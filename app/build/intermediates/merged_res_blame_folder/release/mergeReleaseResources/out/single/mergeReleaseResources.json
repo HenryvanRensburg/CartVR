@@ -1,0 +1,174 @@
+[
+    {
+        "merged": "com.cartvr.app-release-59:/drawable-v21_notification_action_background.xml.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/drawable-v21/notification_action_background.xml"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.cartvr.app-main-60:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/layout-v21_notification_action_tombstone.xml.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/layout-v21/notification_action_tombstone.xml"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/layout_ime_secondary_split_test_activity.xml.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/layout/ime_secondary_split_test_activity.xml"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/layout-v21_notification_template_icon_group.xml.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/layout-v21/notification_template_icon_group.xml"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/color_vector_tint_color.xml.flat",
+        "source": "com.cartvr.app-ui-release-8:/color/vector_tint_color.xml"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/drawable-xhdpi-v4_notification_bg_low_normal.9.png.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/drawable-xhdpi-v4/notification_bg_low_normal.9.png"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/layout_custom_dialog.xml.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/layout/custom_dialog.xml"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/drawable_notification_tile_bg.xml.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/drawable/notification_tile_bg.xml"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/drawable-xhdpi-v4_notification_bg_low_pressed.9.png.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/drawable-xhdpi-v4/notification_bg_low_pressed.9.png"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/drawable-hdpi-v4_notification_bg_normal_pressed.9.png.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/drawable-hdpi-v4/notification_bg_normal_pressed.9.png"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/drawable-mdpi-v4_notification_bg_low_pressed.9.png.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/drawable-mdpi-v4/notification_bg_low_pressed.9.png"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/layout_browser_actions_context_menu_row.xml.flat",
+        "source": "com.cartvr.app-browser-1.8.0-38:/layout/browser_actions_context_menu_row.xml"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/drawable-mdpi-v4_notification_bg_low_normal.9.png.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/drawable-mdpi-v4/notification_bg_low_normal.9.png"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/drawable-xhdpi-v4_notify_panel_notification_icon_bg.png.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/drawable-xhdpi-v4/notify_panel_notification_icon_bg.png"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/xml_image_share_filepaths.xml.flat",
+        "source": "com.cartvr.app-browser-1.8.0-38:/xml/image_share_filepaths.xml"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/drawable-xhdpi-v4_notification_bg_normal_pressed.9.png.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/drawable-xhdpi-v4/notification_bg_normal_pressed.9.png"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/layout-v21_notification_action.xml.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/layout-v21/notification_action.xml"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/drawable-hdpi-v4_notification_oversize_large_icon_bg.png.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/drawable-hdpi-v4/notification_oversize_large_icon_bg.png"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/drawable-hdpi-v4_notification_bg_normal.9.png.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/drawable-hdpi-v4/notification_bg_normal.9.png"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/drawable_ic_call_answer_low.xml.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/drawable/ic_call_answer_low.xml"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/drawable-hdpi-v4_notify_panel_notification_icon_bg.png.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/drawable-hdpi-v4/notify_panel_notification_icon_bg.png"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/layout_notification_template_part_time.xml.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/layout/notification_template_part_time.xml"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/drawable_ic_call_answer_video_low.xml.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/drawable/ic_call_answer_video_low.xml"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/drawable_notification_bg.xml.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/drawable/notification_bg.xml"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/drawable-mdpi-v4_notification_bg_normal_pressed.9.png.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/drawable-mdpi-v4/notification_bg_normal_pressed.9.png"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/drawable-hdpi-v4_notification_bg_low_normal.9.png.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/drawable-hdpi-v4/notification_bg_low_normal.9.png"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/layout_browser_actions_context_menu_page.xml.flat",
+        "source": "com.cartvr.app-browser-1.8.0-38:/layout/browser_actions_context_menu_page.xml"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/layout_ime_base_split_test_activity.xml.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/layout/ime_base_split_test_activity.xml"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/color_vector_tint_theme_color.xml.flat",
+        "source": "com.cartvr.app-ui-release-8:/color/vector_tint_theme_color.xml"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/drawable-hdpi-v4_notification_bg_low_pressed.9.png.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/drawable-hdpi-v4/notification_bg_low_pressed.9.png"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/drawable-mdpi-v4_notify_panel_notification_icon_bg.png.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/drawable-mdpi-v4/notify_panel_notification_icon_bg.png"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/drawable_ic_call_answer_video.xml.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/drawable/ic_call_answer_video.xml"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/layout_notification_template_part_chronometer.xml.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/layout/notification_template_part_chronometer.xml"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/drawable-mdpi-v4_notification_bg_normal.9.png.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/drawable-mdpi-v4/notification_bg_normal.9.png"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/drawable_ic_call_decline_low.xml.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/drawable/ic_call_decline_low.xml"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/drawable_ic_call_decline.xml.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/drawable/ic_call_decline.xml"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/drawable_notification_icon_background.xml.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/drawable/notification_icon_background.xml"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/drawable_ic_call_answer.xml.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/drawable/ic_call_answer.xml"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/layout-v21_notification_template_custom_big.xml.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/layout-v21/notification_template_custom_big.xml"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/drawable_notification_bg_low.xml.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/drawable/notification_bg_low.xml"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/drawable-xhdpi-v4_notification_bg_normal.9.png.flat",
+        "source": "com.cartvr.app-core-1.15.0-37:/drawable-xhdpi-v4/notification_bg_normal.9.png"
+    },
+    {
+        "merged": "com.cartvr.app-release-59:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.cartvr.app-main-60:/mipmap-anydpi-v26/ic_launcher.xml"
+    }
+]

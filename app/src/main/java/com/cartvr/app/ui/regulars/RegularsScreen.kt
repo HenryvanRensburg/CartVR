@@ -1,0 +1,273 @@
+package com.cartvr.app.ui.regulars
+
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.DeleteOutline
+import androidx.compose.material.icons.rounded.PlaylistAdd
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.cartvr.app.data.local.entity.CategoryEntity
+import com.cartvr.app.data.local.entity.RegularItemEntity
+import com.cartvr.app.data.local.entity.StoreEntity
+
+@Composable
+fun RegularsScreen(
+    regulars: List<RegularItemEntity>,
+    stores: List<StoreEntity>,
+    categories: List<CategoryEntity>,
+    onAddToShoppingList: (RegularItemEntity) -> Unit,
+    onCreateRegular: (name: String, qty: String?, storeId: String?, categoryId: String?) -> Unit,
+    onDeleteRegular: (RegularItemEntity) -> Unit
+) {
+    var showCreateDialog by remember { mutableStateOf(false) }
+
+    val storeMap = remember(stores) { stores.associateBy { it.id } }
+    val categoryMap = remember(categories) { categories.associateBy { it.id } }
+
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 96.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(
+                        text = "Regulars",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Text(
+                        text = "Weekly staples for one-tap adding",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                OutlinedButton(
+                    onClick = { showCreateDialog = true },
+                    shape = RoundedCornerShape(14.dp)
+                ) {
+                    Icon(Icons.Rounded.Add, contentDescription = null)
+                    Text(" New")
+                }
+            }
+        }
+
+        if (regulars.isEmpty()) {
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(28.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "No regulars yet",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "Save items you buy every week (like milk, bread, or coffee) for one-tap re-adding.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+        }
+
+        items(regulars, key = { it.id }) { regular ->
+            val storeName = storeMap[regular.defaultStoreId]?.name ?: "Default Store"
+            val categoryName = categoryMap[regular.defaultCategoryId]?.name
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(18.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        val title = if (!regular.defaultQuantity.isNullOrBlank()) {
+                            "${regular.defaultQuantity} ${regular.name}"
+                        } else {
+                            regular.name
+                        }
+                        Text(
+                            text = title,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        val subtitle = listOfNotNull(storeName, categoryName).joinToString(" • ")
+                        Text(
+                            text = subtitle,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+
+                    FilledTonalIconButton(onClick = { onAddToShoppingList(regular) }) {
+                        Icon(
+                            imageVector = Icons.Rounded.PlaylistAdd,
+                            contentDescription = "Add to shopping list"
+                        )
+                    }
+
+                    IconButton(onClick = { onDeleteRegular(regular) }) {
+                        Icon(
+                            imageVector = Icons.Rounded.DeleteOutline,
+                            contentDescription = "Delete regular",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    if (showCreateDialog) {
+        CreateRegularDialog(
+            stores = stores,
+            categories = categories,
+            onDismiss = { showCreateDialog = false },
+            onSave = { name, qty, storeId, categoryId ->
+                onCreateRegular(name, qty, storeId, categoryId)
+                showCreateDialog = false
+            }
+        )
+    }
+}
+
+@Composable
+private fun CreateRegularDialog(
+    stores: List<StoreEntity>,
+    categories: List<CategoryEntity>,
+    onDismiss: () -> Unit,
+    onSave: (name: String, qty: String?, storeId: String?, categoryId: String?) -> Unit
+) {
+    var name by remember { mutableStateOf("") }
+    var quantity by remember { mutableStateOf("") }
+    var selectedStoreId by remember { mutableStateOf(stores.firstOrNull()?.id) }
+    var selectedCategoryId by remember { mutableStateOf(categories.lastOrNull()?.id) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("New Regular Item") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text("Item name (e.g. Full cream milk)") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                OutlinedTextField(
+                    value = quantity,
+                    onValueChange = { quantity = it },
+                    label = { Text("Default quantity (e.g. 2L)") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Text("Default Store", style = MaterialTheme.typography.labelMedium)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    stores.forEach { store ->
+                        FilterChip(
+                            selected = store.id == selectedStoreId,
+                            onClick = { selectedStoreId = store.id },
+                            label = { Text(store.name) }
+                        )
+                    }
+                }
+                Text("Default Aisle", style = MaterialTheme.typography.labelMedium)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    categories.forEach { cat ->
+                        FilterChip(
+                            selected = cat.id == selectedCategoryId,
+                            onClick = { selectedCategoryId = cat.id },
+                            label = { Text(cat.name) }
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    onSave(
+                        name.trim(),
+                        quantity.trim().ifBlank { null },
+                        selectedStoreId,
+                        selectedCategoryId
+                    )
+                },
+                enabled = name.isNotBlank()
+            ) {
+                Text("Save")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
+}

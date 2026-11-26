@@ -1,0 +1,1486 @@
+kotlinx.serialization.encoding.Encoder
+androidx.compose.ui.focus.FocusOwnerImpl$modifier$2
+androidx.compose.foundation.gestures.ScrollableElement
+kotlinx.serialization.encoding.Decoder
+androidx.profileinstaller.ProfileInstallerInitializer
+androidx.compose.ui.semantics.EmptySemanticsElement
+androidx.compose.ui.draw.ShadowGraphicsLayerElement
+androidx.compose.ui.layout.LayoutIdElement
+androidx.compose.foundation.layout.HorizontalAlignElement
+kotlinx.coroutines.internal.StackTraceRecoveryKt
+androidx.compose.ui.layout.LayoutElement
+kotlinx.serialization.json.JsonElement$Companion
+kotlin.jvm.internal.DefaultConstructorMarker
+androidx.compose.ui.draw.PainterElement
+kotlin.coroutines.jvm.internal.BaseContinuationImpl
+com.cartvr.app.data.remote.dto.CategoryDto$$serializer
+androidx.lifecycle.ProcessLifecycleOwner$attach$1$onActivityPreCreated$1
+androidx.compose.foundation.selection.SelectableElement
+com.russhwolf.settings.SettingsInitializer
+io.ktor.client.engine.okhttp.OkHttpEngineContainer
+androidx.compose.ui.layout.OnSizeChangedModifier
+androidx.compose.ui.focus.FocusChangedElement
+androidx.compose.ui.semantics.ClearAndSetSemanticsElement
+com.cartvr.app.data.remote.dto.HouseholdMemberDto
+androidx.lifecycle.ReportFragment
+com.cartvr.app.CartVRApplication
+com.cartvr.app.MainActivity
+androidx.navigation.NavBackStackEntry$SavedStateViewModel
+androidx.compose.material3.internal.DraggableAnchorsElement
+androidx.versionedparcelable.ParcelImpl
+androidx.compose.foundation.relocation.BringIntoViewRequesterElement
+com.cartvr.app.data.remote.dto.StoreDto$$serializer
+kotlinx.serialization.descriptors.SerialDescriptor
+com.cartvr.app.data.updater.GitHubRelease
+androidx.compose.foundation.layout.PaddingElement
+androidx.compose.ui.draw.DrawBehindElement
+androidx.navigation.NavControllerViewModel
+androidx.navigation.NavGraphNavigator
+androidx.navigation.compose.BackStackEntryIdViewModel
+com.cartvr.app.data.updater.GitHubAsset$$serializer
+kotlinx.serialization.KSerializer
+androidx.compose.foundation.lazy.layout.TraversablePrefetchStateModifierElement
+androidx.compose.foundation.lazy.layout.LazyLayoutSemanticsModifier
+androidx.lifecycle.ProcessLifecycleInitializer
+com.cartvr.app.data.remote.dto.ShoppingItemDto
+androidx.compose.ui.layout.OnGloballyPositionedElement
+androidx.compose.ui.draw.DrawWithCacheElement
+androidx.compose.foundation.FocusableElement
+androidx.lifecycle.SavedStateHandlesVM
+androidx.compose.ui.semantics.AppendedSemanticsElement
+androidx.compose.foundation.gestures.DraggableElement
+androidx.compose.foundation.text.modifiers.TextStringSimpleElement
+androidx.compose.foundation.layout.IntrinsicWidthElement
+androidx.compose.ui.platform.AndroidCompositionLocals_androidKt
+androidx.core.app.CoreComponentFactory
+com.cartvr.app.data.remote.dto.RegularItemDto
+androidx.compose.material3.MinimumInteractiveModifier
+androidx.graphics.path.ConicConverter
+androidx.compose.foundation.BorderModifierNodeElement
+androidx.compose.ui.input.pointer.SuspendPointerInputElement
+androidx.versionedparcelable.CustomVersionedParcelable
+com.cartvr.app.data.updater.GitHubAsset
+com.cartvr.app.data.remote.dto.StoreDto
+androidx.startup.InitializationProvider
+androidx.browser.browseractions.BrowserActionsFallbackMenuView
+com.cartvr.app.data.updater.UpdateInfo
+androidx.compose.foundation.BackgroundElement
+androidx.compose.foundation.text.input.internal.LegacyAdaptingPlatformTextInputModifier
+androidx.compose.foundation.ClickableElement
+androidx.compose.foundation.IndicationModifierElement
+com.cartvr.app.data.updater.GitHubRelease$Companion
+androidx.compose.foundation.layout.LayoutWeightElement
+com.cartvr.app.data.remote.dto.RegularItemDto$$serializer
+okhttp3.internal.publicsuffix.PublicSuffixDatabase
+androidx.compose.foundation.layout.FillElement
+androidx.compose.foundation.layout.SizeElement
+androidx.navigation.compose.ComposeNavigator
+androidx.compose.foundation.layout.PaddingValuesElement
+androidx.compose.foundation.text.handwriting.StylusHandwritingElementWithNegativePadding
+android.support.v4.graphics.drawable.IconCompatParcelizer
+androidx.core.graphics.drawable.IconCompatParcelizer
+androidx.core.app.RemoteActionCompat
+androidx.compose.foundation.layout.AlignmentLineOffsetDpElement
+com.cartvr.app.data.remote.dto.HouseholdDto
+androidx.compose.ui.input.key.KeyInputElement
+kotlinx.serialization.json.JsonObject$Companion
+androidx.compose.ui.input.rotary.RotaryInputElement
+androidx.compose.foundation.FocusableKt$FocusableInNonTouchModeElement$1
+kotlinx.serialization.json.JsonPrimitive$Companion
+com.cartvr.app.data.remote.dto.ShoppingItemDto$$serializer
+androidx.compose.ui.focus.FocusPropertiesElement
+androidx.compose.foundation.layout.WrapContentElement
+androidx.annotation.Keep
+kotlin.reflect.jvm.internal.ReflectionFactoryImpl
+androidx.navigation.ActivityNavigator
+com.cartvr.app.data.remote.dto.CategoryDto
+androidx.compose.foundation.lazy.layout.LazyLayoutItemAnimator$DisplayingDisappearingItemsElement
+android.support.v4.app.RemoteActionCompatParcelizer
+com.cartvr.app.data.remote.dto.HouseholdDto$$serializer
+com.cartvr.app.data.updater.GitHubAsset$Companion
+androidx.compose.foundation.text.modifiers.TextAnnotatedStringElement
+com.cartvr.app.data.updater.InstallStatusReceiver$Companion
+androidx.compose.foundation.ScrollingLayoutElement
+androidx.compose.ui.graphics.GraphicsLayerElement
+androidx.profileinstaller.ProfileInstallReceiver
+androidx.compose.foundation.layout.BoxChildDataElement
+androidx.navigation.compose.DialogNavigator
+androidx.room.MultiInstanceInvalidationService
+androidx.lifecycle.ProcessLifecycleOwner$attach$1
+kotlinx.serialization.json.JsonArray$Companion
+com.cartvr.app.data.updater.GitHubUpdater
+androidx.emoji2.text.EmojiCompatInitializer
+androidx.compose.ui.focus.FocusRequesterElement
+androidx.compose.foundation.layout.UnspecifiedConstraintsElement
+io.github.jan.supabase.auth.SupabaseInitializer
+kotlinx.coroutines.android.AndroidDispatcherFactory
+androidx.graphics.path.PathIteratorPreApi34Impl
+com.cartvr.app.data.updater.GitHubUpdater$downloadAndInstall$2
+androidx.lifecycle.LegacySavedStateHandleController$OnRecreation
+com.cartvr.app.data.updater.GitHubUpdater$checkForUpdate$1
+com.cartvr.app.data.updater.InstallStatusReceiver
+androidx.compose.ui.draw.DrawWithContentElement
+com.cartvr.app.data.local.CartVrDatabase_Impl
+androidx.compose.ui.platform.DragAndDropModifierOnDragListener$modifier$1
+androidx.compose.foundation.ScrollSemanticsElement
+androidx.compose.foundation.MagnifierElement
+androidx.compose.foundation.text.modifiers.SelectableTextAnnotatedStringElement
+com.cartvr.app.data.updater.GitHubUpdater$checkForUpdate$2
+androidx.navigation.compose.ComposeNavGraphNavigator
+androidx.lifecycle.LifecycleDispatcher$DispatcherActivityCallback
+androidx.core.app.RemoteActionCompatParcelizer
+com.cartvr.app.data.updater.GitHubRelease$$serializer
+androidx.compose.animation.EnterExitTransitionElement
+com.cartvr.app.data.local.CartVrDatabase
+kotlinx.serialization.json.JsonNull
+kotlin.Metadata
+com.cartvr.app.data.updater.GitHubUpdater$downloadAndInstall$1
+androidx.compose.ui.input.nestedscroll.NestedScrollElement
+androidx.compose.foundation.selection.TriStateToggleableElement
+androidx.core.graphics.drawable.IconCompat
+androidx.lifecycle.ReportFragment$LifecycleCallbacks
+androidx.compose.ui.graphics.BlockGraphicsLayerElement
+com.cartvr.app.data.remote.dto.HouseholdMemberDto$$serializer
+androidx.compose.ui.input.pointer.PointerHoverIconModifierElement
+androidx.compose.runtime.ParcelableSnapshotMutableIntState: android.os.Parcelable$Creator CREATOR
+androidx.compose.foundation.lazy.layout.DefaultLazyKey: android.os.Parcelable$Creator CREATOR
+com.cartvr.app.data.updater.GitHubRelease$$serializer: kotlinx.serialization.descriptors.SerialDescriptor descriptor
+kotlinx.coroutines.channels.BufferedChannel: java.lang.Object _closeCause$volatile
+kotlinx.coroutines.CompletedExceptionally: int _handled$volatile
+io.github.jan.supabase.realtime.PresenceJoinConfig: io.github.jan.supabase.realtime.PresenceJoinConfig$Companion Companion
+io.github.jan.supabase.auth.providers.builtin.IDToken$Config$$serializer: kotlinx.serialization.descriptors.SerialDescriptor descriptor
+kotlinx.coroutines.scheduling.WorkQueue: java.lang.Object lastScheduledTask$volatile
+kotlinx.serialization.json.JsonNull: kotlinx.serialization.json.JsonNull INSTANCE
+com.cartvr.app.data.updater.GitHubUpdater$downloadAndInstall$2: long J$1
+androidx.datastore.preferences.PreferencesProto$Value: int STRING_FIELD_NUMBER
+androidx.datastore.preferences.PreferencesProto$Value: androidx.datastore.preferences.protobuf.Parser PARSER
+io.ktor.utils.io.ByteChannel: java.lang.Object _closedCause
+androidx.datastore.preferences.protobuf.GeneratedMessageLite: androidx.datastore.preferences.protobuf.UnknownFieldSetLite unknownFields
+androidx.datastore.preferences.PreferencesProto$PreferenceMap: androidx.datastore.preferences.protobuf.MapFieldLite preferences_
+kotlinx.coroutines.JobSupport$Finishing: int _isCompleting$volatile
+kotlinx.serialization.json.JsonPrimitive: kotlinx.serialization.json.JsonPrimitive$Companion Companion
+com.cartvr.app.data.updater.GitHubUpdater$checkForUpdate$2: int label
+com.cartvr.app.data.updater.GitHubAsset: java.lang.String name
+kotlinx.coroutines.internal.ResizableAtomicArray: java.util.concurrent.atomic.AtomicReferenceArray array
+androidx.lifecycle.Lifecycle$Event: androidx.lifecycle.Lifecycle$Event ON_ANY
+com.cartvr.app.data.updater.UpdateInfo: java.lang.String versionName
+kotlinx.coroutines.scheduling.CoroutineScheduler$Worker: java.lang.Object nextParkedWorker
+androidx.lifecycle.ProcessLifecycleOwner$attach$1$onActivityPreCreated$1: androidx.lifecycle.ProcessLifecycleOwner this$0
+androidx.datastore.preferences.PreferencesProto$Value: int LONG_FIELD_NUMBER
+kotlinx.atomicfu.AtomicRef: java.lang.Object value
+io.github.jan.supabase.realtime.RealtimeMessage$$serializer: kotlinx.serialization.descriptors.SerialDescriptor descriptor
+androidx.lifecycle.Lifecycle$Event: androidx.lifecycle.Lifecycle$Event ON_START
+kotlinx.coroutines.sync.SemaphoreAndMutexImpl: java.lang.Object tail$volatile
+kotlinx.coroutines.UndispatchedCoroutine: boolean threadLocalIsSet
+kotlinx.coroutines.channels.BufferedChannel: java.lang.Object closeHandler$volatile
+com.cartvr.app.data.remote.dto.RegularItemDto$$serializer: kotlinx.serialization.descriptors.SerialDescriptor descriptor
+io.github.jan.supabase.realtime.RealtimeJoinConfig$$serializer: kotlinx.serialization.descriptors.SerialDescriptor descriptor
+io.ktor.utils.io.ByteChannel: java.lang.Object suspensionSlot
+androidx.compose.runtime.ParcelableSnapshotMutableLongState: android.os.Parcelable$Creator CREATOR
+androidx.concurrent.futures.AbstractResolvableFuture: java.lang.Object value
+kotlinx.coroutines.flow.ChannelAsFlow: int consumed$volatile
+com.cartvr.app.data.updater.UpdateInfo: int $stable
+androidx.datastore.preferences.protobuf.GeneratedMessageLite: int UNINITIALIZED_SERIALIZED_SIZE
+io.github.jan.supabase.realtime.Column: io.github.jan.supabase.realtime.Column$Companion Companion
+kotlinx.coroutines.DispatchedCoroutine: int _decision$volatile
+io.github.jan.supabase.auth.providers.builtin.Phone$Config$$serializer: kotlinx.serialization.descriptors.SerialDescriptor descriptor
+androidx.lifecycle.Lifecycle$Event: androidx.lifecycle.Lifecycle$Event ON_CREATE
+com.cartvr.app.data.updater.GitHubAsset$$serializer: kotlinx.serialization.descriptors.SerialDescriptor descriptor
+androidx.datastore.preferences.PreferencesProto$Value: int bitField0_
+androidx.datastore.preferences.protobuf.GeneratedMessageLite: int MUTABLE_FLAG_MASK
+kotlinx.serialization.json.internal.InternalJsonWriter: kotlinx.serialization.json.internal.InternalJsonWriter$Companion Companion
+io.github.jan.supabase.postgrest.PostgrestErrorResponse$$serializer: kotlinx.serialization.descriptors.SerialDescriptor descriptor
+io.github.jan.supabase.postgrest.PostgrestErrorResponse: io.github.jan.supabase.postgrest.PostgrestErrorResponse$Companion Companion
+kotlinx.coroutines.CancelledContinuation: int _resumed$volatile
+androidx.datastore.preferences.PreferencesProto$Value: androidx.datastore.preferences.PreferencesProto$Value DEFAULT_INSTANCE
+io.ktor.client.HttpClient: int closed
+androidx.lifecycle.Lifecycle$Event: androidx.lifecycle.Lifecycle$Event ON_RESUME
+com.cartvr.app.data.remote.dto.StoreDto$$serializer: int $stable
+kotlinx.coroutines.sync.SemaphoreAndMutexImpl: java.lang.Object head$volatile
+com.cartvr.app.data.updater.GitHubRelease$$serializer: int $stable
+kotlinx.coroutines.CancellableContinuationImpl: int _decisionAndIndex$volatile
+com.cartvr.app.data.updater.GitHubRelease: java.lang.String tagName
+kotlinx.coroutines.internal.LockFreeLinkedListNode: java.lang.Object _removedRef$volatile
+kotlinx.coroutines.internal.LockFreeTaskQueue: java.lang.Object _cur$volatile
+kotlinx.coroutines.scheduling.CoroutineScheduler: long parkedWorkersStack$volatile
+com.cartvr.app.data.updater.GitHubUpdater$downloadAndInstall$2: java.lang.Object L$6
+androidx.lifecycle.Lifecycle$Event: androidx.lifecycle.Lifecycle$Event ON_STOP
+kotlinx.serialization.json.JsonArray: kotlinx.serialization.json.JsonArray$Companion Companion
+kotlinx.coroutines.CancellableContinuationImpl: java.lang.Object _parentHandle$volatile
+androidx.datastore.preferences.PreferencesProto$Value: int valueCase_
+com.cartvr.app.data.remote.dto.ShoppingItemDto$$serializer: int $stable
+kotlinx.atomicfu.AtomicInt: int value
+com.cartvr.app.data.remote.dto.CategoryDto$$serializer: com.cartvr.app.data.remote.dto.CategoryDto$$serializer INSTANCE
+androidx.versionedparcelable.ParcelImpl: android.os.Parcelable$Creator CREATOR
+com.cartvr.app.data.updater.GitHubUpdater: int $stable
+com.cartvr.app.data.remote.dto.HouseholdDto$$serializer: com.cartvr.app.data.remote.dto.HouseholdDto$$serializer INSTANCE
+androidx.lifecycle.ProcessLifecycleOwner$attach$1: androidx.lifecycle.ProcessLifecycleOwner this$0
+androidx.datastore.preferences.PreferencesProto$PreferenceMap: androidx.datastore.preferences.PreferencesProto$PreferenceMap DEFAULT_INSTANCE
+kotlinx.coroutines.internal.ConcurrentLinkedListNode: java.lang.Object _next$volatile
+androidx.datastore.preferences.protobuf.AbstractMessageLite: int memoizedHashCode
+io.github.jan.supabase.realtime.RealtimeJoinPayload$$serializer: kotlinx.serialization.descriptors.SerialDescriptor descriptor
+androidx.datastore.preferences.PreferencesProto$PreferenceMap: androidx.datastore.preferences.protobuf.Parser PARSER
+com.cartvr.app.data.updater.UpdateInfo: java.lang.String apkDownloadUrl
+com.cartvr.app.data.updater.GitHubRelease: kotlinx.serialization.KSerializer[] $childSerializers
+com.cartvr.app.data.updater.GitHubUpdater$checkForUpdate$1: java.lang.Object result
+com.cartvr.app.data.updater.GitHubAsset: int $stable
+kotlinx.coroutines.internal.LockFreeLinkedListNode: java.lang.Object _next$volatile
+com.cartvr.app.data.updater.GitHubAsset: java.lang.String browserDownloadUrl
+io.github.jan.supabase.auth.user.UserMfaFactor$$serializer: kotlinx.serialization.descriptors.SerialDescriptor descriptor
+com.cartvr.app.data.updater.GitHubRelease$$serializer: com.cartvr.app.data.updater.GitHubRelease$$serializer INSTANCE
+kotlinx.serialization.json.JsonObject: kotlinx.serialization.json.JsonObject$Companion Companion
+androidx.navigation.NavBackStackEntryState: android.os.Parcelable$Creator CREATOR
+kotlinx.datetime.LocalTime: kotlinx.datetime.LocalTime$Companion Companion
+io.github.jan.supabase.auth.providers.builtin.DefaultAuthProvider$Config: io.github.jan.supabase.auth.providers.builtin.DefaultAuthProvider$Config$Companion Companion
+kotlinx.coroutines.internal.LimitedDispatcher: int runningWorkers$volatile
+kotlinx.coroutines.internal.DispatchedContinuation: java.lang.Object _reusableCancellableContinuation$volatile
+io.github.jan.supabase.realtime.Presence: io.github.jan.supabase.realtime.Presence$Companion Companion
+io.github.jan.supabase.auth.providers.builtin.Email$Config: io.github.jan.supabase.auth.providers.builtin.Email$Config$Companion Companion
+kotlinx.coroutines.sync.SemaphoreAndMutexImpl: long enqIdx$volatile
+io.ktor.util.date.GMTDate: io.ktor.util.date.GMTDate$Companion Companion
+kotlinx.datetime.UtcOffset: kotlinx.datetime.UtcOffset$Companion Companion
+androidx.lifecycle.ReportFragment$LifecycleCallbacks: androidx.lifecycle.ReportFragment$LifecycleCallbacks$Companion Companion
+kotlinx.coroutines.internal.LockFreeTaskQueueCore: long _state$volatile
+kotlinx.coroutines.channels.BufferedChannel: java.lang.Object sendSegment$volatile
+com.cartvr.app.data.updater.GitHubUpdater$downloadAndInstall$2: kotlin.jvm.functions.Function1 $onProgress
+io.github.jan.supabase.auth.user.UserSession: io.github.jan.supabase.auth.user.UserSession$Companion Companion
+com.cartvr.app.data.updater.GitHubUpdater$downloadAndInstall$2: java.lang.Object L$4
+kotlinx.coroutines.internal.LockFreeTaskQueueCore: java.lang.Object _next$volatile
+kotlinx.coroutines.internal.ConcurrentLinkedListNode: java.lang.Object _prev$volatile
+kotlinx.coroutines.android.AndroidExceptionPreHandler: java.lang.Object _preHandler
+androidx.datastore.preferences.protobuf.GeneratedMessageLite: int MEMOIZED_SERIALIZED_SIZE_MASK
+kotlinx.atomicfu.AtomicLong: long value
+io.github.jan.supabase.auth.GoTrueErrorResponse$WeakPassword$$serializer: kotlinx.serialization.descriptors.SerialDescriptor descriptor
+androidx.lifecycle.Lifecycle$Event: androidx.lifecycle.Lifecycle$Event$Companion Companion
+io.github.jan.supabase.auth.user.UserMfaFactor: io.github.jan.supabase.auth.user.UserMfaFactor$Companion Companion
+androidx.datastore.preferences.PreferencesProto$PreferenceMap: int PREFERENCES_FIELD_NUMBER
+io.ktor.websocket.DefaultWebSocketSessionImpl: java.lang.Object pinger
+com.cartvr.app.data.updater.GitHubUpdater$downloadAndInstall$1: int label
+kotlinx.serialization.json.JsonElement: kotlinx.serialization.json.JsonElement$Companion Companion
+com.cartvr.app.data.updater.GitHubUpdater$downloadAndInstall$2: java.lang.Object L$3
+com.cartvr.app.data.remote.dto.ShoppingItemDto$$serializer: com.cartvr.app.data.remote.dto.ShoppingItemDto$$serializer INSTANCE
+io.ktor.utils.io.SourceByteReadChannel: io.ktor.utils.io.CloseToken closed
+kotlinx.coroutines.channels.BufferedChannel: long bufferEnd$volatile
+kotlinx.datetime.Instant: kotlinx.datetime.Instant$Companion Companion
+kotlinx.coroutines.scheduling.CoroutineScheduler: long controlState$volatile
+io.github.jan.supabase.auth.GoTrueErrorResponse$WeakPassword: io.github.jan.supabase.auth.GoTrueErrorResponse$WeakPassword$Companion Companion
+com.cartvr.app.data.updater.GitHubUpdater$downloadAndInstall$2: java.lang.Object L$5
+com.cartvr.app.data.updater.GitHubRelease: java.lang.String body
+kotlinx.coroutines.scheduling.WorkQueue: int producerIndex$volatile
+com.cartvr.app.data.updater.InstallStatusReceiver: int $stable
+kotlinx.coroutines.scheduling.CoroutineScheduler: int _isTerminated$volatile
+androidx.activity.result.ActivityResult: android.os.Parcelable$Creator CREATOR
+io.github.jan.supabase.auth.user.UserSession$$serializer: kotlinx.serialization.descriptors.SerialDescriptor descriptor
+io.github.jan.supabase.auth.GoTrueErrorResponse: io.github.jan.supabase.auth.GoTrueErrorResponse$Companion Companion
+io.github.jan.supabase.auth.providers.builtin.IDToken$Config: io.github.jan.supabase.auth.providers.builtin.IDToken$Config$Companion Companion
+androidx.datastore.preferences.PreferencesProto$StringSet: androidx.datastore.preferences.PreferencesProto$StringSet DEFAULT_INSTANCE
+com.cartvr.app.data.remote.dto.StoreDto$$serializer: kotlinx.serialization.descriptors.SerialDescriptor descriptor
+com.cartvr.app.data.remote.dto.HouseholdMemberDto: com.cartvr.app.data.remote.dto.HouseholdMemberDto$Companion Companion
+androidx.datastore.preferences.PreferencesProto$StringSet: androidx.datastore.preferences.protobuf.Internal$ProtobufList strings_
+androidx.concurrent.futures.AbstractResolvableFuture: androidx.concurrent.futures.AbstractResolvableFuture$Listener listeners
+io.ktor.websocket.DefaultWebSocketSessionImpl: int started
+io.github.jan.supabase.auth.user.Identity$$serializer: kotlinx.serialization.descriptors.SerialDescriptor descriptor
+androidx.datastore.preferences.PreferencesProto$Value: java.lang.Object value_
+com.cartvr.app.data.remote.dto.CategoryDto$$serializer: int $stable
+com.cartvr.app.data.updater.GitHubUpdater: io.ktor.client.HttpClient httpClient
+com.cartvr.app.data.remote.dto.HouseholdMemberDto$$serializer: int $stable
+kotlinx.coroutines.internal.Segment: int cleanedAndPointers$volatile
+kotlinx.coroutines.JobSupport: java.lang.Object _parentHandle$volatile
+com.cartvr.app.data.remote.dto.RegularItemDto: com.cartvr.app.data.remote.dto.RegularItemDto$Companion Companion
+com.cartvr.app.data.updater.GitHubUpdater$downloadAndInstall$2: com.cartvr.app.data.updater.GitHubUpdater this$0
+com.cartvr.app.data.updater.GitHubUpdater$downloadAndInstall$2: long J$0
+com.cartvr.app.data.remote.dto.CategoryDto: com.cartvr.app.data.remote.dto.CategoryDto$Companion Companion
+kotlinx.coroutines.channels.BufferedChannel: long sendersAndCloseStatus$volatile
+io.github.jan.supabase.auth.providers.IDTokenProvider: io.github.jan.supabase.auth.providers.IDTokenProvider$Companion Companion
+kotlinx.coroutines.channels.BufferedChannel: java.lang.Object receiveSegment$volatile
+kotlinx.coroutines.EventLoopImplBase$DelayedTask: java.lang.Object _heap
+io.ktor.utils.io.pool.DefaultPool: long top
+com.cartvr.app.data.updater.GitHubUpdater$downloadAndInstall$2: com.cartvr.app.data.updater.UpdateInfo $updateInfo
+kotlinx.coroutines.sync.MutexImpl: java.lang.Object owner$volatile
+io.ktor.util.collections.CopyOnWriteHashMap: java.lang.Object current
+io.github.jan.supabase.auth.user.UserInfo: io.github.jan.supabase.auth.user.UserInfo$Companion Companion
+kotlin.coroutines.jvm.internal.ContinuationImpl: kotlin.coroutines.Continuation intercepted
+com.cartvr.app.data.updater.GitHubAsset: com.cartvr.app.data.updater.GitHubAsset$Companion Companion
+io.ktor.util.pipeline.Pipeline: java.lang.Object interceptors$delegate
+kotlinx.coroutines.EventLoopImplBase: java.lang.Object _delayed$volatile
+io.ktor.util.date.GMTDate$$serializer: kotlinx.serialization.descriptors.SerialDescriptor descriptor
+kotlinx.coroutines.InvokeOnCancelling: int _invoked$volatile
+io.ktor.client.plugins.internal.ByteChannelReplay: java.lang.Object content
+kotlinx.coroutines.channels.BufferedChannel: long completedExpandBuffersAndPauseFlag$volatile
+com.cartvr.app.data.updater.UpdateInfo: java.lang.String releaseNotes
+com.cartvr.app.data.remote.dto.HouseholdMemberDto$$serializer: kotlinx.serialization.descriptors.SerialDescriptor descriptor
+com.cartvr.app.data.remote.dto.RegularItemDto$$serializer: com.cartvr.app.data.remote.dto.RegularItemDto$$serializer INSTANCE
+androidx.compose.runtime.ParcelableSnapshotMutableState: android.os.Parcelable$Creator CREATOR
+androidx.datastore.preferences.PreferencesProto$Value: int INTEGER_FIELD_NUMBER
+androidx.datastore.preferences.protobuf.GeneratedMessageLite: int memoizedSerializedSize
+io.github.jan.supabase.auth.providers.builtin.Email$Config$$serializer: kotlinx.serialization.descriptors.SerialDescriptor descriptor
+io.github.jan.supabase.realtime.data.PostgresActionData$$serializer: kotlinx.serialization.descriptors.SerialDescriptor descriptor
+kotlin.coroutines.jvm.internal.SuspendLambda: int arity
+com.cartvr.app.data.updater.GitHubUpdater$checkForUpdate$1: com.cartvr.app.data.updater.GitHubUpdater this$0
+kotlinx.coroutines.EventLoopImplBase: int _isCompleted$volatile
+kotlinx.coroutines.sync.SemaphoreAndMutexImpl: long deqIdx$volatile
+kotlinx.coroutines.JobSupport$Finishing: java.lang.Object _exceptionsHolder$volatile
+io.github.jan.supabase.auth.providers.builtin.Phone$Channel: io.github.jan.supabase.auth.providers.builtin.Phone$Channel$Companion Companion
+kotlinx.coroutines.DefaultExecutor: java.lang.Thread _thread
+com.cartvr.app.data.remote.dto.StoreDto$$serializer: com.cartvr.app.data.remote.dto.StoreDto$$serializer INSTANCE
+kotlinx.coroutines.scheduling.CoroutineScheduler$Worker: int workerCtl$volatile
+com.cartvr.app.data.updater.GitHubUpdater$downloadAndInstall$1: java.lang.Object result
+com.cartvr.app.data.updater.GitHubUpdater$downloadAndInstall$2: int label
+kotlinx.coroutines.scheduling.WorkQueue: int consumerIndex$volatile
+com.cartvr.app.data.remote.dto.RegularItemDto$$serializer: int $stable
+io.ktor.websocket.DefaultWebSocketSessionImpl: int closed
+com.cartvr.app.data.remote.dto.HouseholdDto$$serializer: kotlinx.serialization.descriptors.SerialDescriptor descriptor
+androidx.lifecycle.Lifecycle$Event: androidx.lifecycle.Lifecycle$Event ON_DESTROY
+io.ktor.client.engine.HttpClientEngineBase: int closed
+com.cartvr.app.data.updater.GitHubUpdater$downloadAndInstall$2: java.lang.Object L$0
+com.cartvr.app.data.updater.GitHubUpdater$downloadAndInstall$1: com.cartvr.app.data.updater.GitHubUpdater this$0
+kotlinx.coroutines.JobSupport$Finishing: java.lang.Object _rootCause$volatile
+com.cartvr.app.data.updater.GitHubUpdater: android.content.Context context
+io.github.jan.supabase.realtime.BroadcastJoinConfig: io.github.jan.supabase.realtime.BroadcastJoinConfig$Companion Companion
+androidx.datastore.preferences.PreferencesProto$Value: int BOOLEAN_FIELD_NUMBER
+androidx.datastore.preferences.PreferencesProto$Value: int BYTES_FIELD_NUMBER
+kotlinx.coroutines.scheduling.CoroutineScheduler$Worker: int indexInArray
+kotlinx.coroutines.channels.BufferedChannel: long receivers$volatile
+kotlinx.coroutines.flow.StateFlowImpl: java.lang.Object _state$volatile
+kotlinx.coroutines.EventLoopImplBase: java.lang.Object _queue$volatile
+com.cartvr.app.data.remote.dto.HouseholdMemberDto$$serializer: com.cartvr.app.data.remote.dto.HouseholdMemberDto$$serializer INSTANCE
+com.cartvr.app.data.remote.dto.ShoppingItemDto$$serializer: kotlinx.serialization.descriptors.SerialDescriptor descriptor
+com.cartvr.app.data.updater.GitHubUpdater$checkForUpdate$2: java.lang.Object L$0
+com.cartvr.app.data.updater.GitHubAsset$$serializer: int $stable
+androidx.datastore.preferences.protobuf.GeneratedMessageLite: java.util.Map defaultInstanceMap
+kotlinx.datetime.LocalDate: kotlinx.datetime.LocalDate$Companion Companion
+io.github.jan.supabase.auth.user.Identity: io.github.jan.supabase.auth.user.Identity$Companion Companion
+io.github.jan.supabase.auth.user.UserInfo$$serializer: kotlinx.serialization.descriptors.SerialDescriptor descriptor
+io.ktor.utils.io.ByteChannel: int flushBufferSize
+io.github.jan.supabase.realtime.Column$$serializer: kotlinx.serialization.descriptors.SerialDescriptor descriptor
+androidx.lifecycle.Lifecycle$Event: androidx.lifecycle.Lifecycle$Event[] $VALUES
+io.github.jan.supabase.realtime.RealtimeJoinPayload: io.github.jan.supabase.realtime.RealtimeJoinPayload$Companion Companion
+com.cartvr.app.data.updater.GitHubAsset$$serializer: com.cartvr.app.data.updater.GitHubAsset$$serializer INSTANCE
+kotlinx.coroutines.sync.SemaphoreAndMutexImpl: int _availablePermits$volatile
+kotlinx.coroutines.scheduling.WorkQueue: int blockingTasksInBuffer$volatile
+androidx.datastore.preferences.PreferencesProto$Value: int DOUBLE_FIELD_NUMBER
+androidx.concurrent.futures.AbstractResolvableFuture: androidx.concurrent.futures.AbstractResolvableFuture$Waiter waiters
+com.cartvr.app.data.remote.dto.StoreDto: com.cartvr.app.data.remote.dto.StoreDto$Companion Companion
+com.cartvr.app.data.updater.GitHubRelease: int $stable
+kotlinx.coroutines.channels.BufferedChannel: java.lang.Object bufferEndSegment$volatile
+io.github.jan.supabase.realtime.PresenceJoinConfig$$serializer: kotlinx.serialization.descriptors.SerialDescriptor descriptor
+com.cartvr.app.data.remote.dto.HouseholdDto: com.cartvr.app.data.remote.dto.HouseholdDto$Companion Companion
+com.cartvr.app.data.updater.GitHubUpdater$downloadAndInstall$2: java.lang.Object L$2
+com.cartvr.app.data.updater.GitHubRelease: java.util.List assets
+io.ktor.client.call.HttpClientCall: int received
+androidx.datastore.preferences.PreferencesProto$Value: int FLOAT_FIELD_NUMBER
+io.github.jan.supabase.realtime.data.PostgresActionData: io.github.jan.supabase.realtime.data.PostgresActionData$Companion Companion
+androidx.datastore.preferences.PreferencesProto$StringSet: androidx.datastore.preferences.protobuf.Parser PARSER
+io.github.jan.supabase.realtime.BroadcastJoinConfig$$serializer: kotlinx.serialization.descriptors.SerialDescriptor descriptor
+io.github.jan.supabase.realtime.RealtimeJoinConfig: io.github.jan.supabase.realtime.RealtimeJoinConfig$Companion Companion
+androidx.datastore.preferences.PreferencesProto$Value: int STRING_SET_FIELD_NUMBER
+com.cartvr.app.data.updater.GitHubUpdater$downloadAndInstall$2: java.lang.Object L$1
+kotlinx.coroutines.android.HandlerDispatcherKt: android.view.Choreographer choreographer
+kotlinx.io.RefCountingCopyTracker: int copyCount
+com.cartvr.app.data.remote.dto.ShoppingItemDto: com.cartvr.app.data.remote.dto.ShoppingItemDto$Companion Companion
+com.cartvr.app.data.updater.GitHubRelease: com.cartvr.app.data.updater.GitHubRelease$Companion Companion
+com.cartvr.app.data.updater.GitHubRelease: java.lang.String name
+androidx.datastore.preferences.protobuf.GeneratedMessageLite: int UNINITIALIZED_HASH_CODE
+io.github.jan.supabase.realtime.PostgresJoinConfig: io.github.jan.supabase.realtime.PostgresJoinConfig$Companion Companion
+io.github.jan.supabase.auth.providers.builtin.Phone$Config: io.github.jan.supabase.auth.providers.builtin.Phone$Config$Companion Companion
+androidx.concurrent.futures.AbstractResolvableFuture$Waiter: java.lang.Thread thread
+kotlinx.coroutines.internal.LockFreeLinkedListNode: java.lang.Object _prev$volatile
+com.cartvr.app.data.remote.dto.CategoryDto$$serializer: kotlinx.serialization.descriptors.SerialDescriptor descriptor
+androidx.compose.runtime.ParcelableSnapshotMutableFloatState: android.os.Parcelable$Creator CREATOR
+kotlinx.coroutines.JobSupport: java.lang.Object _state$volatile
+com.cartvr.app.data.updater.GitHubAsset: long size
+androidx.datastore.preferences.PreferencesProto$StringSet: int STRINGS_FIELD_NUMBER
+com.cartvr.app.data.remote.dto.HouseholdDto$$serializer: int $stable
+kotlinx.coroutines.DefaultExecutor: int debugStatus
+io.github.jan.supabase.realtime.RealtimeMessage: io.github.jan.supabase.realtime.RealtimeMessage$Companion Companion
+com.cartvr.app.data.updater.UpdateInfo: long apkSizeBytes
+androidx.concurrent.futures.AbstractResolvableFuture$Waiter: androidx.concurrent.futures.AbstractResolvableFuture$Waiter next
+kotlin.SafePublicationLazyImpl: java.lang.Object _value
+kotlinx.coroutines.internal.ThreadSafeHeap: int _size$volatile
+com.cartvr.app.data.updater.GitHubUpdater$checkForUpdate$2: com.cartvr.app.data.updater.GitHubUpdater this$0
+kotlin.coroutines.jvm.internal.BaseContinuationImpl: kotlin.coroutines.Continuation completion
+kotlin.coroutines.jvm.internal.ContinuationImpl: kotlin.coroutines.CoroutineContext _context
+io.github.jan.supabase.realtime.PostgresJoinConfig$$serializer: kotlinx.serialization.descriptors.SerialDescriptor descriptor
+androidx.lifecycle.Lifecycle$Event: androidx.lifecycle.Lifecycle$Event ON_PAUSE
+kotlin.coroutines.SafeContinuation: java.lang.Object result
+com.cartvr.app.data.updater.InstallStatusReceiver: com.cartvr.app.data.updater.InstallStatusReceiver$Companion Companion
+com.cartvr.app.data.updater.GitHubUpdater$checkForUpdate$1: int label
+kotlinx.coroutines.CancellableContinuationImpl: java.lang.Object _state$volatile
+com.cartvr.app.data.remote.dto.ShoppingItemDto$$serializer: java.lang.Object deserialize(kotlinx.serialization.encoding.Decoder)
+androidx.compose.material3.internal.InputPhase: androidx.compose.material3.internal.InputPhase valueOf(java.lang.String)
+androidx.core.graphics.drawable.IconCompatParcelizer: IconCompatParcelizer()
+androidx.core.view.ViewCompat$Api20Impl: void requestApplyInsets(android.view.View)
+androidx.core.view.WindowInsetsCompat$Impl21: androidx.core.view.WindowInsetsCompat consumeStableInsets()
+kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$Effect$InvocationKind: kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$Effect$InvocationKind[] values()
+androidx.core.view.WindowInsetsCompat$Impl: boolean isConsumed()
+androidx.compose.ui.text.android.CanvasCompatQ: void drawDoubleRoundRect(android.graphics.Canvas,android.graphics.RectF,float,float,android.graphics.RectF,float,float,android.graphics.Paint)
+androidx.core.view.WindowInsetsCompat$Impl29: WindowInsetsCompat$Impl29(androidx.core.view.WindowInsetsCompat,android.view.WindowInsets)
+androidx.compose.ui.text.android.CanvasCompatQ: void drawColor(android.graphics.Canvas,int,android.graphics.BlendMode)
+kotlin.reflect.jvm.internal.impl.types.error.ErrorScopeKind: kotlin.reflect.jvm.internal.impl.types.error.ErrorScopeKind[] values()
+androidx.compose.ui.platform.AbstractComposeView: void setParentCompositionContext(androidx.compose.runtime.CompositionContext)
+io.github.jan.supabase.auth.providers.builtin.DefaultAuthProvider$Config$Companion: kotlinx.serialization.KSerializer serializer()
+com.cartvr.app.data.remote.dto.RegularItemDto$$serializer: com.cartvr.app.data.remote.dto.RegularItemDto deserialize(kotlinx.serialization.encoding.Decoder)
+com.cartvr.app.data.remote.dto.CategoryDto$$serializer: void serialize(kotlinx.serialization.encoding.Encoder,com.cartvr.app.data.remote.dto.CategoryDto)
+androidx.compose.material3.SnackbarDuration: androidx.compose.material3.SnackbarDuration[] values()
+androidx.datastore.preferences.protobuf.JavaType: androidx.datastore.preferences.protobuf.JavaType valueOf(java.lang.String)
+androidx.compose.foundation.text.input.internal.HandwritingGestureApi34: void previewSelectRangeGesture(androidx.compose.foundation.text.LegacyTextFieldState,android.view.inputmethod.SelectRangeGesture,androidx.compose.foundation.text.selection.TextFieldSelectionManager)
+androidx.compose.ui.layout.MeasuringIntrinsics$IntrinsicMinMax: androidx.compose.ui.layout.MeasuringIntrinsics$IntrinsicMinMax valueOf(java.lang.String)
+com.cartvr.app.data.updater.GitHubUpdater$downloadAndInstall$2: GitHubUpdater$downloadAndInstall$2(com.cartvr.app.data.updater.GitHubUpdater,com.cartvr.app.data.updater.UpdateInfo,kotlin.jvm.functions.Function1,kotlin.coroutines.Continuation)
+kotlinx.serialization.json.JsonElement$Companion: kotlinx.serialization.KSerializer serializer()
+androidx.core.view.WindowInsetsCompat$BuilderImpl29: void setTappableElementInsets(androidx.core.graphics.Insets)
+androidx.compose.ui.window.PopupLayout: int getDisplayWidth()
+kotlin.reflect.jvm.internal.impl.types.TypeUsage: kotlin.reflect.jvm.internal.impl.types.TypeUsage valueOf(java.lang.String)
+androidx.compose.ui.platform.ViewLayerVerificationHelper28: void setOutlineAmbientShadowColor(android.view.View,int)
+androidx.compose.ui.unit.LayoutDirection: androidx.compose.ui.unit.LayoutDirection[] values()
+kotlin.reflect.jvm.internal.impl.types.Variance: kotlin.reflect.jvm.internal.impl.types.Variance[] values()
+kotlin.reflect.jvm.internal.impl.storage.LockBasedStorageManager$NotValue: kotlin.reflect.jvm.internal.impl.storage.LockBasedStorageManager$NotValue[] values()
+androidx.compose.ui.graphics.Path$Direction: androidx.compose.ui.graphics.Path$Direction[] values()
+androidx.core.view.WindowInsetsCompat$BuilderImpl20: android.view.WindowInsets createWindowInsetsInstance()
+androidx.compose.ui.unit.LayoutDirection: androidx.compose.ui.unit.LayoutDirection valueOf(java.lang.String)
+androidx.compose.foundation.Api31Impl: float onPullDistance(android.widget.EdgeEffect,float,float)
+androidx.compose.foundation.text.input.internal.HandwritingGestureApi34: int performInsertGesture(androidx.compose.foundation.text.LegacyTextFieldState,android.view.inputmethod.InsertGesture,androidx.compose.ui.platform.ViewConfiguration,kotlin.jvm.functions.Function1)
+androidx.compose.foundation.gestures.Orientation: androidx.compose.foundation.gestures.Orientation[] values()
+com.cartvr.app.data.updater.GitHubAsset: java.lang.String getBrowserDownloadUrl()
+androidx.compose.ui.platform.AndroidComposeView: androidx.compose.ui.platform.TextToolbar getTextToolbar()
+androidx.compose.ui.platform.ViewLayer$UniqueDrawingIdApi29: long getUniqueDrawingId(android.view.View)
+androidx.core.view.WindowInsetsCompat$Impl: void copyRootViewBounds(android.view.View)
+androidx.core.view.WindowInsetsCompat$Impl: int hashCode()
+androidx.compose.ui.platform.AndroidComposeView: long getMeasureIteration()
+androidx.compose.ui.platform.AndroidComposeViewTranslationCallbackS: void clearViewTranslationCallback(android.view.View)
+androidx.compose.ui.platform.AndroidComposeView: androidx.compose.ui.platform.AccessibilityManager getAccessibilityManager()
+androidx.core.view.WindowInsetsCompat$Impl30: boolean isVisible(int)
+androidx.compose.foundation.text.input.internal.HandwritingGestureApi34: int performDeleteGesture(androidx.compose.foundation.text.input.internal.TransformedTextFieldState,android.view.inputmethod.DeleteGesture,androidx.compose.foundation.text.input.internal.TextLayoutState)
+com.cartvr.app.data.updater.GitHubUpdater: android.content.Context access$getContext$p(com.cartvr.app.data.updater.GitHubUpdater)
+androidx.core.view.ViewCompat$Api21Impl$1: android.view.WindowInsets onApplyWindowInsets(android.view.View,android.view.WindowInsets)
+org.slf4j.event.Level: org.slf4j.event.Level valueOf(java.lang.String)
+io.ktor.util.date.Month: io.ktor.util.date.Month valueOf(java.lang.String)
+androidx.core.view.WindowInsetsCompat$Impl30: WindowInsetsCompat$Impl30(androidx.core.view.WindowInsetsCompat,androidx.core.view.WindowInsetsCompat$Impl30)
+com.cartvr.app.data.updater.GitHubAsset: boolean equals(java.lang.Object)
+com.cartvr.app.data.updater.GitHubUpdater: GitHubUpdater(android.content.Context)
+kotlin.reflect.jvm.internal.impl.protobuf.WireFormat$FieldType: kotlin.reflect.jvm.internal.impl.protobuf.WireFormat$FieldType valueOf(java.lang.String)
+androidx.compose.ui.text.input.CursorAnchorInfoApi34Helper: android.view.inputmethod.CursorAnchorInfo$Builder addVisibleLineBounds(android.view.inputmethod.CursorAnchorInfo$Builder,androidx.compose.ui.text.TextLayoutResult,androidx.compose.ui.geometry.Rect)
+androidx.compose.ui.platform.coreshims.ContentCaptureSessionCompat$Api29Impl: android.view.autofill.AutofillId newAutofillId(android.view.contentcapture.ContentCaptureSession,android.view.autofill.AutofillId,long)
+androidx.core.view.WindowInsetsCompat$Impl: void copyWindowDataInto(androidx.core.view.WindowInsetsCompat)
+androidx.compose.ui.contentcapture.AndroidContentCaptureManager$ViewTranslationHelperMethods: void onCreateVirtualViewTranslationRequests(androidx.compose.ui.contentcapture.AndroidContentCaptureManager,long[],int[],java.util.function.Consumer)
+androidx.compose.foundation.text.input.internal.HandwritingGestureApi34: boolean previewHandwritingGesture$foundation_release(androidx.compose.foundation.text.input.internal.TransformedTextFieldState,android.view.inputmethod.PreviewableHandwritingGesture,androidx.compose.foundation.text.input.internal.TextLayoutState,android.os.CancellationSignal)
+androidx.lifecycle.ProcessLifecycleOwner$attach$1: void onActivityPaused(android.app.Activity)
+com.cartvr.app.data.updater.GitHubUpdater$downloadAndInstall$1: GitHubUpdater$downloadAndInstall$1(com.cartvr.app.data.updater.GitHubUpdater,kotlin.coroutines.Continuation)
+androidx.profileinstaller.FileSectionType: androidx.profileinstaller.FileSectionType valueOf(java.lang.String)
+androidx.compose.ui.text.platform.Api28Impl: android.text.style.TypefaceSpan createTypefaceSpan(android.graphics.Typeface)
+androidx.core.view.WindowInsetsCompat$Impl28: androidx.core.view.WindowInsetsCompat consumeDisplayCutout()
+okhttp3.Protocol: okhttp3.Protocol[] values()
+androidx.compose.ui.scrollcapture.ScrollCapture: void onScrollCaptureSearch(android.view.View,androidx.compose.ui.semantics.SemanticsOwner,kotlin.coroutines.CoroutineContext,java.util.function.Consumer)
+androidx.compose.ui.platform.AndroidComposeView: void setLayoutDirection(androidx.compose.ui.unit.LayoutDirection)
+androidx.compose.ui.platform.coreshims.ViewCompatShims$Api26Impl: android.view.autofill.AutofillId getAutofillId(android.view.View)
+androidx.core.view.WindowInsetsCompat$Impl: void setRootViewData(androidx.core.graphics.Insets)
+androidx.compose.ui.platform.AndroidComposeView: void getLastMatrixRecalculationAnimationTime$ui_release$annotations()
+androidx.compose.ui.autofill.AutofillType: androidx.compose.ui.autofill.AutofillType[] values()
+androidx.compose.ui.platform.RenderNodeVerificationHelper28: int getSpotShadowColor(android.view.RenderNode)
+androidx.activity.EdgeToEdgeApi28: void adjustLayoutInDisplayCutoutMode(android.view.Window)
+androidx.compose.ui.autofill.AutofillType: androidx.compose.ui.autofill.AutofillType valueOf(java.lang.String)
+androidx.core.view.WindowInsetsCompat$BuilderImpl: WindowInsetsCompat$BuilderImpl(androidx.core.view.WindowInsetsCompat)
+kotlin.reflect.jvm.internal.impl.types.model.TypeVariance: kotlin.reflect.jvm.internal.impl.types.model.TypeVariance[] values()
+androidx.compose.foundation.text.input.internal.HandwritingGestureApi34: int performHandwritingGesture$foundation_release(androidx.compose.foundation.text.LegacyTextFieldState,android.view.inputmethod.HandwritingGesture,androidx.compose.foundation.text.selection.TextFieldSelectionManager,androidx.compose.ui.platform.ViewConfiguration,kotlin.jvm.functions.Function1)
+androidx.compose.ui.platform.AndroidComposeView: androidx.compose.ui.node.OwnerSnapshotObserver getSnapshotObserver()
+kotlin.DeprecationLevel: kotlin.DeprecationLevel valueOf(java.lang.String)
+androidx.compose.ui.platform.AndroidComposeView: androidx.compose.ui.node.LayoutNode getRoot()
+androidx.compose.ui.text.font.FontWeightAdjustmentHelperApi31: int fontWeightAdjustment(android.content.Context)
+androidx.compose.foundation.text.input.internal.undo.TextFieldEditUndoBehavior: androidx.compose.foundation.text.input.internal.undo.TextFieldEditUndoBehavior valueOf(java.lang.String)
+androidx.compose.ui.platform.RenderNodeVerificationHelper28: void setAmbientShadowColor(android.view.RenderNode,int)
+androidx.compose.ui.platform.AndroidComposeView: kotlin.coroutines.CoroutineContext getCoroutineContext()
+androidx.core.view.WindowInsetsCompat$BuilderImpl20: void setStableInsets(androidx.core.graphics.Insets)
+kotlin.reflect.jvm.internal.impl.builtins.jvm.JvmBuiltIns$Kind: kotlin.reflect.jvm.internal.impl.builtins.jvm.JvmBuiltIns$Kind[] values()
+androidx.compose.ui.window.PopupLayout: androidx.compose.ui.platform.AbstractComposeView getSubCompositionView()
+com.cartvr.app.data.updater.UpdateInfo: UpdateInfo(java.lang.String,java.lang.String,java.lang.String,long)
+com.cartvr.app.data.updater.GitHubRelease: java.lang.String toString()
+androidx.compose.ui.platform.AndroidComposeView: androidx.compose.ui.text.font.Font$ResourceLoader getFontLoader()
+kotlinx.serialization.json.JsonArray$Companion: kotlinx.serialization.KSerializer serializer()
+com.cartvr.app.data.updater.GitHubAsset$$serializer: void serialize(kotlinx.serialization.encoding.Encoder,com.cartvr.app.data.updater.GitHubAsset)
+com.cartvr.app.data.updater.GitHubUpdater: void installApkWithPackageInstaller(java.io.File)
+androidx.compose.ui.window.PopupLayout: void setContent(kotlin.jvm.functions.Function2)
+io.github.jan.supabase.auth.providers.builtin.IDToken$Config$Companion: kotlinx.serialization.KSerializer serializer()
+androidx.compose.foundation.text.input.internal.HandwritingGestureApi34: void performDeletion-Sb-Bc2M(androidx.compose.foundation.text.input.internal.TransformedTextFieldState,long,boolean)
+androidx.activity.OnBackPressedDispatcher$Api34Impl: android.window.OnBackInvokedCallback createOnBackAnimationCallback(kotlin.jvm.functions.Function1,kotlin.jvm.functions.Function1,kotlin.jvm.functions.Function0,kotlin.jvm.functions.Function0)
+com.cartvr.app.data.updater.GitHubAsset$$serializer: com.cartvr.app.data.updater.GitHubAsset deserialize(kotlinx.serialization.encoding.Decoder)
+com.cartvr.app.data.updater.GitHubUpdater: kotlin.Unit httpClient$lambda$2$lambda$1$lambda$0(kotlinx.serialization.json.JsonBuilder)
+androidx.compose.ui.platform.TextToolbarStatus: androidx.compose.ui.platform.TextToolbarStatus valueOf(java.lang.String)
+androidx.compose.ui.graphics.Api26Bitmap: android.graphics.Bitmap createBitmap-x__-hDU$ui_graphics_release(int,int,int,boolean,androidx.compose.ui.graphics.colorspace.ColorSpace)
+androidx.compose.foundation.text.input.internal.HandwritingGestureApi34: void previewDeleteRangeGesture(androidx.compose.foundation.text.LegacyTextFieldState,android.view.inputmethod.DeleteRangeGesture,androidx.compose.foundation.text.selection.TextFieldSelectionManager)
+com.cartvr.app.data.remote.dto.RegularItemDto$$serializer: void serialize(kotlinx.serialization.encoding.Encoder,java.lang.Object)
+androidx.compose.ui.platform.AndroidComposeView: void set_viewTreeOwners(androidx.compose.ui.platform.AndroidComposeView$ViewTreeOwners)
+androidx.compose.material3.internal.InputPhase: androidx.compose.material3.internal.InputPhase[] values()
+androidx.compose.ui.platform.AbstractComposeView: boolean getHasComposition()
+androidx.compose.foundation.text.input.internal.HandwritingGestureApi34: int performRemoveSpaceGesture(androidx.compose.foundation.text.LegacyTextFieldState,android.view.inputmethod.RemoveSpaceGesture,androidx.compose.ui.text.AnnotatedString,androidx.compose.ui.platform.ViewConfiguration,kotlin.jvm.functions.Function1)
+androidx.lifecycle.ProcessLifecycleOwner$attach$1$onActivityPreCreated$1: ProcessLifecycleOwner$attach$1$onActivityPreCreated$1(androidx.lifecycle.ProcessLifecycleOwner)
+com.cartvr.app.data.updater.GitHubAsset: void write$Self$app_release(com.cartvr.app.data.updater.GitHubAsset,kotlinx.serialization.encoding.CompositeEncoder,kotlinx.serialization.descriptors.SerialDescriptor)
+androidx.compose.ui.graphics.layer.RenderNodeVerificationHelper28: void setSpotShadowColor(android.view.RenderNode,int)
+com.cartvr.app.data.updater.GitHubRelease: java.lang.String component2()
+androidx.core.view.WindowInsetsCompat$Impl21: androidx.core.graphics.Insets getStableInsets()
+kotlin.reflect.jvm.internal.impl.descriptors.Modality: kotlin.reflect.jvm.internal.impl.descriptors.Modality[] values()
+com.cartvr.app.data.updater.GitHubRelease$Companion: kotlinx.serialization.KSerializer serializer()
+kotlin.reflect.jvm.internal.impl.builtins.UnsignedType: kotlin.reflect.jvm.internal.impl.builtins.UnsignedType valueOf(java.lang.String)
+androidx.compose.animation.core.AnimationEndReason: androidx.compose.animation.core.AnimationEndReason[] values()
+kotlin.reflect.jvm.internal.impl.descriptors.annotations.AnnotationUseSiteTarget: kotlin.reflect.jvm.internal.impl.descriptors.annotations.AnnotationUseSiteTarget[] values()
+androidx.navigation.NavControllerViewModel: NavControllerViewModel()
+androidx.compose.ui.platform.AbstractComposeView: void getShowLayoutBounds$annotations()
+androidx.compose.ui.platform.AndroidComposeView: void setContentCaptureManager$ui_release(androidx.compose.ui.contentcapture.AndroidContentCaptureManager)
+androidx.compose.ui.platform.coreshims.ContentCaptureSessionCompat$Api29Impl: android.view.ViewStructure newViewStructure(android.view.contentcapture.ContentCaptureSession,android.view.View)
+okhttp3.Protocol: okhttp3.Protocol valueOf(java.lang.String)
+kotlin.time.DurationUnit: kotlin.time.DurationUnit[] values()
+kotlinx.coroutines.android.AndroidExceptionPreHandler: AndroidExceptionPreHandler()
+androidx.compose.ui.text.platform.extensions.LocaleListHelperMethods: void setTextLocales(androidx.compose.ui.text.platform.AndroidTextPaint,androidx.compose.ui.text.intl.LocaleList)
+androidx.room.Index$Order: androidx.room.Index$Order[] values()
+androidx.compose.ui.platform.coreshims.ViewCompatShims$Api29Impl: android.view.contentcapture.ContentCaptureSession getContentCaptureSession(android.view.View)
+androidx.lifecycle.ProcessLifecycleOwner$attach$1$onActivityPreCreated$1: void onActivityPostResumed(android.app.Activity)
+com.cartvr.app.data.updater.InstallStatusReceiver$Companion: InstallStatusReceiver$Companion(kotlin.jvm.internal.DefaultConstructorMarker)
+kotlin.Metadata: java.lang.String pn()
+androidx.compose.material.ripple.RippleHostView: void setRippleState(boolean)
+androidx.core.view.WindowInsetsCompat$BuilderImpl30: void setInsets(int,androidx.core.graphics.Insets)
+com.cartvr.app.data.remote.dto.HouseholdDto$$serializer: com.cartvr.app.data.remote.dto.HouseholdDto deserialize(kotlinx.serialization.encoding.Decoder)
+androidx.compose.foundation.layout.Direction: androidx.compose.foundation.layout.Direction[] values()
+androidx.lifecycle.ProcessLifecycleOwner$Api29Impl: void registerActivityLifecycleCallbacks(android.app.Activity,android.app.Application$ActivityLifecycleCallbacks)
+kotlin.reflect.jvm.internal.impl.types.TypeCheckerState$LowerCapturedTypePolicy: kotlin.reflect.jvm.internal.impl.types.TypeCheckerState$LowerCapturedTypePolicy[] values()
+com.cartvr.app.data.updater.GitHubRelease: java.lang.String component3()
+io.github.jan.supabase.realtime.RealtimeJoinConfig$Companion: kotlinx.serialization.KSerializer serializer()
+kotlin.LazyThreadSafetyMode: kotlin.LazyThreadSafetyMode valueOf(java.lang.String)
+androidx.core.app.RemoteActionCompatParcelizer: void write(androidx.core.app.RemoteActionCompat,androidx.versionedparcelable.VersionedParcel)
+com.cartvr.app.data.remote.dto.RegularItemDto$$serializer: kotlinx.serialization.KSerializer[] typeParametersSerializers()
+androidx.compose.ui.platform.ViewLayer: float getCameraDistancePx()
+io.github.jan.supabase.realtime.Realtime$Status: io.github.jan.supabase.realtime.Realtime$Status valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.impl.descriptors.annotations.KotlinRetention: kotlin.reflect.jvm.internal.impl.descriptors.annotations.KotlinRetention valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.impl.load.java.typeEnhancement.TypeComponentPosition: kotlin.reflect.jvm.internal.impl.load.java.typeEnhancement.TypeComponentPosition valueOf(java.lang.String)
+androidx.core.view.WindowInsetsCompat$Impl29: void setStableInsets(androidx.core.graphics.Insets)
+androidx.compose.ui.text.android.CanvasCompatQ: void drawTextRun(android.graphics.Canvas,android.graphics.text.MeasuredText,int,int,int,int,float,float,boolean,android.graphics.Paint)
+androidx.graphics.path.PathIteratorPreApi34Impl: int internalPathIteratorSize(long)
+com.cartvr.app.data.updater.UpdateInfo: int hashCode()
+androidx.core.view.WindowInsetsCompat$Impl29: WindowInsetsCompat$Impl29(androidx.core.view.WindowInsetsCompat,androidx.core.view.WindowInsetsCompat$Impl29)
+androidx.core.view.WindowInsetsCompat$Impl21: WindowInsetsCompat$Impl21(androidx.core.view.WindowInsetsCompat,androidx.core.view.WindowInsetsCompat$Impl21)
+androidx.compose.ui.platform.AndroidComposeView: androidx.compose.ui.unit.Density getDensity()
+androidx.compose.ui.layout.MeasuringIntrinsics$IntrinsicWidthHeight: androidx.compose.ui.layout.MeasuringIntrinsics$IntrinsicWidthHeight valueOf(java.lang.String)
+androidx.compose.ui.platform.AndroidComposeViewAssistHelperMethodsO: void setClassName(android.view.ViewStructure,android.view.View)
+kotlin.reflect.jvm.internal.impl.resolve.constants.IntegerLiteralTypeConstructor$Companion$Mode: kotlin.reflect.jvm.internal.impl.resolve.constants.IntegerLiteralTypeConstructor$Companion$Mode[] values()
+kotlin.reflect.jvm.internal.impl.descriptors.CallableMemberDescriptor$Kind: kotlin.reflect.jvm.internal.impl.descriptors.CallableMemberDescriptor$Kind valueOf(java.lang.String)
+androidx.lifecycle.EmptyActivityLifecycleCallbacks: void onActivityStarted(android.app.Activity)
+androidx.compose.ui.state.ToggleableState: androidx.compose.ui.state.ToggleableState[] values()
+com.cartvr.app.data.remote.dto.RegularItemDto$$serializer: kotlinx.serialization.descriptors.SerialDescriptor getDescriptor()
+androidx.compose.foundation.text.input.internal.HandwritingGestureApi34: boolean previewHandwritingGesture$foundation_release(androidx.compose.foundation.text.LegacyTextFieldState,android.view.inputmethod.PreviewableHandwritingGesture,androidx.compose.foundation.text.selection.TextFieldSelectionManager,android.os.CancellationSignal)
+kotlin.reflect.jvm.internal.impl.descriptors.annotations.AnnotationUseSiteTarget: kotlin.reflect.jvm.internal.impl.descriptors.annotations.AnnotationUseSiteTarget valueOf(java.lang.String)
+androidx.compose.foundation.text.selection.SelectionHandleAnchor: androidx.compose.foundation.text.selection.SelectionHandleAnchor[] values()
+androidx.compose.ui.graphics.ColorSpaceVerificationHelper: android.graphics.ColorSpace androidColorSpace(androidx.compose.ui.graphics.colorspace.ColorSpace)
+com.cartvr.app.data.updater.GitHubRelease$$serializer: java.lang.Object deserialize(kotlinx.serialization.encoding.Decoder)
+kotlin.reflect.jvm.internal.impl.descriptors.annotations.KotlinTarget: kotlin.reflect.jvm.internal.impl.descriptors.annotations.KotlinTarget[] values()
+androidx.compose.ui.platform.AndroidComposeView: boolean getShowLayoutBounds()
+io.github.jan.supabase.realtime.PostgresJoinConfig$Companion: kotlinx.serialization.KSerializer serializer()
+kotlin.reflect.jvm.internal.impl.renderer.RenderingFormat: kotlin.reflect.jvm.internal.impl.renderer.RenderingFormat[] values()
+androidx.compose.ui.platform.coreshims.ViewStructureCompat$Api23Impl: void setTextStyle(android.view.ViewStructure,float,int,int,int)
+androidx.compose.ui.focus.FocusStateImpl: androidx.compose.ui.focus.FocusStateImpl valueOf(java.lang.String)
+androidx.compose.ui.text.AnnotationType: androidx.compose.ui.text.AnnotationType valueOf(java.lang.String)
+com.cartvr.app.data.updater.InstallStatusReceiver: InstallStatusReceiver()
+com.cartvr.app.data.updater.GitHubAsset: long getSize()
+androidx.compose.ui.graphics.layer.ViewLayer: void setInvalidated(boolean)
+io.ktor.util.date.WeekDay: io.ktor.util.date.WeekDay[] values()
+io.github.jan.supabase.auth.user.Identity$Companion: kotlinx.serialization.KSerializer serializer()
+androidx.graphics.path.PathIteratorPreApi34Impl: boolean internalPathIteratorHasNext(long)
+androidx.compose.foundation.layout.Direction: androidx.compose.foundation.layout.Direction valueOf(java.lang.String)
+androidx.compose.material3.tokens.TypographyKeyTokens: androidx.compose.material3.tokens.TypographyKeyTokens valueOf(java.lang.String)
+androidx.core.view.WindowInsetsCompat$Impl20: androidx.core.graphics.Insets getVisibleInsets(android.view.View)
+androidx.compose.foundation.text.input.internal.Api34StartStylusHandwriting: void startStylusHandwriting(android.view.inputmethod.InputMethodManager,android.view.View)
+kotlin.reflect.jvm.internal.impl.resolve.jvm.JvmPrimitiveType: kotlin.reflect.jvm.internal.impl.resolve.jvm.JvmPrimitiveType valueOf(java.lang.String)
+androidx.compose.ui.text.android.CanvasCompatO: boolean clipOutPath(android.graphics.Canvas,android.graphics.Path)
+androidx.compose.foundation.text.input.internal.HandwritingGestureApi34: int performDeleteGesture(androidx.compose.foundation.text.LegacyTextFieldState,android.view.inputmethod.DeleteGesture,androidx.compose.ui.text.AnnotatedString,kotlin.jvm.functions.Function1)
+androidx.compose.ui.platform.ViewLayer: androidx.compose.ui.platform.AndroidComposeView getOwnerView()
+kotlin.coroutines.intrinsics.CoroutineSingletons: kotlin.coroutines.intrinsics.CoroutineSingletons[] values()
+androidx.compose.ui.platform.AndroidViewsHandler: java.util.HashMap getLayoutNodeToHolder()
+com.cartvr.app.CartVRApplication: CartVRApplication()
+com.cartvr.app.data.remote.dto.HouseholdDto$$serializer: kotlinx.serialization.KSerializer[] typeParametersSerializers()
+kotlin.reflect.jvm.internal.impl.resolve.deprecation.DeprecationLevelValue: kotlin.reflect.jvm.internal.impl.resolve.deprecation.DeprecationLevelValue valueOf(java.lang.String)
+kotlin.coroutines.jvm.internal.BaseContinuationImpl: void resumeWith(java.lang.Object)
+kotlinx.serialization.json.ClassDiscriminatorMode: kotlinx.serialization.json.ClassDiscriminatorMode[] values()
+kotlin.reflect.jvm.internal.impl.renderer.PropertyAccessorRenderingPolicy: kotlin.reflect.jvm.internal.impl.renderer.PropertyAccessorRenderingPolicy[] values()
+androidx.core.view.WindowInsetsCompat$Impl: androidx.core.graphics.Insets getMandatorySystemGestureInsets()
+androidx.compose.ui.platform.AndroidComposeViewAccessibilityDelegateCompat$Api29Impl: void addPageActions(androidx.core.view.accessibility.AccessibilityNodeInfoCompat,androidx.compose.ui.semantics.SemanticsNode)
+com.cartvr.app.data.updater.GitHubUpdater: io.ktor.client.HttpClient access$getHttpClient$p(com.cartvr.app.data.updater.GitHubUpdater)
+androidx.compose.foundation.text.TextContextMenuItems: androidx.compose.foundation.text.TextContextMenuItems[] values()
+androidx.compose.foundation.text.input.internal.undo.TextFieldEditUndoBehavior: androidx.compose.foundation.text.input.internal.undo.TextFieldEditUndoBehavior[] values()
+androidx.core.view.WindowInsetsCompat$Impl20: androidx.core.graphics.Insets getSystemWindowInsets()
+kotlin.reflect.jvm.internal.impl.renderer.PropertyAccessorRenderingPolicy: kotlin.reflect.jvm.internal.impl.renderer.PropertyAccessorRenderingPolicy valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.impl.load.java.typeEnhancement.TypeComponentPosition: kotlin.reflect.jvm.internal.impl.load.java.typeEnhancement.TypeComponentPosition[] values()
+kotlin.reflect.jvm.internal.impl.load.java.typeEnhancement.NullabilityQualifier: kotlin.reflect.jvm.internal.impl.load.java.typeEnhancement.NullabilityQualifier[] values()
+androidx.compose.ui.platform.Api29Impl: int getRecommendedTimeoutMillis(android.view.accessibility.AccessibilityManager,int,int)
+com.cartvr.app.data.remote.dto.CategoryDto$$serializer: void serialize(kotlinx.serialization.encoding.Encoder,java.lang.Object)
+kotlin.text.RegexOption: kotlin.text.RegexOption valueOf(java.lang.String)
+androidx.compose.ui.graphics.AndroidGraphicsContext$UniqueDrawingIdApi29: long getUniqueDrawingId(android.view.View)
+androidx.navigation.compose.BackStackEntryIdViewModel: BackStackEntryIdViewModel(androidx.lifecycle.SavedStateHandle)
+com.cartvr.app.data.updater.UpdateInfo: boolean equals(java.lang.Object)
+androidx.compose.material3.tokens.ShapeKeyTokens: androidx.compose.material3.tokens.ShapeKeyTokens valueOf(java.lang.String)
+androidx.core.view.WindowInsetsCompat$Impl: void setStableInsets(androidx.core.graphics.Insets)
+kotlinx.datetime.LocalTime$Companion: kotlinx.serialization.KSerializer serializer()
+androidx.compose.foundation.FocusableKt$FocusableInNonTouchModeElement$1: FocusableKt$FocusableInNonTouchModeElement$1()
+androidx.compose.ui.autofill.AutofillApi26Helper: boolean isList(android.view.autofill.AutofillValue)
+androidx.compose.ui.text.android.CanvasCompatR: boolean quickReject(android.graphics.Canvas,android.graphics.Path)
+androidx.core.view.WindowInsetsCompat$Impl30: void copyRootViewBounds(android.view.View)
+android.support.v4.app.RemoteActionCompatParcelizer: void write(androidx.core.app.RemoteActionCompat,androidx.versionedparcelable.VersionedParcel)
+com.cartvr.app.data.sync.SyncState: com.cartvr.app.data.sync.SyncState valueOf(java.lang.String)
+androidx.compose.ui.text.android.CanvasCompatQ: void drawColor(android.graphics.Canvas,long,android.graphics.BlendMode)
+com.cartvr.app.data.remote.dto.ShoppingItemDto$$serializer: com.cartvr.app.data.remote.dto.ShoppingItemDto deserialize(kotlinx.serialization.encoding.Decoder)
+com.cartvr.app.data.updater.GitHubAsset$$serializer: java.lang.Object deserialize(kotlinx.serialization.encoding.Decoder)
+androidx.compose.foundation.text.input.internal.HandwritingGestureApi34: int toTextGranularity-NUwxegE(int)
+androidx.lifecycle.Lifecycle$Event: androidx.lifecycle.Lifecycle$Event[] values()
+kotlin.coroutines.jvm.internal.BaseContinuationImpl: kotlin.coroutines.Continuation getCompletion()
+androidx.lifecycle.ReportFragment$LifecycleCallbacks: void onActivityStopped(android.app.Activity)
+com.cartvr.app.data.updater.GitHubUpdater$checkForUpdate$1: GitHubUpdater$checkForUpdate$1(com.cartvr.app.data.updater.GitHubUpdater,kotlin.coroutines.Continuation)
+androidx.compose.ui.text.android.StaticLayoutFactory33: boolean isFallbackLineSpacingEnabled(android.text.StaticLayout)
+androidx.compose.runtime.Recomposer$State: androidx.compose.runtime.Recomposer$State valueOf(java.lang.String)
+com.cartvr.app.data.updater.UpdateInfo: java.lang.String toString()
+com.cartvr.app.data.remote.dto.RegularItemDto$$serializer: void serialize(kotlinx.serialization.encoding.Encoder,com.cartvr.app.data.remote.dto.RegularItemDto)
+kotlin.reflect.jvm.internal.impl.load.kotlin.header.KotlinClassHeader$Kind: kotlin.reflect.jvm.internal.impl.load.kotlin.header.KotlinClassHeader$Kind[] values()
+androidx.activity.OnBackPressedDispatcher$Api33Impl: android.window.OnBackInvokedCallback createOnBackInvokedCallback(kotlin.jvm.functions.Function0)
+com.cartvr.app.ui.TopTab: com.cartvr.app.ui.TopTab valueOf(java.lang.String)
+androidx.compose.ui.platform.AndroidComposeViewVerificationHelperMethodsN: void setPointerIcon(android.view.View,androidx.compose.ui.input.pointer.PointerIcon)
+androidx.core.view.WindowInsetsCompat$Impl: boolean isVisible(int)
+androidx.compose.foundation.text.KeyCommand: androidx.compose.foundation.text.KeyCommand valueOf(java.lang.String)
+kotlin.Metadata: java.lang.String[] d2()
+com.cartvr.app.data.updater.GitHubRelease: java.util.List component4()
+androidx.compose.ui.platform.TextToolbarHelperMethods: void invalidateContentRect(android.view.ActionMode)
+androidx.datastore.preferences.protobuf.FieldType: androidx.datastore.preferences.protobuf.FieldType[] values()
+androidx.compose.ui.graphics.Path$Direction: androidx.compose.ui.graphics.Path$Direction valueOf(java.lang.String)
+androidx.compose.ui.platform.AndroidComposeView: androidx.compose.ui.platform.AndroidComposeView$ViewTreeOwners get_viewTreeOwners()
+androidx.compose.ui.autofill.AutofillApi26Helper: android.view.autofill.AutofillId getAutofillId(android.view.ViewStructure)
+com.cartvr.app.data.updater.GitHubRelease: boolean equals(java.lang.Object)
+io.github.jan.supabase.postgrest.query.Count: io.github.jan.supabase.postgrest.query.Count[] values()
+androidx.compose.foundation.Api31Impl: android.widget.EdgeEffect create(android.content.Context,android.util.AttributeSet)
+androidx.compose.ui.autofill.AutofillApi23Helper: android.view.ViewStructure newChild(android.view.ViewStructure,int)
+com.cartvr.app.data.remote.dto.StoreDto$$serializer: StoreDto$$serializer()
+androidx.compose.runtime.InvalidationResult: androidx.compose.runtime.InvalidationResult valueOf(java.lang.String)
+androidx.compose.ui.contentcapture.AndroidContentCaptureManager$ViewTranslationHelperMethods: void onVirtualViewTranslationResponses(androidx.compose.ui.contentcapture.AndroidContentCaptureManager,android.util.LongSparseArray)
+androidx.compose.ui.platform.ViewLayer: long getOwnerViewId()
+com.cartvr.app.data.remote.dto.CategoryDto$$serializer: CategoryDto$$serializer()
+androidx.lifecycle.ReportFragment: ReportFragment()
+kotlin.Metadata: int xi()
+com.cartvr.app.data.updater.GitHubRelease: com.cartvr.app.data.updater.GitHubRelease copy$default(com.cartvr.app.data.updater.GitHubRelease,java.lang.String,java.lang.String,java.lang.String,java.util.List,int,java.lang.Object)
+kotlinx.coroutines.scheduling.CoroutineScheduler$WorkerState: kotlinx.coroutines.scheduling.CoroutineScheduler$WorkerState valueOf(java.lang.String)
+androidx.compose.ui.window.PopupLayout: void getParams$ui_release$annotations()
+androidx.compose.ui.platform.AndroidComposeView: boolean getHasPendingMeasureOrLayout()
+com.cartvr.app.data.preferences.ThemeMode: com.cartvr.app.data.preferences.ThemeMode[] values()
+androidx.core.view.ViewCompat$Api28Impl: boolean isScreenReaderFocusable(android.view.View)
+androidx.compose.ui.platform.AndroidComposeView: androidx.compose.ui.input.pointer.PointerIconService getPointerIconService()
+kotlin.coroutines.jvm.internal.BaseContinuationImpl: java.lang.StackTraceElement getStackTraceElement()
+androidx.compose.foundation.text.input.internal.HandwritingGestureApi34: int performRemoveSpaceGesture(androidx.compose.foundation.text.input.internal.TransformedTextFieldState,android.view.inputmethod.RemoveSpaceGesture,androidx.compose.foundation.text.input.internal.TextLayoutState,androidx.compose.ui.platform.ViewConfiguration)
+kotlin.DeprecationLevel: kotlin.DeprecationLevel[] values()
+kotlin.reflect.KParameter$Kind: kotlin.reflect.KParameter$Kind[] values()
+androidx.compose.ui.platform.AndroidComposeView: androidx.compose.ui.platform.AndroidAccessibilityManager getAccessibilityManager()
+androidx.compose.ui.platform.coreshims.ContentCaptureSessionCompat$Api29Impl: android.view.ViewStructure newVirtualViewStructure(android.view.contentcapture.ContentCaptureSession,android.view.autofill.AutofillId,long)
+androidx.lifecycle.Lifecycle$State: androidx.lifecycle.Lifecycle$State[] values()
+androidx.compose.ui.platform.AndroidComposeView: androidx.compose.ui.input.InputModeManager getInputModeManager()
+androidx.core.graphics.drawable.IconCompatParcelizer: void write(androidx.core.graphics.drawable.IconCompat,androidx.versionedparcelable.VersionedParcel)
+androidx.core.view.WindowInsetsCompat$Impl20: void setRootViewData(androidx.core.graphics.Insets)
+androidx.compose.ui.autofill.AutofillApi26Helper: boolean isDate(android.view.autofill.AutofillValue)
+kotlin.reflect.jvm.internal.impl.incremental.components.ScopeKind: kotlin.reflect.jvm.internal.impl.incremental.components.ScopeKind valueOf(java.lang.String)
+androidx.compose.ui.text.platform.extensions.LocaleListHelperMethods: java.lang.Object localeSpan(androidx.compose.ui.text.intl.LocaleList)
+kotlinx.serialization.json.internal.WriteMode: kotlinx.serialization.json.internal.WriteMode valueOf(java.lang.String)
+androidx.datastore.preferences.protobuf.FieldType$Collection: androidx.datastore.preferences.protobuf.FieldType$Collection valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.impl.load.java.typeEnhancement.MutabilityQualifier: kotlin.reflect.jvm.internal.impl.load.java.typeEnhancement.MutabilityQualifier[] values()
+androidx.compose.ui.node.LayoutNode$UsageByParent: androidx.compose.ui.node.LayoutNode$UsageByParent valueOf(java.lang.String)
+com.cartvr.app.data.remote.dto.HouseholdMemberDto$$serializer: kotlinx.serialization.KSerializer[] typeParametersSerializers()
+kotlin.reflect.jvm.internal.impl.types.checker.TypeIntersector$ResultNullability: kotlin.reflect.jvm.internal.impl.types.checker.TypeIntersector$ResultNullability[] values()
+androidx.compose.ui.window.PopupLayout: boolean getCanCalculatePosition()
+androidx.core.view.WindowInsetsCompat$Impl20: androidx.core.graphics.Insets getInsetsForType(int,boolean)
+okhttp3.TlsVersion: okhttp3.TlsVersion valueOf(java.lang.String)
+com.cartvr.app.data.remote.dto.CategoryDto$$serializer: kotlinx.serialization.KSerializer[] childSerializers()
+com.cartvr.app.data.remote.dto.HouseholdMemberDto$$serializer: void serialize(kotlinx.serialization.encoding.Encoder,java.lang.Object)
+androidx.core.app.RemoteActionCompatParcelizer: androidx.core.app.RemoteActionCompat read(androidx.versionedparcelable.VersionedParcel)
+androidx.compose.material3.tokens.TypographyKeyTokens: androidx.compose.material3.tokens.TypographyKeyTokens[] values()
+com.cartvr.app.data.remote.dto.ShoppingItemDto$$serializer: kotlinx.serialization.KSerializer[] childSerializers()
+kotlin.reflect.jvm.internal.impl.descriptors.CallableMemberDescriptor$Kind: kotlin.reflect.jvm.internal.impl.descriptors.CallableMemberDescriptor$Kind[] values()
+androidx.activity.ComponentActivity: void setContentView(android.view.View)
+org.slf4j.helpers.Reporter$TargetChoice: org.slf4j.helpers.Reporter$TargetChoice valueOf(java.lang.String)
+androidx.compose.ui.node.NodeMeasuringIntrinsics$IntrinsicMinMax: androidx.compose.ui.node.NodeMeasuringIntrinsics$IntrinsicMinMax[] values()
+kotlin.reflect.jvm.internal.impl.resolve.ExternalOverridabilityCondition$Contract: kotlin.reflect.jvm.internal.impl.resolve.ExternalOverridabilityCondition$Contract[] values()
+kotlin.reflect.jvm.internal.impl.types.Variance: kotlin.reflect.jvm.internal.impl.types.Variance valueOf(java.lang.String)
+com.cartvr.app.data.updater.UpdateInfo: java.lang.String getReleaseNotes()
+androidx.browser.browseractions.BrowserActionsFallbackMenuView: BrowserActionsFallbackMenuView(android.content.Context,android.util.AttributeSet)
+androidx.compose.ui.graphics.layer.RenderNodeVerificationHelper23: void destroyDisplayListData(android.view.RenderNode)
+kotlinx.datetime.format.AmPmMarker: kotlinx.datetime.format.AmPmMarker valueOf(java.lang.String)
+androidx.compose.ui.platform.RenderNodeVerificationHelper28: int getAmbientShadowColor(android.view.RenderNode)
+androidx.compose.material3.tokens.ShapeKeyTokens: androidx.compose.material3.tokens.ShapeKeyTokens[] values()
+kotlin.reflect.jvm.internal.impl.resolve.constants.IntegerLiteralTypeConstructor$Companion$Mode: kotlin.reflect.jvm.internal.impl.resolve.constants.IntegerLiteralTypeConstructor$Companion$Mode valueOf(java.lang.String)
+kotlinx.serialization.json.DecodeSequenceMode: kotlinx.serialization.json.DecodeSequenceMode valueOf(java.lang.String)
+androidx.compose.ui.graphics.layer.ViewLayer: boolean getCanUseCompositingLayer$ui_graphics_release()
+com.cartvr.app.data.remote.dto.RegularItemDto$$serializer: RegularItemDto$$serializer()
+androidx.lifecycle.EmptyActivityLifecycleCallbacks: void onActivityPaused(android.app.Activity)
+com.cartvr.app.data.updater.GitHubUpdater: java.lang.Object checkForUpdate-IoAF18A(kotlin.coroutines.Continuation)
+kotlin.reflect.jvm.internal.impl.renderer.OverrideRenderingPolicy: kotlin.reflect.jvm.internal.impl.renderer.OverrideRenderingPolicy[] values()
+com.cartvr.app.data.updater.GitHubAsset: long component3()
+kotlin.reflect.jvm.internal.impl.builtins.jvm.JvmBuiltInsCustomizer$JDKMemberStatus: kotlin.reflect.jvm.internal.impl.builtins.jvm.JvmBuiltInsCustomizer$JDKMemberStatus[] values()
+kotlin.reflect.jvm.internal.impl.name.State: kotlin.reflect.jvm.internal.impl.name.State valueOf(java.lang.String)
+androidx.compose.ui.state.ToggleableState: androidx.compose.ui.state.ToggleableState valueOf(java.lang.String)
+androidx.compose.ui.graphics.BlendModeColorFilterHelper: android.graphics.BlendModeColorFilter BlendModeColorFilter-xETnrds(long,int)
+androidx.compose.ui.platform.AndroidViewConfigurationApi34: float getScaledHandwritingSlop(android.view.ViewConfiguration)
+com.cartvr.app.data.remote.dto.StoreDto$$serializer: kotlinx.serialization.descriptors.SerialDescriptor getDescriptor()
+kotlin.reflect.jvm.internal.impl.load.java.SpecialGenericSignatures$TypeSafeBarrierDescription: kotlin.reflect.jvm.internal.impl.load.java.SpecialGenericSignatures$TypeSafeBarrierDescription[] values()
+androidx.core.view.WindowInsetsCompat$Impl: androidx.core.graphics.Insets getSystemGestureInsets()
+androidx.compose.ui.autofill.AutofillApi26Helper: void setAutofillId(android.view.ViewStructure,android.view.autofill.AutofillId,int)
+kotlin.reflect.jvm.internal.impl.load.java.SpecialGenericSignatures$SpecialSignatureInfo: kotlin.reflect.jvm.internal.impl.load.java.SpecialGenericSignatures$SpecialSignatureInfo[] values()
+androidx.compose.ui.input.pointer.PointerEventPass: androidx.compose.ui.input.pointer.PointerEventPass[] values()
+com.cartvr.app.data.remote.dto.ShoppingItemDto$$serializer: void serialize(kotlinx.serialization.encoding.Encoder,com.cartvr.app.data.remote.dto.ShoppingItemDto)
+io.github.jan.supabase.auth.SignOutScope: io.github.jan.supabase.auth.SignOutScope[] values()
+androidx.compose.ui.platform.AndroidComposeView: void setConfigurationChangeObserver(kotlin.jvm.functions.Function1)
+androidx.core.view.WindowInsetsCompat$Impl21: boolean isConsumed()
+kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$Class$Kind: kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$Class$Kind[] values()
+androidx.compose.material3.SnackbarResult: androidx.compose.material3.SnackbarResult[] values()
+androidx.compose.ui.layout.MeasuringIntrinsics$IntrinsicWidthHeight: androidx.compose.ui.layout.MeasuringIntrinsics$IntrinsicWidthHeight[] values()
+kotlinx.coroutines.selects.TrySelectDetailedResult: kotlinx.coroutines.selects.TrySelectDetailedResult valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.impl.types.TypeSubstitutor$VarianceConflictType: kotlin.reflect.jvm.internal.impl.types.TypeSubstitutor$VarianceConflictType[] values()
+com.cartvr.app.ui.TopTab: com.cartvr.app.ui.TopTab[] values()
+androidx.datastore.preferences.protobuf.ProtoSyntax: androidx.datastore.preferences.protobuf.ProtoSyntax[] values()
+androidx.datastore.preferences.protobuf.FieldType$Collection: androidx.datastore.preferences.protobuf.FieldType$Collection[] values()
+androidx.compose.ui.graphics.layer.view.DrawChildContainer: int getChildCount()
+io.github.jan.supabase.auth.providers.builtin.Phone$Channel$Companion: kotlinx.serialization.KSerializer serializer()
+io.github.jan.supabase.realtime.Presence$Companion: kotlinx.serialization.KSerializer serializer()
+androidx.compose.foundation.text.input.internal.HandwritingGestureApi34: int performDeleteRangeGesture(androidx.compose.foundation.text.input.internal.TransformedTextFieldState,android.view.inputmethod.DeleteRangeGesture,androidx.compose.foundation.text.input.internal.TextLayoutState)
+kotlin.coroutines.jvm.internal.ContinuationImpl: void releaseIntercepted()
+kotlin.coroutines.jvm.internal.ContinuationImpl: kotlin.coroutines.CoroutineContext getContext()
+androidx.compose.ui.platform.coreshims.ContentCaptureSessionCompat$Api29Impl: void notifyViewAppeared(android.view.contentcapture.ContentCaptureSession,android.view.ViewStructure)
+androidx.activity.EdgeToEdgeApi21: void setUp(androidx.activity.SystemBarStyle,androidx.activity.SystemBarStyle,android.view.Window,android.view.View,boolean,boolean)
+androidx.compose.animation.core.RepeatMode: androidx.compose.animation.core.RepeatMode[] values()
+kotlinx.datetime.Instant$Companion: kotlinx.serialization.KSerializer serializer()
+androidx.compose.ui.text.android.StaticLayoutFactoryImpl: android.text.StaticLayout create(androidx.compose.ui.text.android.StaticLayoutParams)
+androidx.compose.ui.platform.AndroidComposeView: void setCoroutineContext(kotlin.coroutines.CoroutineContext)
+io.github.jan.supabase.postgrest.query.Count: io.github.jan.supabase.postgrest.query.Count valueOf(java.lang.String)
+androidx.compose.ui.text.style.ResolvedTextDirection: androidx.compose.ui.text.style.ResolvedTextDirection valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.impl.load.java.ErasedOverridabilityCondition: ErasedOverridabilityCondition()
+androidx.compose.material3.tokens.ColorSchemeKeyTokens: androidx.compose.material3.tokens.ColorSchemeKeyTokens[] values()
+kotlin.reflect.jvm.internal.impl.serialization.deserialization.AnnotatedCallableKind: kotlin.reflect.jvm.internal.impl.serialization.deserialization.AnnotatedCallableKind valueOf(java.lang.String)
+androidx.lifecycle.ReportFragment$LifecycleCallbacks: void onActivityStarted(android.app.Activity)
+androidx.compose.ui.graphics.layer.ViewLayer: android.view.View getOwnerView()
+androidx.core.view.WindowInsetsCompat$BuilderImpl: void setTappableElementInsets(androidx.core.graphics.Insets)
+kotlin.reflect.jvm.internal.impl.load.java.descriptors.JavaMethodDescriptor$ParameterNamesStatus: kotlin.reflect.jvm.internal.impl.load.java.descriptors.JavaMethodDescriptor$ParameterNamesStatus[] values()
+androidx.compose.material3.ScaffoldLayoutContent: androidx.compose.material3.ScaffoldLayoutContent[] values()
+androidx.compose.ui.platform.AndroidComposeView: void getFontLoader$annotations()
+io.github.jan.supabase.auth.providers.builtin.Email$Config$Companion: kotlinx.serialization.KSerializer serializer()
+androidx.compose.animation.core.AnimationEndReason: androidx.compose.animation.core.AnimationEndReason valueOf(java.lang.String)
+kotlin.coroutines.jvm.internal.ContinuationImpl: kotlin.coroutines.Continuation intercepted()
+androidx.compose.ui.text.font.TypefaceHelperMethodsApi28: android.graphics.Typeface create(android.graphics.Typeface,int,boolean)
+kotlin.Metadata: int[] bv()
+androidx.compose.ui.text.android.CanvasCompatS: void drawGlyphs(android.graphics.Canvas,int[],int,float[],int,int,android.graphics.fonts.Font,android.graphics.Paint)
+androidx.compose.ui.platform.AbstractComposeView: boolean getShouldCreateCompositionOnAttachedToWindow()
+androidx.compose.material3.SheetValue: androidx.compose.material3.SheetValue valueOf(java.lang.String)
+androidx.compose.foundation.text.selection.SelectionHandleAnchor: androidx.compose.foundation.text.selection.SelectionHandleAnchor valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.impl.renderer.OverrideRenderingPolicy: kotlin.reflect.jvm.internal.impl.renderer.OverrideRenderingPolicy valueOf(java.lang.String)
+androidx.compose.ui.layout.IntrinsicMinMax: androidx.compose.ui.layout.IntrinsicMinMax valueOf(java.lang.String)
+com.cartvr.app.data.updater.GitHubRelease: java.lang.String getBody()
+io.github.jan.supabase.realtime.RealtimeChannel$Status: io.github.jan.supabase.realtime.RealtimeChannel$Status[] values()
+androidx.compose.material3.SnackbarResult: androidx.compose.material3.SnackbarResult valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.impl.incremental.components.ScopeKind: kotlin.reflect.jvm.internal.impl.incremental.components.ScopeKind[] values()
+androidx.compose.foundation.text.input.internal.undo.TextEditType: androidx.compose.foundation.text.input.internal.undo.TextEditType valueOf(java.lang.String)
+com.cartvr.app.data.updater.GitHubUpdater$downloadAndInstall$2: kotlin.coroutines.Continuation create(java.lang.Object,kotlin.coroutines.Continuation)
+androidx.compose.ui.autofill.AutofillApi26Helper: java.lang.CharSequence textValue(android.view.autofill.AutofillValue)
+com.cartvr.app.data.updater.GitHubRelease: int hashCode()
+kotlin.reflect.jvm.internal.impl.load.kotlin.AbstractBinaryClassAnnotationLoader$PropertyRelatedElement: kotlin.reflect.jvm.internal.impl.load.kotlin.AbstractBinaryClassAnnotationLoader$PropertyRelatedElement valueOf(java.lang.String)
+androidx.compose.ui.graphics.layer.ViewLayer: void setCanUseCompositingLayer$ui_graphics_release(boolean)
+org.slf4j.helpers.Reporter$Level: org.slf4j.helpers.Reporter$Level[] values()
+androidx.profileinstaller.ProfileInstallerInitializer$Handler28Impl: android.os.Handler createAsync(android.os.Looper)
+androidx.compose.ui.window.PopupLayout: void setPositionProvider(androidx.compose.ui.window.PopupPositionProvider)
+androidx.core.view.WindowInsetsCompat$Impl30: WindowInsetsCompat$Impl30(androidx.core.view.WindowInsetsCompat,android.view.WindowInsets)
+kotlin.reflect.jvm.internal.impl.resolve.ExternalOverridabilityCondition$Result: kotlin.reflect.jvm.internal.impl.resolve.ExternalOverridabilityCondition$Result[] values()
+androidx.compose.ui.graphics.Api26Bitmap: androidx.compose.ui.graphics.colorspace.ColorSpace composeColorSpace$ui_graphics_release(android.graphics.Bitmap)
+androidx.core.view.WindowInsetsCompat$Impl20: androidx.core.graphics.Insets getInsets(int,boolean)
+androidx.core.view.WindowInsetsCompat$Impl: androidx.core.graphics.Insets getStableInsets()
+kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$Effect$InvocationKind: kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$Effect$InvocationKind valueOf(java.lang.String)
+androidx.compose.ui.platform.coreshims.ContentCaptureSessionCompat$Api34Impl: void notifyViewsAppeared(android.view.contentcapture.ContentCaptureSession,java.util.List)
+androidx.compose.ui.platform.ViewLayer: androidx.compose.ui.platform.DrawChildContainer getContainer()
+okhttp3.internal.http2.ErrorCode: okhttp3.internal.http2.ErrorCode valueOf(java.lang.String)
+androidx.compose.ui.text.android.selection.Api34SegmentFinder: android.text.SegmentFinder toAndroidSegmentFinder$ui_text_release(androidx.compose.ui.text.android.selection.SegmentFinder)
+io.github.jan.supabase.auth.FlowType: io.github.jan.supabase.auth.FlowType[] values()
+androidx.graphics.path.PathIteratorPreApi34Impl: void destroyInternalPathIterator(long)
+androidx.compose.ui.window.Api33Impl: void maybeRegisterBackCallback(android.view.View,java.lang.Object)
+androidx.core.view.WindowInsetsCompat$Impl29: androidx.core.graphics.Insets getSystemGestureInsets()
+androidx.compose.ui.text.android.StaticLayoutFactory28: void setUseLineSpacingFromFallbacks(android.text.StaticLayout$Builder,boolean)
+androidx.compose.ui.autofill.AutofillApi23Helper: void setDimens(android.view.ViewStructure,int,int,int,int,int,int)
+com.cartvr.app.data.updater.InstallStatusReceiver$Companion: InstallStatusReceiver$Companion()
+androidx.core.view.WindowInsetsCompat$Impl29: androidx.core.graphics.Insets getTappableElementInsets()
+androidx.core.view.WindowInsetsCompat$Impl20: boolean equals(java.lang.Object)
+io.ktor.util.date.Month: io.ktor.util.date.Month[] values()
+io.ktor.serialization.kotlinx.json.KotlinxSerializationJsonExtensionProvider: KotlinxSerializationJsonExtensionProvider()
+com.cartvr.app.data.updater.UpdateInfo: java.lang.String component2()
+androidx.core.view.WindowInsetsCompat$Impl21: androidx.core.view.WindowInsetsCompat consumeSystemWindowInsets()
+androidx.compose.ui.text.android.CanvasCompatM: void drawTextRun(android.graphics.Canvas,java.lang.CharSequence,int,int,int,int,float,float,boolean,android.graphics.Paint)
+com.cartvr.app.data.local.CartVrDatabase: CartVrDatabase()
+androidx.compose.ui.platform.AndroidComposeViewStartDragAndDropN: boolean startDragAndDrop(android.view.View,androidx.compose.ui.draganddrop.DragAndDropTransferData,androidx.compose.ui.draganddrop.ComposeDragShadowBuilder)
+com.cartvr.app.data.updater.GitHubAsset$$serializer: kotlinx.serialization.KSerializer[] typeParametersSerializers()
+com.cartvr.app.data.updater.GitHubRelease$$serializer: void serialize(kotlinx.serialization.encoding.Encoder,com.cartvr.app.data.updater.GitHubRelease)
+io.github.jan.supabase.realtime.RealtimeChannel$Status: io.github.jan.supabase.realtime.RealtimeChannel$Status valueOf(java.lang.String)
+androidx.compose.ui.platform.TextToolbarStatus: androidx.compose.ui.platform.TextToolbarStatus[] values()
+androidx.activity.Api34Impl: android.window.BackEvent createOnBackEvent(float,float,float,int)
+androidx.navigation.compose.ComposeNavigator: ComposeNavigator()
+io.ktor.util.date.WeekDay: io.ktor.util.date.WeekDay valueOf(java.lang.String)
+androidx.compose.material3.internal.TextFieldType: androidx.compose.material3.internal.TextFieldType valueOf(java.lang.String)
+com.cartvr.app.data.updater.GitHubAsset: void getBrowserDownloadUrl$annotations()
+androidx.core.view.WindowInsetsCompat$Impl30: androidx.core.graphics.Insets getInsetsIgnoringVisibility(int)
+androidx.compose.ui.window.PopupLayout: void setParentLayoutCoordinates(androidx.compose.ui.layout.LayoutCoordinates)
+androidx.compose.runtime.Recomposer$State: androidx.compose.runtime.Recomposer$State[] values()
+androidx.compose.ui.platform.ViewLayer: void setInvalidated(boolean)
+androidx.compose.foundation.text.input.internal.HandwritingGestureApi34: int fallback(androidx.compose.foundation.text.input.internal.TransformedTextFieldState,android.view.inputmethod.HandwritingGesture)
+kotlinx.serialization.json.internal.WriteMode: kotlinx.serialization.json.internal.WriteMode[] values()
+io.github.jan.supabase.realtime.RealtimeMessage$Companion: kotlinx.serialization.KSerializer serializer()
+androidx.compose.ui.layout.MeasuringIntrinsics$IntrinsicMinMax: androidx.compose.ui.layout.MeasuringIntrinsics$IntrinsicMinMax[] values()
+androidx.compose.ui.focus.FocusStateImpl: androidx.compose.ui.focus.FocusStateImpl[] values()
+androidx.compose.ui.platform.AndroidComposeView: androidx.compose.ui.text.font.FontFamily$Resolver getFontFamilyResolver()
+com.cartvr.app.data.updater.GitHubRelease: GitHubRelease(java.lang.String,java.lang.String,java.lang.String,java.util.List,int,kotlin.jvm.internal.DefaultConstructorMarker)
+kotlin.reflect.jvm.internal.impl.load.java.SpecialGenericSignatures$SpecialSignatureInfo: kotlin.reflect.jvm.internal.impl.load.java.SpecialGenericSignatures$SpecialSignatureInfo valueOf(java.lang.String)
+com.cartvr.app.data.updater.GitHubAsset: java.lang.String component1()
+androidx.activity.EdgeToEdgeApi30: void adjustLayoutInDisplayCutoutMode(android.view.Window)
+androidx.emoji2.text.ConcurrencyHelpers$Handler28Impl: android.os.Handler createAsync(android.os.Looper)
+com.cartvr.app.data.remote.dto.StoreDto$$serializer: java.lang.Object deserialize(kotlinx.serialization.encoding.Decoder)
+co.touchlab.kermit.Severity: co.touchlab.kermit.Severity[] values()
+io.github.jan.supabase.realtime.BroadcastJoinConfig$Companion: kotlinx.serialization.KSerializer serializer()
+androidx.core.view.WindowInsetsCompat$BuilderImpl20: androidx.core.view.WindowInsetsCompat build()
+androidx.compose.ui.platform.AndroidComposeView: androidx.compose.ui.draganddrop.DragAndDropManager getDragAndDropManager()
+androidx.compose.ui.text.AnnotationType: androidx.compose.ui.text.AnnotationType[] values()
+androidx.compose.ui.platform.coreshims.ContentCaptureSessionCompat$Api29Impl: void notifyViewTextChanged(android.view.contentcapture.ContentCaptureSession,android.view.autofill.AutofillId,java.lang.CharSequence)
+androidx.core.view.WindowInsetsCompat$BuilderImpl: void setMandatorySystemGestureInsets(androidx.core.graphics.Insets)
+androidx.compose.ui.text.android.CanvasCompatQ: void drawRenderNode(android.graphics.Canvas,android.graphics.RenderNode)
+androidx.compose.ui.window.PopupLayout: java.lang.String getTestTag()
+androidx.core.app.CoreComponentFactory: CoreComponentFactory()
+androidx.core.view.WindowInsetsCompat$Impl20: androidx.core.graphics.Insets getRootStableInsets()
+androidx.compose.ui.platform.AndroidComposeView: androidx.compose.ui.platform.SoftwareKeyboardController getSoftwareKeyboardController()
+androidx.compose.animation.core.RepeatMode: androidx.compose.animation.core.RepeatMode valueOf(java.lang.String)
+androidx.compose.ui.graphics.ColorSpaceVerificationHelper: androidx.compose.ui.graphics.colorspace.ColorSpace composeColorSpace(android.graphics.ColorSpace)
+androidx.core.view.WindowInsetsCompat$BuilderImpl29: void setSystemGestureInsets(androidx.core.graphics.Insets)
+androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper$CallbackName: androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper$CallbackName[] values()
+androidx.lifecycle.Lifecycle$State: androidx.lifecycle.Lifecycle$State valueOf(java.lang.String)
+androidx.compose.ui.autofill.AutofillApi26Helper: boolean isToggle(android.view.autofill.AutofillValue)
+kotlin.reflect.KParameter$Kind: kotlin.reflect.KParameter$Kind valueOf(java.lang.String)
+androidx.compose.ui.window.PopupLayout: int getDisplayHeight()
+io.ktor.client.engine.okhttp.OkHttpEngineContainer: OkHttpEngineContainer()
+androidx.compose.foundation.text.input.internal.EditorInfoApi34: void setHandwritingGestures(android.view.inputmethod.EditorInfo)
+androidx.activity.EdgeToEdgeApi26: void setUp(androidx.activity.SystemBarStyle,androidx.activity.SystemBarStyle,android.view.Window,android.view.View,boolean,boolean)
+okhttp3.TlsVersion: okhttp3.TlsVersion[] values()
+androidx.compose.ui.platform.AndroidComposeView: androidx.compose.ui.platform.AndroidViewsHandler getAndroidViewsHandler$ui_release()
+androidx.compose.ui.platform.AbstractComposeView: boolean getShowLayoutBounds()
+com.cartvr.app.data.remote.dto.ShoppingItemDto$$serializer: kotlinx.serialization.descriptors.SerialDescriptor getDescriptor()
+androidx.lifecycle.ReportFragment$LifecycleCallbacks: void onActivitySaveInstanceState(android.app.Activity,android.os.Bundle)
+com.cartvr.app.MainActivity: MainActivity()
+kotlin.reflect.jvm.internal.impl.builtins.jvm.JvmBuiltInsCustomizer$JDKMemberStatus: kotlin.reflect.jvm.internal.impl.builtins.jvm.JvmBuiltInsCustomizer$JDKMemberStatus valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.impl.builtins.functions.FunctionClassKind: kotlin.reflect.jvm.internal.impl.builtins.functions.FunctionClassKind[] values()
+com.cartvr.app.data.remote.dto.ShoppingItemDto$$serializer: ShoppingItemDto$$serializer()
+androidx.activity.Api34Impl: float touchY(android.window.BackEvent)
+androidx.compose.ui.platform.AndroidComposeView: void setDensity(androidx.compose.ui.unit.Density)
+com.cartvr.app.data.updater.GitHubUpdater: java.lang.Object downloadAndInstall-0E7RQCE(com.cartvr.app.data.updater.UpdateInfo,kotlin.jvm.functions.Function1,kotlin.coroutines.Continuation)
+androidx.datastore.preferences.protobuf.ProtoSyntax: androidx.datastore.preferences.protobuf.ProtoSyntax valueOf(java.lang.String)
+androidx.compose.ui.platform.AndroidComposeView: boolean getScrollCaptureInProgress$ui_release()
+androidx.compose.ui.text.style.ResolvedTextDirection: androidx.compose.ui.text.style.ResolvedTextDirection[] values()
+androidx.compose.ui.platform.AndroidComposeView: void setAccessibilityEventBatchIntervalMillis(long)
+com.cartvr.app.data.remote.dto.HouseholdDto$$serializer: java.lang.Object deserialize(kotlinx.serialization.encoding.Decoder)
+androidx.compose.ui.node.LayoutNode$LayoutState: androidx.compose.ui.node.LayoutNode$LayoutState[] values()
+io.ktor.websocket.FrameType: io.ktor.websocket.FrameType[] values()
+androidx.core.view.WindowInsetsCompat$Impl: void setRootWindowInsets(androidx.core.view.WindowInsetsCompat)
+androidx.compose.ui.platform.coreshims.ViewStructureCompat$Api23Impl: void setClassName(android.view.ViewStructure,java.lang.String)
+io.github.jan.supabase.auth.providers.builtin.Phone$Channel: io.github.jan.supabase.auth.providers.builtin.Phone$Channel valueOf(java.lang.String)
+io.github.jan.supabase.realtime.Realtime$Status: io.github.jan.supabase.realtime.Realtime$Status[] values()
+androidx.compose.ui.platform.AndroidViewConfigurationApi34: float getScaledHandwritingGestureLineMargin(android.view.ViewConfiguration)
+androidx.compose.foundation.text.input.internal.HandwritingGestureApi34: int performJoinOrSplitGesture(androidx.compose.foundation.text.LegacyTextFieldState,android.view.inputmethod.JoinOrSplitGesture,androidx.compose.ui.text.AnnotatedString,androidx.compose.ui.platform.ViewConfiguration,kotlin.jvm.functions.Function1)
+io.ktor.websocket.CloseReason$Codes: io.ktor.websocket.CloseReason$Codes valueOf(java.lang.String)
+androidx.compose.ui.graphics.BlendModeColorFilterHelper: androidx.compose.ui.graphics.BlendModeColorFilter createBlendModeColorFilter(android.graphics.BlendModeColorFilter)
+androidx.compose.ui.platform.AndroidComposeView: androidx.compose.ui.hapticfeedback.HapticFeedback getHapticFeedBack()
+androidx.lifecycle.ProcessLifecycleOwner$attach$1: void onActivityPreCreated(android.app.Activity,android.os.Bundle)
+co.touchlab.kermit.Severity: co.touchlab.kermit.Severity valueOf(java.lang.String)
+androidx.compose.ui.graphics.WrapperVerificationHelperMethods: void setBlendMode-GB0RdKg(android.graphics.Paint,int)
+androidx.compose.ui.text.android.CanvasCompatM: void drawTextRun(android.graphics.Canvas,char[],int,int,int,int,float,float,boolean,android.graphics.Paint)
+androidx.core.view.WindowInsetsCompat$BuilderImpl20: WindowInsetsCompat$BuilderImpl20(androidx.core.view.WindowInsetsCompat)
+kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$Effect$EffectType: kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$Effect$EffectType[] values()
+androidx.compose.ui.platform.AndroidComposeView: androidx.compose.ui.modifier.ModifierLocalManager getModifierLocalManager()
+androidx.core.view.WindowInsetsCompat$Impl20: boolean isVisible(int)
+kotlinx.coroutines.flow.SharingCommand: kotlinx.coroutines.flow.SharingCommand valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$Modality: kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$Modality[] values()
+kotlin.Metadata: int[] mv()
+androidx.core.view.WindowInsetsCompat$BuilderImpl29: void setSystemWindowInsets(androidx.core.graphics.Insets)
+androidx.core.view.WindowInsetsCompat$BuilderImpl: void setStableInsets(androidx.core.graphics.Insets)
+androidx.lifecycle.SavedStateHandlesVM: SavedStateHandlesVM()
+androidx.compose.ui.platform.AndroidComposeViewForceDarkModeQ: void disallowForceDark(android.view.View)
+androidx.compose.ui.text.android.AndroidLayoutApi34: int[] getRangeForRect$ui_text_release(androidx.compose.ui.text.android.TextLayout,android.graphics.RectF,int,kotlin.jvm.functions.Function2)
+kotlin.reflect.jvm.internal.calls.AnnotationConstructorCaller$Origin: kotlin.reflect.jvm.internal.calls.AnnotationConstructorCaller$Origin valueOf(java.lang.String)
+androidx.lifecycle.ReportFragment$LifecycleCallbacks: void onActivityPreDestroyed(android.app.Activity)
+com.cartvr.app.data.updater.GitHubAsset: GitHubAsset(java.lang.String,java.lang.String,long,int,kotlin.jvm.internal.DefaultConstructorMarker)
+kotlin.reflect.jvm.internal.impl.metadata.jvm.JvmProtoBuf$StringTableTypes$Record$Operation: kotlin.reflect.jvm.internal.impl.metadata.jvm.JvmProtoBuf$StringTableTypes$Record$Operation[] values()
+kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$TypeParameter$Variance: kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$TypeParameter$Variance valueOf(java.lang.String)
+io.github.jan.supabase.logging.LogLevel: io.github.jan.supabase.logging.LogLevel valueOf(java.lang.String)
+androidx.tracing.TraceApi29Impl: boolean isEnabled()
+kotlin.reflect.jvm.internal.impl.serialization.deserialization.builtins.BuiltInsLoaderImpl: BuiltInsLoaderImpl()
+com.cartvr.app.data.remote.dto.StoreDto$$serializer: kotlinx.serialization.KSerializer[] childSerializers()
+androidx.core.view.ViewCompat$Api21Impl: void callCompatInsetAnimationCallback(android.view.WindowInsets,android.view.View)
+androidx.core.view.WindowInsetsCompat$Impl: androidx.core.graphics.Insets getInsets(int)
+androidx.core.view.WindowInsetsCompat$BuilderImpl: void setInsets(int,androidx.core.graphics.Insets)
+androidx.compose.ui.platform.AndroidComposeView: androidx.compose.ui.graphics.GraphicsContext getGraphicsContext()
+kotlin.reflect.jvm.internal.impl.descriptors.Modality: kotlin.reflect.jvm.internal.impl.descriptors.Modality valueOf(java.lang.String)
+androidx.compose.ui.text.android.BoringLayoutFactory33: boolean isFallbackLineSpacingEnabled(android.text.BoringLayout)
+io.github.jan.supabase.auth.SignOutScope: io.github.jan.supabase.auth.SignOutScope valueOf(java.lang.String)
+androidx.core.view.WindowInsetsCompat$BuilderImpl: void setSystemGestureInsets(androidx.core.graphics.Insets)
+androidx.core.view.WindowInsetsCompat$BuilderImpl: androidx.core.view.WindowInsetsCompat build()
+androidx.core.view.WindowInsetsCompat$Impl21: WindowInsetsCompat$Impl21(androidx.core.view.WindowInsetsCompat,android.view.WindowInsets)
+androidx.core.view.WindowInsetsCompat$Impl20: WindowInsetsCompat$Impl20(androidx.core.view.WindowInsetsCompat,android.view.WindowInsets)
+androidx.compose.foundation.text.HandleState: androidx.compose.foundation.text.HandleState valueOf(java.lang.String)
+com.cartvr.app.data.updater.GitHubAsset$$serializer: kotlinx.serialization.KSerializer[] childSerializers()
+com.cartvr.app.data.updater.GitHubRelease: java.lang.String getName()
+kotlin.reflect.jvm.internal.impl.protobuf.WireFormat$JavaType: kotlin.reflect.jvm.internal.impl.protobuf.WireFormat$JavaType[] values()
+androidx.core.view.WindowInsetsCompat$Impl: androidx.core.graphics.Insets getSystemWindowInsets()
+kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$QualifiedNameTable$QualifiedName$Kind: kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$QualifiedNameTable$QualifiedName$Kind[] values()
+io.github.jan.supabase.postgrest.PostgrestErrorResponse$Companion: kotlinx.serialization.KSerializer serializer()
+androidx.compose.ui.autofill.AutofillApi26Helper: void setAutofillType(android.view.ViewStructure,int)
+androidx.compose.ui.text.android.BoringLayoutFactoryDefault: android.text.BoringLayout$Metrics isBoring(java.lang.CharSequence,android.text.TextPaint,android.text.TextDirectionHeuristic)
+androidx.compose.ui.platform.AndroidCompositionLocals_androidKt: androidx.compose.runtime.ProvidableCompositionLocal getLocalLifecycleOwner()
+androidx.lifecycle.LifecycleDispatcher$DispatcherActivityCallback: LifecycleDispatcher$DispatcherActivityCallback()
+androidx.graphics.path.PathIteratorPreApi34Impl: long createInternalPathIterator(android.graphics.Path,int,float)
+kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$Class$Kind: kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$Class$Kind valueOf(java.lang.String)
+kotlin.Metadata: java.lang.String[] d1()
+androidx.compose.ui.graphics.layer.RenderNodeVerificationHelper28: void setAmbientShadowColor(android.view.RenderNode,int)
+com.cartvr.app.data.remote.dto.HouseholdDto$$serializer: kotlinx.serialization.descriptors.SerialDescriptor getDescriptor()
+com.cartvr.app.data.updater.GitHubAsset: com.cartvr.app.data.updater.GitHubAsset copy$default(com.cartvr.app.data.updater.GitHubAsset,java.lang.String,java.lang.String,long,int,java.lang.Object)
+androidx.compose.ui.platform.ComposeView: void getShouldCreateCompositionOnAttachedToWindow$annotations()
+androidx.core.view.WindowInsetsCompat$TypeImpl30: int toPlatformType(int)
+com.cartvr.app.data.updater.GitHubAsset: GitHubAsset(java.lang.String,java.lang.String,long)
+kotlin.reflect.jvm.internal.impl.builtins.UnsignedArrayType: kotlin.reflect.jvm.internal.impl.builtins.UnsignedArrayType valueOf(java.lang.String)
+androidx.compose.ui.window.PopupLayout: androidx.compose.ui.unit.IntSize getPopupContentSize-bOM6tXw()
+androidx.compose.ui.graphics.layer.RenderNodeVerificationHelper24: void discardDisplayList(android.view.RenderNode)
+androidx.compose.foundation.MutatePriority: androidx.compose.foundation.MutatePriority valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.impl.load.kotlin.AbstractBinaryClassAnnotationLoader$PropertyRelatedElement: kotlin.reflect.jvm.internal.impl.load.kotlin.AbstractBinaryClassAnnotationLoader$PropertyRelatedElement[] values()
+androidx.datastore.preferences.protobuf.WireFormat$JavaType: androidx.datastore.preferences.protobuf.WireFormat$JavaType valueOf(java.lang.String)
+kotlinx.serialization.json.JsonNull: kotlinx.serialization.KSerializer serializer()
+kotlinx.coroutines.flow.SharingCommand: kotlinx.coroutines.flow.SharingCommand[] values()
+kotlin.reflect.jvm.internal.impl.builtins.UnsignedType: kotlin.reflect.jvm.internal.impl.builtins.UnsignedType[] values()
+androidx.compose.ui.platform.AndroidComposeView: androidx.compose.ui.platform.AndroidClipboardManager getClipboardManager()
+kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$VersionRequirement$Level: kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$VersionRequirement$Level valueOf(java.lang.String)
+androidx.core.view.ViewCompat$Api28Impl: java.lang.CharSequence getAccessibilityPaneTitle(android.view.View)
+androidx.compose.ui.platform.AndroidComposeView: androidx.compose.ui.autofill.Autofill getAutofill()
+com.cartvr.app.data.updater.UpdateInfo: java.lang.String getApkDownloadUrl()
+kotlinx.serialization.json.JsonObject$Companion: kotlinx.serialization.KSerializer serializer()
+androidx.lifecycle.EmptyActivityLifecycleCallbacks: void onActivityCreated(android.app.Activity,android.os.Bundle)
+androidx.compose.ui.platform.AndroidComposeView: androidx.compose.ui.autofill.AutofillTree getAutofillTree()
+io.github.jan.supabase.auth.providers.builtin.Phone$Channel: io.github.jan.supabase.auth.providers.builtin.Phone$Channel[] values()
+androidx.compose.ui.window.PopupLayout: boolean getShouldCreateCompositionOnAttachedToWindow()
+androidx.compose.ui.platform.AndroidComposeViewAccessibilityDelegateCompat$Api24Impl: void addSetProgressAction(androidx.core.view.accessibility.AccessibilityNodeInfoCompat,androidx.compose.ui.semantics.SemanticsNode)
+kotlin.reflect.jvm.internal.impl.descriptors.annotations.KotlinTarget: kotlin.reflect.jvm.internal.impl.descriptors.annotations.KotlinTarget valueOf(java.lang.String)
+kotlinx.datetime.LocalDate$Companion: kotlinx.serialization.KSerializer serializer()
+com.cartvr.app.data.updater.GitHubRelease$$serializer: GitHubRelease$$serializer()
+com.cartvr.app.data.updater.GitHubRelease: GitHubRelease(java.lang.String,java.lang.String,java.lang.String,java.util.List)
+kotlinx.coroutines.CoroutineStart: kotlinx.coroutines.CoroutineStart[] values()
+androidx.compose.ui.autofill.AutofillApi23Helper: void setId(android.view.ViewStructure,int,java.lang.String,java.lang.String,java.lang.String)
+kotlin.reflect.jvm.internal.impl.builtins.PrimitiveType: kotlin.reflect.jvm.internal.impl.builtins.PrimitiveType[] values()
+androidx.core.view.WindowInsetsCompat$Impl20: androidx.core.graphics.Insets getInsets(int)
+androidx.compose.ui.platform.WrapperRenderNodeLayerHelperMethods: void onDescendantInvalidated(androidx.compose.ui.platform.AndroidComposeView)
+androidx.compose.animation.EnterExitState: androidx.compose.animation.EnterExitState[] values()
+androidx.compose.ui.window.PopupLayout: void setParentLayoutDirection(androidx.compose.ui.unit.LayoutDirection)
+com.cartvr.app.data.remote.dto.HouseholdDto$$serializer: void serialize(kotlinx.serialization.encoding.Encoder,com.cartvr.app.data.remote.dto.HouseholdDto)
+kotlin.reflect.jvm.internal.impl.types.error.ErrorTypeKind: kotlin.reflect.jvm.internal.impl.types.error.ErrorTypeKind valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.impl.types.TypeUsage: kotlin.reflect.jvm.internal.impl.types.TypeUsage[] values()
+com.cartvr.app.data.updater.GitHubUpdater: boolean canInstallUnknownApps()
+com.cartvr.app.data.updater.GitHubAsset$Companion: kotlinx.serialization.KSerializer serializer()
+androidx.compose.ui.platform.AndroidComposeView: kotlin.jvm.functions.Function1 getConfigurationChangeObserver()
+androidx.compose.ui.platform.AndroidComposeView: void setShowLayoutBounds(boolean)
+androidx.compose.ui.platform.ComposeView: java.lang.CharSequence getAccessibilityClassName()
+io.github.jan.supabase.auth.mfa.AuthenticatorAssuranceLevel: io.github.jan.supabase.auth.mfa.AuthenticatorAssuranceLevel valueOf(java.lang.String)
+androidx.datastore.preferences.protobuf.WireFormat$JavaType: androidx.datastore.preferences.protobuf.WireFormat$JavaType[] values()
+com.cartvr.app.data.updater.UpdateInfo: com.cartvr.app.data.updater.UpdateInfo copy(java.lang.String,java.lang.String,java.lang.String,long)
+androidx.compose.foundation.MutatePriority: androidx.compose.foundation.MutatePriority[] values()
+androidx.compose.ui.platform.coreshims.ViewStructureCompat$Api23Impl: void setText(android.view.ViewStructure,java.lang.CharSequence)
+androidx.compose.ui.platform.ViewLayer: void setCameraDistancePx(float)
+androidx.compose.ui.window.SecureFlagPolicy: androidx.compose.ui.window.SecureFlagPolicy valueOf(java.lang.String)
+androidx.compose.ui.text.android.BoringLayoutFactoryDefault: android.text.BoringLayout create(java.lang.CharSequence,android.text.TextPaint,int,android.text.Layout$Alignment,float,float,android.text.BoringLayout$Metrics,boolean,android.text.TextUtils$TruncateAt,int)
+androidx.core.view.WindowInsetsCompat$Impl20: void setOverriddenInsets(androidx.core.graphics.Insets[])
+com.cartvr.app.data.updater.GitHubRelease: kotlinx.serialization.KSerializer[] access$get$childSerializers$cp()
+androidx.core.view.WindowInsetsCompat$Impl20: androidx.core.graphics.Insets getInsetsIgnoringVisibility(int)
+androidx.core.view.WindowInsetsCompat$Impl: WindowInsetsCompat$Impl(androidx.core.view.WindowInsetsCompat)
+androidx.compose.ui.window.PopupLayout: androidx.compose.ui.unit.LayoutDirection getParentLayoutDirection()
+androidx.compose.ui.platform.AndroidComposeView: androidx.compose.ui.focus.FocusOwner getFocusOwner()
+io.ktor.util.Platform$JsPlatform: io.ktor.util.Platform$JsPlatform[] values()
+com.cartvr.app.data.remote.dto.CategoryDto$$serializer: com.cartvr.app.data.remote.dto.CategoryDto deserialize(kotlinx.serialization.encoding.Decoder)
+androidx.compose.ui.window.PopupLayout: android.view.View getViewRoot()
+com.cartvr.app.data.updater.GitHubAsset: java.lang.String component2()
+kotlinx.serialization.json.ClassDiscriminatorMode: kotlinx.serialization.json.ClassDiscriminatorMode valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.impl.builtins.PrimitiveType: kotlin.reflect.jvm.internal.impl.builtins.PrimitiveType valueOf(java.lang.String)
+androidx.compose.ui.platform.RenderNodeVerificationHelper28: void setSpotShadowColor(android.view.RenderNode,int)
+kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$VersionRequirement$VersionKind: kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$VersionRequirement$VersionKind valueOf(java.lang.String)
+io.github.jan.supabase.auth.exception.AuthErrorCode: io.github.jan.supabase.auth.exception.AuthErrorCode valueOf(java.lang.String)
+androidx.datastore.preferences.protobuf.FieldType: androidx.datastore.preferences.protobuf.FieldType valueOf(java.lang.String)
+androidx.compose.ui.platform.AndroidComposeView: androidx.compose.ui.contentcapture.AndroidContentCaptureManager getContentCaptureManager$ui_release()
+kotlin.reflect.jvm.internal.impl.protobuf.WireFormat$JavaType: kotlin.reflect.jvm.internal.impl.protobuf.WireFormat$JavaType valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.impl.resolve.deprecation.DeprecationLevelValue: kotlin.reflect.jvm.internal.impl.resolve.deprecation.DeprecationLevelValue[] values()
+androidx.compose.material3.ModalBottomSheetDialogLayout$Api33Impl: void maybeRegisterBackCallback(android.view.View,java.lang.Object)
+androidx.core.view.WindowInsetsCompat$Impl29: androidx.core.graphics.Insets getMandatorySystemGestureInsets()
+com.cartvr.app.data.updater.GitHubUpdater$downloadAndInstall$2: java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
+androidx.compose.ui.platform.AbstractComposeView: void setViewCompositionStrategy(androidx.compose.ui.platform.ViewCompositionStrategy)
+androidx.compose.ui.platform.AbstractComposeView: void setParentContext(androidx.compose.runtime.CompositionContext)
+kotlin.reflect.jvm.internal.impl.types.TypeSubstitutor$VarianceConflictType: kotlin.reflect.jvm.internal.impl.types.TypeSubstitutor$VarianceConflictType valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$Type$Argument$Projection: kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$Type$Argument$Projection[] values()
+androidx.core.view.ViewCompat$Api29Impl: android.view.View$AccessibilityDelegate getAccessibilityDelegate(android.view.View)
+androidx.compose.ui.text.android.CanvasCompatR: boolean quickReject(android.graphics.Canvas,float,float,float,float)
+androidx.lifecycle.ReportFragment$LifecycleCallbacks: void onActivityPostStarted(android.app.Activity)
+androidx.compose.foundation.gestures.Orientation: androidx.compose.foundation.gestures.Orientation valueOf(java.lang.String)
+androidx.compose.ui.window.Api33Impl: android.window.OnBackInvokedCallback createBackCallback(kotlin.jvm.functions.Function0)
+androidx.core.view.WindowInsetsCompat$Impl30: androidx.core.graphics.Insets getInsets(int)
+io.github.jan.supabase.realtime.RealtimeJoinPayload$Companion: kotlinx.serialization.KSerializer serializer()
+kotlin.reflect.jvm.internal.impl.descriptors.annotations.KotlinRetention: kotlin.reflect.jvm.internal.impl.descriptors.annotations.KotlinRetention[] values()
+androidx.compose.material.ripple.RippleHostView: void setRippleState$lambda$2(androidx.compose.material.ripple.RippleHostView)
+androidx.core.view.WindowInsetsCompat$Impl: androidx.core.view.DisplayCutoutCompat getDisplayCutout()
+com.cartvr.app.data.updater.UpdateInfo: long getApkSizeBytes()
+androidx.core.view.WindowInsetsCompat$Impl: androidx.core.view.WindowInsetsCompat consumeDisplayCutout()
+androidx.profileinstaller.FileSectionType: androidx.profileinstaller.FileSectionType[] values()
+androidx.compose.ui.autofill.AutofillApi23Helper: int addChildCount(android.view.ViewStructure,int)
+androidx.compose.foundation.text.input.internal.HandwritingGestureApi34: void previewSelectGesture(androidx.compose.foundation.text.input.internal.TransformedTextFieldState,android.view.inputmethod.SelectGesture,androidx.compose.foundation.text.input.internal.TextLayoutState)
+androidx.core.view.WindowInsetsCompat$BuilderImpl29: void setMandatorySystemGestureInsets(androidx.core.graphics.Insets)
+androidx.compose.ui.platform.AndroidComposeView: androidx.compose.ui.layout.Placeable$PlacementScope getPlacementScope()
+androidx.compose.ui.focus.CustomDestinationResult: androidx.compose.ui.focus.CustomDestinationResult[] values()
+com.cartvr.app.data.remote.dto.RegularItemDto$$serializer: java.lang.Object deserialize(kotlinx.serialization.encoding.Decoder)
+kotlin.reflect.jvm.internal.impl.load.java.structure.LightClassOriginKind: kotlin.reflect.jvm.internal.impl.load.java.structure.LightClassOriginKind[] values()
+androidx.core.view.WindowInsetsCompat$BuilderImpl: void setSystemWindowInsets(androidx.core.graphics.Insets)
+androidx.compose.ui.platform.actionmodecallback.MenuItemOption: androidx.compose.ui.platform.actionmodecallback.MenuItemOption valueOf(java.lang.String)
+androidx.compose.ui.platform.coreshims.ViewStructureCompat$Api23Impl: void setDimens(android.view.ViewStructure,int,int,int,int,int,int)
+com.cartvr.app.data.remote.dto.CategoryDto$Companion: kotlinx.serialization.KSerializer serializer()
+androidx.lifecycle.ReportFragment$LifecycleCallbacks: void onActivityPostResumed(android.app.Activity)
+androidx.lifecycle.EmptyActivityLifecycleCallbacks: void onActivityDestroyed(android.app.Activity)
+androidx.room.RoomDatabase$JournalMode: androidx.room.RoomDatabase$JournalMode[] values()
+kotlinx.datetime.format.Padding: kotlinx.datetime.format.Padding[] values()
+com.cartvr.app.data.remote.dto.CategoryDto$$serializer: kotlinx.serialization.KSerializer[] typeParametersSerializers()
+androidx.compose.ui.graphics.layer.ViewLayer: androidx.compose.ui.graphics.CanvasHolder getCanvasHolder()
+kotlin.text.RegexOption: kotlin.text.RegexOption[] values()
+androidx.compose.ui.platform.coreshims.ViewStructureCompat$Api23Impl: android.os.Bundle getExtras(android.view.ViewStructure)
+androidx.core.view.WindowInsetsCompat$BuilderImpl29: androidx.core.view.WindowInsetsCompat build()
+androidx.core.view.WindowInsetsCompat$BuilderImpl29: void setStableInsets(androidx.core.graphics.Insets)
+androidx.compose.ui.platform.TextToolbarHelperMethods: android.view.ActionMode startActionMode(android.view.View,android.view.ActionMode$Callback,int)
+kotlin.reflect.jvm.internal.KDeclarationContainerImpl$MemberBelonginess: kotlin.reflect.jvm.internal.KDeclarationContainerImpl$MemberBelonginess valueOf(java.lang.String)
+io.github.jan.supabase.auth.FlowType: io.github.jan.supabase.auth.FlowType valueOf(java.lang.String)
+androidx.compose.ui.layout.IntrinsicMinMax: androidx.compose.ui.layout.IntrinsicMinMax[] values()
+kotlin.coroutines.jvm.internal.BaseContinuationImpl: kotlin.coroutines.jvm.internal.CoroutineStackFrame getCallerFrame()
+io.github.jan.supabase.logging.LogLevel: io.github.jan.supabase.logging.LogLevel[] values()
+androidx.compose.ui.platform.actionmodecallback.MenuItemOption: androidx.compose.ui.platform.actionmodecallback.MenuItemOption[] values()
+io.github.jan.supabase.auth.exception.AuthErrorCode: io.github.jan.supabase.auth.exception.AuthErrorCode[] values()
+androidx.compose.ui.window.PopupLayout: androidx.compose.ui.window.PopupPositionProvider getPositionProvider()
+com.cartvr.app.data.updater.UpdateInfo: java.lang.String component3()
+androidx.compose.ui.text.android.CanvasCompatO: boolean clipOutRect(android.graphics.Canvas,android.graphics.RectF)
+androidx.compose.foundation.text.input.internal.HandwritingGestureApi34: void performSelectionOnLegacyTextField-8ffj60Q(long,androidx.compose.foundation.text.selection.TextFieldSelectionManager,kotlin.jvm.functions.Function1)
+io.ktor.websocket.CloseReason$Codes: io.ktor.websocket.CloseReason$Codes[] values()
+androidx.compose.ui.window.PopupLayout: void setPopupContentSize-fhxjrPA(androidx.compose.ui.unit.IntSize)
+android.support.v4.graphics.drawable.IconCompatParcelizer: IconCompatParcelizer()
+com.cartvr.app.data.updater.GitHubRelease$Companion: GitHubRelease$Companion()
+com.cartvr.app.data.updater.GitHubAsset$Companion: GitHubAsset$Companion()
+com.cartvr.app.data.remote.dto.HouseholdMemberDto$$serializer: void serialize(kotlinx.serialization.encoding.Encoder,com.cartvr.app.data.remote.dto.HouseholdMemberDto)
+androidx.compose.ui.text.input.CursorAnchorInfoApi33Helper: android.view.inputmethod.CursorAnchorInfo$Builder setEditorBoundsInfo(android.view.inputmethod.CursorAnchorInfo$Builder,androidx.compose.ui.geometry.Rect)
+androidx.activity.Api34Impl: int swipeEdge(android.window.BackEvent)
+androidx.core.view.WindowInsetsCompat$Impl28: androidx.core.view.DisplayCutoutCompat getDisplayCutout()
+androidx.compose.foundation.text.input.internal.HandwritingGestureApi34: void previewDeleteRangeGesture(androidx.compose.foundation.text.input.internal.TransformedTextFieldState,android.view.inputmethod.DeleteRangeGesture,androidx.compose.foundation.text.input.internal.TextLayoutState)
+kotlinx.coroutines.android.AndroidDispatcherFactory: AndroidDispatcherFactory()
+com.cartvr.app.data.remote.dto.HouseholdDto$Companion: kotlinx.serialization.KSerializer serializer()
+com.cartvr.app.data.remote.dto.HouseholdDto$$serializer: kotlinx.serialization.KSerializer[] childSerializers()
+com.cartvr.app.data.updater.GitHubRelease$$serializer: com.cartvr.app.data.updater.GitHubRelease deserialize(kotlinx.serialization.encoding.Decoder)
+androidx.compose.ui.text.android.CanvasCompatS: void drawPatch(android.graphics.Canvas,android.graphics.NinePatch,android.graphics.RectF,android.graphics.Paint)
+androidx.compose.material3.internal.TextFieldType: androidx.compose.material3.internal.TextFieldType[] values()
+androidx.compose.ui.platform.DrawChildContainer: int getChildCount()
+com.cartvr.app.data.remote.dto.HouseholdMemberDto$$serializer: java.lang.Object deserialize(kotlinx.serialization.encoding.Decoder)
+kotlinx.coroutines.selects.TrySelectDetailedResult: kotlinx.coroutines.selects.TrySelectDetailedResult[] values()
+kotlin.reflect.jvm.internal.impl.renderer.AnnotationArgumentsRenderingPolicy: kotlin.reflect.jvm.internal.impl.renderer.AnnotationArgumentsRenderingPolicy valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.impl.name.State: kotlin.reflect.jvm.internal.impl.name.State[] values()
+androidx.lifecycle.ReportFragment$LifecycleCallbacks: void registerIn(android.app.Activity)
+androidx.lifecycle.EmptyActivityLifecycleCallbacks: void onActivityStopped(android.app.Activity)
+androidx.navigation.compose.DialogNavigator: DialogNavigator()
+androidx.core.view.ViewCompat$Api21Impl: androidx.core.view.WindowInsetsCompat getRootWindowInsets(android.view.View)
+com.cartvr.app.data.remote.dto.HouseholdMemberDto$Companion: kotlinx.serialization.KSerializer serializer()
+androidx.core.view.WindowInsetsCompat$BuilderImpl29: WindowInsetsCompat$BuilderImpl29()
+androidx.compose.ui.platform.AndroidComposeView: void getShowLayoutBounds$annotations()
+androidx.compose.ui.node.NodeMeasuringIntrinsics$IntrinsicWidthHeight: androidx.compose.ui.node.NodeMeasuringIntrinsics$IntrinsicWidthHeight[] values()
+io.github.jan.supabase.auth.GoTrueErrorResponse$WeakPassword$Companion: kotlinx.serialization.KSerializer serializer()
+androidx.compose.ui.autofill.AutofillCallback: void unregister(androidx.compose.ui.autofill.AndroidAutofill)
+androidx.compose.foundation.text.Handle: androidx.compose.foundation.text.Handle[] values()
+androidx.compose.animation.core.MutatePriority: androidx.compose.animation.core.MutatePriority valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.impl.types.TypeCheckerState$LowerCapturedTypePolicy: kotlin.reflect.jvm.internal.impl.types.TypeCheckerState$LowerCapturedTypePolicy valueOf(java.lang.String)
+androidx.core.view.WindowInsetsCompat$Impl: androidx.core.view.WindowInsetsCompat consumeStableInsets()
+androidx.datastore.preferences.PreferencesProto$Value$ValueCase: androidx.datastore.preferences.PreferencesProto$Value$ValueCase valueOf(java.lang.String)
+com.cartvr.app.data.updater.GitHubAsset$$serializer: void serialize(kotlinx.serialization.encoding.Encoder,java.lang.Object)
+kotlin.reflect.jvm.internal.impl.renderer.ParameterNameRenderingPolicy: kotlin.reflect.jvm.internal.impl.renderer.ParameterNameRenderingPolicy valueOf(java.lang.String)
+androidx.core.view.WindowInsetsCompat$Impl: void setOverriddenInsets(androidx.core.graphics.Insets[])
+androidx.compose.ui.window.PopupLayout: android.view.WindowManager$LayoutParams getParams$ui_release()
+androidx.core.view.WindowInsetsCompat$Impl20: boolean isRound()
+androidx.core.view.WindowInsetsCompat$Impl28: WindowInsetsCompat$Impl28(androidx.core.view.WindowInsetsCompat,androidx.core.view.WindowInsetsCompat$Impl28)
+kotlin.reflect.jvm.internal.impl.load.java.AnnotationQualifierApplicabilityType: kotlin.reflect.jvm.internal.impl.load.java.AnnotationQualifierApplicabilityType[] values()
+androidx.core.view.WindowInsetsCompat$Impl: boolean isRound()
+androidx.compose.ui.platform.coreshims.ViewStructureCompat$Api23Impl: void setContentDescription(android.view.ViewStructure,java.lang.CharSequence)
+androidx.compose.material3.ScaffoldLayoutContent: androidx.compose.material3.ScaffoldLayoutContent valueOf(java.lang.String)
+kotlin.time.DurationUnit: kotlin.time.DurationUnit valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.impl.load.java.lazy.types.JavaTypeFlexibility: kotlin.reflect.jvm.internal.impl.load.java.lazy.types.JavaTypeFlexibility[] values()
+androidx.compose.ui.text.input.TextInputServiceAndroid$TextInputCommand: androidx.compose.ui.text.input.TextInputServiceAndroid$TextInputCommand[] values()
+androidx.core.view.ViewCompat$Api21Impl: void setOnApplyWindowInsetsListener(android.view.View,androidx.core.view.OnApplyWindowInsetsListener)
+androidx.lifecycle.ReportFragment$LifecycleCallbacks: void onActivityDestroyed(android.app.Activity)
+androidx.core.view.WindowInsetsCompat$BuilderImpl: void applyInsetTypes()
+androidx.compose.ui.window.PopupLayout: void setTestTag(java.lang.String)
+androidx.datastore.preferences.protobuf.WireFormat$FieldType: androidx.datastore.preferences.protobuf.WireFormat$FieldType valueOf(java.lang.String)
+androidx.compose.ui.platform.ViewLayerVerificationHelper31: void setRenderEffect(android.view.View,androidx.compose.ui.graphics.RenderEffect)
+androidx.lifecycle.ProcessLifecycleOwner$attach$1: void onActivityStopped(android.app.Activity)
+androidx.activity.ComponentActivity$Api33Impl: android.window.OnBackInvokedDispatcher getOnBackInvokedDispatcher(android.app.Activity)
+androidx.compose.foundation.text.input.internal.HandwritingGestureApi34: void previewSelectGesture(androidx.compose.foundation.text.LegacyTextFieldState,android.view.inputmethod.SelectGesture,androidx.compose.foundation.text.selection.TextFieldSelectionManager)
+com.cartvr.app.data.updater.GitHubUpdater$checkForUpdate$2: GitHubUpdater$checkForUpdate$2(com.cartvr.app.data.updater.GitHubUpdater,kotlin.coroutines.Continuation)
+kotlin.reflect.jvm.internal.impl.types.model.TypeVariance: kotlin.reflect.jvm.internal.impl.types.model.TypeVariance valueOf(java.lang.String)
+androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper$CallbackName: androidx.sqlite.db.framework.FrameworkSQLiteOpenHelper$OpenHelper$CallbackName valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.impl.types.error.ErrorTypeKind: kotlin.reflect.jvm.internal.impl.types.error.ErrorTypeKind[] values()
+androidx.compose.ui.autofill.AutofillApi26Helper: boolean isText(android.view.autofill.AutofillValue)
+com.cartvr.app.data.updater.InstallStatusReceiver: void onReceive(android.content.Context,android.content.Intent)
+kotlin.coroutines.jvm.internal.SuspendLambda: int getArity()
+androidx.compose.ui.autofill.AutofillCallback: void register(androidx.compose.ui.autofill.AndroidAutofill)
+io.github.jan.supabase.postgrest.query.filter.FilterOperator: io.github.jan.supabase.postgrest.query.filter.FilterOperator[] values()
+androidx.lifecycle.ReportFragment$LifecycleCallbacks: void onActivityResumed(android.app.Activity)
+com.cartvr.app.data.remote.dto.StoreDto$Companion: kotlinx.serialization.KSerializer serializer()
+kotlin.reflect.jvm.internal.impl.types.model.CaptureStatus: kotlin.reflect.jvm.internal.impl.types.model.CaptureStatus valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$MemberKind: kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$MemberKind[] values()
+androidx.compose.foundation.text.input.internal.HandwritingGestureApi34: int performHandwritingGesture$foundation_release(androidx.compose.foundation.text.input.internal.TransformedTextFieldState,android.view.inputmethod.HandwritingGesture,androidx.compose.foundation.text.input.internal.TextLayoutState,androidx.compose.ui.platform.ViewConfiguration)
+androidx.compose.ui.platform.coreshims.ContentCaptureSessionCompat$Api23Impl: android.os.Bundle getExtras(android.view.ViewStructure)
+kotlin.reflect.jvm.internal.impl.resolve.jvm.JvmPrimitiveType: kotlin.reflect.jvm.internal.impl.resolve.jvm.JvmPrimitiveType[] values()
+kotlinx.coroutines.CoroutineStart: kotlinx.coroutines.CoroutineStart valueOf(java.lang.String)
+kotlin.coroutines.jvm.internal.BaseContinuationImpl: kotlin.coroutines.Continuation create(kotlin.coroutines.Continuation)
+android.support.v4.graphics.drawable.IconCompatParcelizer: androidx.core.graphics.drawable.IconCompat read(androidx.versionedparcelable.VersionedParcel)
+com.cartvr.app.data.updater.UpdateInfo: java.lang.String component1()
+kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$Visibility: kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$Visibility valueOf(java.lang.String)
+kotlin.reflect.KVariance: kotlin.reflect.KVariance[] values()
+com.cartvr.app.data.updater.GitHubUpdater: void openUnknownAppSourcesSettings()
+androidx.emoji2.text.EmojiCompatInitializer: EmojiCompatInitializer()
+kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$Type$Argument$Projection: kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$Type$Argument$Projection valueOf(java.lang.String)
+com.cartvr.app.data.updater.GitHubUpdater: boolean isNewerVersion(java.lang.String,java.lang.String)
+kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$Annotation$Argument$Value$Type: kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$Annotation$Argument$Value$Type valueOf(java.lang.String)
+com.cartvr.app.data.updater.GitHubRelease: GitHubRelease(int,java.lang.String,java.lang.String,java.lang.String,java.util.List,kotlinx.serialization.internal.SerializationConstructorMarker)
+androidx.room.RoomDatabase$JournalMode: androidx.room.RoomDatabase$JournalMode valueOf(java.lang.String)
+io.github.jan.supabase.auth.user.UserMfaFactor$Companion: kotlinx.serialization.KSerializer serializer()
+com.cartvr.app.data.updater.GitHubAsset$$serializer: GitHubAsset$$serializer()
+androidx.startup.InitializationProvider: InitializationProvider()
+androidx.room.Index$Order: androidx.room.Index$Order valueOf(java.lang.String)
+kotlin.Metadata: int k()
+androidx.core.view.WindowInsetsCompat$Impl28: int hashCode()
+com.cartvr.app.data.remote.dto.HouseholdMemberDto$$serializer: com.cartvr.app.data.remote.dto.HouseholdMemberDto deserialize(kotlinx.serialization.encoding.Decoder)
+com.russhwolf.settings.SettingsInitializer: SettingsInitializer()
+androidx.compose.foundation.text.Handle: androidx.compose.foundation.text.Handle valueOf(java.lang.String)
+kotlin.coroutines.jvm.internal.BaseContinuationImpl: java.lang.String toString()
+androidx.compose.foundation.text.selection.CrossStatus: androidx.compose.foundation.text.selection.CrossStatus[] values()
+io.ktor.util.date.GMTDate$Companion: kotlinx.serialization.KSerializer serializer()
+androidx.compose.ui.platform.AbstractComposeView: void setTransitionGroup(boolean)
+kotlin.reflect.jvm.internal.impl.renderer.DescriptorRendererModifier: kotlin.reflect.jvm.internal.impl.renderer.DescriptorRendererModifier[] values()
+androidx.graphics.path.ConicConverter: int internalConicToQuadratics(float[],int,float[],float,float)
+androidx.compose.ui.window.SecureFlagPolicy: androidx.compose.ui.window.SecureFlagPolicy[] values()
+kotlin.reflect.jvm.internal.impl.protobuf.WireFormat$FieldType: kotlin.reflect.jvm.internal.impl.protobuf.WireFormat$FieldType[] values()
+androidx.compose.ui.platform.AndroidComposeView: androidx.compose.ui.node.LayoutNodeDrawScope getSharedDrawScope()
+com.cartvr.app.data.updater.GitHubRelease: com.cartvr.app.data.updater.GitHubRelease copy(java.lang.String,java.lang.String,java.lang.String,java.util.List)
+androidx.navigation.NavBackStackEntry$SavedStateViewModel: NavBackStackEntry$SavedStateViewModel(androidx.lifecycle.SavedStateHandle)
+androidx.compose.ui.platform.AbstractComposeView: void getDisposeViewCompositionStrategy$annotations()
+androidx.compose.foundation.text.input.internal.HandwritingGestureApi34: void performInsertionOnLegacyTextField(int,java.lang.String,kotlin.jvm.functions.Function1)
+kotlin.reflect.jvm.internal.impl.renderer.AnnotationArgumentsRenderingPolicy: kotlin.reflect.jvm.internal.impl.renderer.AnnotationArgumentsRenderingPolicy[] values()
+androidx.compose.ui.platform.AbstractComposeView: void setShowLayoutBounds(boolean)
+androidx.compose.ui.text.android.CanvasCompatO: boolean clipOutRect(android.graphics.Canvas,float,float,float,float)
+kotlin.reflect.jvm.internal.impl.load.java.FieldOverridabilityCondition: FieldOverridabilityCondition()
+androidx.compose.ui.autofill.AutofillApi26Helper: void setAutofillHints(android.view.ViewStructure,java.lang.String[])
+com.cartvr.app.data.updater.GitHubUpdater$checkForUpdate$2: kotlin.coroutines.Continuation create(java.lang.Object,kotlin.coroutines.Continuation)
+io.github.jan.supabase.realtime.data.PostgresActionData$Companion: kotlinx.serialization.KSerializer serializer()
+com.cartvr.app.data.updater.GitHubRelease: void getTagName$annotations()
+androidx.compose.material3.SheetValue: androidx.compose.material3.SheetValue[] values()
+io.github.jan.supabase.realtime.PresenceJoinConfig$Companion: kotlinx.serialization.KSerializer serializer()
+com.cartvr.app.data.remote.dto.HouseholdMemberDto$$serializer: HouseholdMemberDto$$serializer()
+androidx.compose.ui.platform.ViewLayer: long getLayerId()
+kotlin.LazyThreadSafetyMode: kotlin.LazyThreadSafetyMode[] values()
+androidx.core.view.WindowInsetsCompat$Impl20: boolean isTypeVisible(int)
+androidx.compose.ui.platform.AndroidComposeView: androidx.compose.ui.platform.ClipboardManager getClipboardManager()
+androidx.compose.foundation.text.input.internal.HandwritingGestureApi34: void previewDeleteGesture(androidx.compose.foundation.text.input.internal.TransformedTextFieldState,android.view.inputmethod.DeleteGesture,androidx.compose.foundation.text.input.internal.TextLayoutState)
+androidx.graphics.path.PathIteratorPreApi34Impl: int internalPathIteratorPeek(long)
+com.cartvr.app.data.remote.dto.RegularItemDto$Companion: kotlinx.serialization.KSerializer serializer()
+androidx.compose.ui.window.Api33Impl: void maybeUnregisterBackCallback(android.view.View,java.lang.Object)
+androidx.compose.foundation.text.input.internal.HandwritingGestureApi34: int performSelectRangeGesture(androidx.compose.foundation.text.LegacyTextFieldState,android.view.inputmethod.SelectRangeGesture,androidx.compose.foundation.text.selection.TextFieldSelectionManager,kotlin.jvm.functions.Function1)
+androidx.compose.ui.contentcapture.AndroidContentCaptureManager$TranslateStatus: androidx.compose.ui.contentcapture.AndroidContentCaptureManager$TranslateStatus[] values()
+androidx.core.view.WindowInsetsCompat$BuilderImpl20: void setSystemWindowInsets(androidx.core.graphics.Insets)
+androidx.core.graphics.drawable.IconCompat: IconCompat()
+kotlin.reflect.jvm.internal.impl.types.error.ErrorScopeKind: kotlin.reflect.jvm.internal.impl.types.error.ErrorScopeKind valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.impl.resolve.ExternalOverridabilityCondition$Result: kotlin.reflect.jvm.internal.impl.resolve.ExternalOverridabilityCondition$Result valueOf(java.lang.String)
+androidx.compose.ui.platform.AndroidComposeViewVerificationHelperMethodsO: void focusable(android.view.View,int,boolean)
+androidx.lifecycle.EmptyActivityLifecycleCallbacks: void onActivitySaveInstanceState(android.app.Activity,android.os.Bundle)
+okhttp3.internal.http2.ErrorCode: okhttp3.internal.http2.ErrorCode[] values()
+kotlin.reflect.jvm.internal.impl.descriptors.ClassKind: kotlin.reflect.jvm.internal.impl.descriptors.ClassKind[] values()
+androidx.lifecycle.ProcessLifecycleInitializer: ProcessLifecycleInitializer()
+kotlin.coroutines.intrinsics.CoroutineSingletons: kotlin.coroutines.intrinsics.CoroutineSingletons valueOf(java.lang.String)
+androidx.datastore.preferences.protobuf.Writer$FieldOrder: androidx.datastore.preferences.protobuf.Writer$FieldOrder valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.ReflectionFactoryImpl: ReflectionFactoryImpl()
+androidx.core.view.WindowInsetsCompat$BuilderImpl30: WindowInsetsCompat$BuilderImpl30()
+androidx.compose.ui.platform.AndroidComposeView: androidx.compose.ui.platform.AndroidComposeView$ViewTreeOwners getViewTreeOwners()
+kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$VersionRequirement$Level: kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$VersionRequirement$Level[] values()
+androidx.compose.ui.node.LayoutNode$LayoutState: androidx.compose.ui.node.LayoutNode$LayoutState valueOf(java.lang.String)
+androidx.lifecycle.LegacySavedStateHandleController$OnRecreation: LegacySavedStateHandleController$OnRecreation()
+androidx.core.view.WindowInsetsCompat$BuilderImpl: WindowInsetsCompat$BuilderImpl()
+androidx.core.view.WindowInsetsCompat$Impl21: void setStableInsets(androidx.core.graphics.Insets)
+androidx.lifecycle.ReportFragment$LifecycleCallbacks: void onActivityCreated(android.app.Activity,android.os.Bundle)
+androidx.compose.ui.input.pointer.util.VelocityTracker1D$Strategy: androidx.compose.ui.input.pointer.util.VelocityTracker1D$Strategy valueOf(java.lang.String)
+io.github.jan.supabase.auth.providers.builtin.Phone$Config$Companion: kotlinx.serialization.KSerializer serializer()
+androidx.compose.ui.platform.RenderNodeApi29VerificationHelper: void setRenderEffect(android.graphics.RenderNode,androidx.compose.ui.graphics.RenderEffect)
+androidx.compose.ui.text.android.StaticLayoutFactoryDefault: android.text.StaticLayout create(androidx.compose.ui.text.android.StaticLayoutParams)
+com.cartvr.app.data.remote.dto.StoreDto$$serializer: void serialize(kotlinx.serialization.encoding.Encoder,com.cartvr.app.data.remote.dto.StoreDto)
+com.cartvr.app.data.updater.GitHubAsset$Companion: GitHubAsset$Companion(kotlin.jvm.internal.DefaultConstructorMarker)
+androidx.profileinstaller.ProfileInstallerInitializer: ProfileInstallerInitializer()
+io.github.jan.supabase.auth.user.UserInfo$Companion: kotlinx.serialization.KSerializer serializer()
+androidx.compose.ui.window.PopupLayout: kotlin.jvm.functions.Function2 getContent()
+androidx.lifecycle.ReportFragment$LifecycleCallbacks: void onActivityPrePaused(android.app.Activity)
+androidx.lifecycle.ReportFragment$LifecycleCallbacks: void onActivityPaused(android.app.Activity)
+io.ktor.util.Platform$JsPlatform: io.ktor.util.Platform$JsPlatform valueOf(java.lang.String)
+androidx.compose.ui.window.PopupLayout: androidx.compose.ui.layout.LayoutCoordinates getParentLayoutCoordinates()
+androidx.core.graphics.drawable.IconCompatParcelizer: androidx.core.graphics.drawable.IconCompat read(androidx.versionedparcelable.VersionedParcel)
+androidx.core.view.WindowInsetsCompat$BuilderImpl20: WindowInsetsCompat$BuilderImpl20()
+androidx.compose.ui.text.android.BoringLayoutFactory33: android.text.BoringLayout$Metrics isBoring(java.lang.CharSequence,android.text.TextPaint,android.text.TextDirectionHeuristic)
+androidx.lifecycle.ReportFragment$LifecycleCallbacks: ReportFragment$LifecycleCallbacks()
+com.cartvr.app.data.updater.GitHubAsset$$serializer: kotlinx.serialization.descriptors.SerialDescriptor getDescriptor()
+kotlin.reflect.jvm.internal.impl.incremental.components.NoLookupLocation: kotlin.reflect.jvm.internal.impl.incremental.components.NoLookupLocation valueOf(java.lang.String)
+com.cartvr.app.data.updater.UpdateInfo: com.cartvr.app.data.updater.UpdateInfo copy$default(com.cartvr.app.data.updater.UpdateInfo,java.lang.String,java.lang.String,java.lang.String,long,int,java.lang.Object)
+com.cartvr.app.data.updater.GitHubUpdater$checkForUpdate$1: java.lang.Object invokeSuspend(java.lang.Object)
+kotlin.reflect.jvm.internal.impl.load.java.structure.LightClassOriginKind: kotlin.reflect.jvm.internal.impl.load.java.structure.LightClassOriginKind valueOf(java.lang.String)
+androidx.core.view.WindowInsetsCompat$Impl28: boolean equals(java.lang.Object)
+androidx.compose.material3.ModalBottomSheetDialogLayout$Api33Impl: void maybeUnregisterBackCallback(android.view.View,java.lang.Object)
+androidx.compose.ui.platform.AndroidComposeView: long getLastMatrixRecalculationAnimationTime$ui_release()
+com.cartvr.app.data.updater.GitHubUpdater: kotlin.Unit httpClient$lambda$2(io.ktor.client.HttpClientConfig)
+kotlin.reflect.jvm.internal.impl.types.model.CaptureStatus: kotlin.reflect.jvm.internal.impl.types.model.CaptureStatus[] values()
+androidx.core.app.RemoteActionCompat: RemoteActionCompat()
+com.cartvr.app.data.updater.GitHubAsset: GitHubAsset(int,java.lang.String,java.lang.String,long,kotlinx.serialization.internal.SerializationConstructorMarker)
+androidx.core.view.ViewCompat$Api28Impl: boolean isAccessibilityHeading(android.view.View)
+androidx.core.view.ViewCompat$Api23Impl: androidx.core.view.WindowInsetsCompat getRootWindowInsets(android.view.View)
+androidx.compose.foundation.text.TextContextMenuItems: androidx.compose.foundation.text.TextContextMenuItems valueOf(java.lang.String)
+androidx.compose.foundation.layout.IntrinsicSize: androidx.compose.foundation.layout.IntrinsicSize valueOf(java.lang.String)
+androidx.datastore.preferences.PreferencesProto$Value$ValueCase: androidx.datastore.preferences.PreferencesProto$Value$ValueCase[] values()
+androidx.versionedparcelable.CustomVersionedParcelable: CustomVersionedParcelable()
+androidx.profileinstaller.ProfileVerifier$Api33Impl: android.content.pm.PackageInfo getPackageInfo(android.content.pm.PackageManager,android.content.Context)
+androidx.compose.ui.text.android.StaticLayoutFactory33: void setLineBreakConfig(android.text.StaticLayout$Builder,int,int)
+androidx.compose.ui.text.input.TextInputServiceAndroid$TextInputCommand: androidx.compose.ui.text.input.TextInputServiceAndroid$TextInputCommand valueOf(java.lang.String)
+androidx.emoji2.text.EmojiExclusions$EmojiExclusions_Api34: java.util.Set getExclusions()
+androidx.lifecycle.ProcessLifecycleOwner$attach$1$onActivityPreCreated$1: void onActivityPostStarted(android.app.Activity)
+androidx.compose.foundation.text.input.internal.HandwritingGestureApi34: int fallbackOnLegacyTextField(android.view.inputmethod.HandwritingGesture,kotlin.jvm.functions.Function1)
+androidx.lifecycle.EmptyActivityLifecycleCallbacks: void onActivityResumed(android.app.Activity)
+kotlin.reflect.jvm.internal.impl.load.java.lazy.types.JavaTypeFlexibility: kotlin.reflect.jvm.internal.impl.load.java.lazy.types.JavaTypeFlexibility valueOf(java.lang.String)
+androidx.compose.foundation.text.KeyCommand: androidx.compose.foundation.text.KeyCommand[] values()
+androidx.compose.ui.graphics.layer.RenderNodeVerificationHelper28: int getSpotShadowColor(android.view.RenderNode)
+androidx.compose.ui.platform.AndroidComposeView: androidx.compose.ui.unit.LayoutDirection getLayoutDirection()
+io.github.jan.supabase.realtime.Column$Companion: kotlinx.serialization.KSerializer serializer()
+kotlinx.coroutines.scheduling.CoroutineScheduler$WorkerState: kotlinx.coroutines.scheduling.CoroutineScheduler$WorkerState[] values()
+androidx.compose.material3.ModalBottomSheetDialogLayout$Api33Impl: android.window.OnBackInvokedCallback createBackCallback(kotlin.jvm.functions.Function0)
+kotlin.reflect.jvm.internal.impl.incremental.components.NoLookupLocation: kotlin.reflect.jvm.internal.impl.incremental.components.NoLookupLocation[] values()
+kotlinx.serialization.json.JsonPrimitive$Companion: kotlinx.serialization.KSerializer serializer()
+androidx.compose.ui.text.android.StaticLayoutFactory23: android.text.StaticLayout create(androidx.compose.ui.text.android.StaticLayoutParams)
+com.cartvr.app.data.remote.dto.ShoppingItemDto$$serializer: kotlinx.serialization.KSerializer[] typeParametersSerializers()
+kotlin.reflect.jvm.internal.KDeclarationContainerImpl$MemberBelonginess: kotlin.reflect.jvm.internal.KDeclarationContainerImpl$MemberBelonginess[] values()
+kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$Expression$ConstantValue: kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$Expression$ConstantValue valueOf(java.lang.String)
+androidx.core.view.WindowInsetsCompat$Impl: androidx.core.graphics.Insets getInsetsIgnoringVisibility(int)
+androidx.compose.foundation.text.input.internal.HandwritingGestureApi34: int performSelectGesture(androidx.compose.foundation.text.LegacyTextFieldState,android.view.inputmethod.SelectGesture,androidx.compose.foundation.text.selection.TextFieldSelectionManager,kotlin.jvm.functions.Function1)
+androidx.compose.ui.platform.AndroidComposeView: void setFontFamilyResolver(androidx.compose.ui.text.font.FontFamily$Resolver)
+androidx.compose.ui.node.TraversableNode$Companion$TraverseDescendantsAction: androidx.compose.ui.node.TraversableNode$Companion$TraverseDescendantsAction valueOf(java.lang.String)
+androidx.compose.material3.MinimumInteractiveModifier: MinimumInteractiveModifier()
+androidx.core.view.WindowInsetsCompat$Impl20: WindowInsetsCompat$Impl20(androidx.core.view.WindowInsetsCompat,androidx.core.view.WindowInsetsCompat$Impl20)
+com.cartvr.app.data.updater.GitHubRelease: void write$Self$app_release(com.cartvr.app.data.updater.GitHubRelease,kotlinx.serialization.encoding.CompositeEncoder,kotlinx.serialization.descriptors.SerialDescriptor)
+androidx.graphics.path.PathIteratorPreApi34Impl: int internalPathIteratorNext(long,float[],int)
+androidx.compose.foundation.text.selection.CrossStatus: androidx.compose.foundation.text.selection.CrossStatus valueOf(java.lang.String)
+androidx.compose.ui.input.pointer.PointerEventPass: androidx.compose.ui.input.pointer.PointerEventPass valueOf(java.lang.String)
+androidx.compose.ui.text.android.Paint29: void getTextBounds(android.graphics.Paint,java.lang.CharSequence,int,int,android.graphics.Rect)
+androidx.compose.ui.platform.MotionEventVerifierApi29: boolean isValidMotionEvent(android.view.MotionEvent,int)
+com.cartvr.app.data.updater.UpdateInfo: long component4()
+kotlin.reflect.jvm.internal.impl.descriptors.ClassKind: kotlin.reflect.jvm.internal.impl.descriptors.ClassKind valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.impl.serialization.deserialization.descriptors.DeserializedContainerAbiStability: kotlin.reflect.jvm.internal.impl.serialization.deserialization.descriptors.DeserializedContainerAbiStability valueOf(java.lang.String)
+kotlinx.serialization.json.DecodeSequenceMode: kotlinx.serialization.json.DecodeSequenceMode[] values()
+androidx.compose.ui.text.android.BoringLayoutFactory33: android.text.BoringLayout create(java.lang.CharSequence,android.text.TextPaint,int,android.text.Layout$Alignment,float,float,android.text.BoringLayout$Metrics,boolean,boolean,android.text.TextUtils$TruncateAt,int)
+androidx.datastore.preferences.protobuf.GeneratedMessageLite$MethodToInvoke: androidx.datastore.preferences.protobuf.GeneratedMessageLite$MethodToInvoke valueOf(java.lang.String)
+androidx.compose.foundation.text.input.internal.HandwritingGestureApi34: int performInsertGesture(androidx.compose.foundation.text.input.internal.TransformedTextFieldState,android.view.inputmethod.InsertGesture,androidx.compose.foundation.text.input.internal.TextLayoutState,androidx.compose.ui.platform.ViewConfiguration)
+com.cartvr.app.data.remote.dto.ShoppingItemDto$$serializer: void serialize(kotlinx.serialization.encoding.Encoder,java.lang.Object)
+kotlinx.coroutines.channels.BufferOverflow: kotlinx.coroutines.channels.BufferOverflow[] values()
+androidx.graphics.path.PathIteratorPreApi34Impl: int internalPathIteratorRawSize(long)
+androidx.datastore.preferences.protobuf.JavaType: androidx.datastore.preferences.protobuf.JavaType[] values()
+androidx.compose.ui.platform.ViewLayerContainer: void dispatchGetDisplayList()
+io.ktor.websocket.FrameType: io.ktor.websocket.FrameType valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$MemberKind: kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$MemberKind valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.impl.types.error.ErrorEntity: kotlin.reflect.jvm.internal.impl.types.error.ErrorEntity valueOf(java.lang.String)
+com.cartvr.app.data.remote.dto.RegularItemDto$$serializer: kotlinx.serialization.KSerializer[] childSerializers()
+androidx.compose.ui.text.android.CanvasCompatS: void drawPatch(android.graphics.Canvas,android.graphics.NinePatch,android.graphics.Rect,android.graphics.Paint)
+androidx.compose.ui.text.android.CanvasCompatO: boolean clipOutRect(android.graphics.Canvas,android.graphics.Rect)
+kotlin.coroutines.jvm.internal.SuspendLambda: java.lang.String toString()
+com.cartvr.app.data.remote.dto.HouseholdMemberDto$$serializer: kotlinx.serialization.descriptors.SerialDescriptor getDescriptor()
+androidx.lifecycle.ReportFragment$LifecycleCallbacks: void onActivityPreStopped(android.app.Activity)
+com.cartvr.app.data.updater.GitHubAsset: int hashCode()
+androidx.compose.ui.graphics.CanvasZHelper: void enableZ(android.graphics.Canvas,boolean)
+com.cartvr.app.data.remote.dto.CategoryDto$$serializer: kotlinx.serialization.descriptors.SerialDescriptor getDescriptor()
+androidx.compose.ui.text.android.CanvasCompatQ: void enableZ(android.graphics.Canvas)
+com.cartvr.app.data.updater.GitHubRelease$$serializer: kotlinx.serialization.descriptors.SerialDescriptor getDescriptor()
+androidx.compose.animation.EnterExitState: androidx.compose.animation.EnterExitState valueOf(java.lang.String)
+com.cartvr.app.data.remote.dto.StoreDto$$serializer: kotlinx.serialization.KSerializer[] typeParametersSerializers()
+androidx.compose.ui.platform.AndroidComposeView: void setLastMatrixRecalculationAnimationTime$ui_release(long)
+kotlinx.coroutines.channels.BufferOverflow: kotlinx.coroutines.channels.BufferOverflow valueOf(java.lang.String)
+androidx.compose.ui.graphics.layer.RenderNodeVerificationHelper28: int getAmbientShadowColor(android.view.RenderNode)
+io.github.jan.supabase.auth.mfa.AuthenticatorAssuranceLevel: io.github.jan.supabase.auth.mfa.AuthenticatorAssuranceLevel[] values()
+androidx.compose.ui.platform.ViewLayerVerificationHelper28: void setOutlineSpotShadowColor(android.view.View,int)
+androidx.core.view.WindowInsetsCompat$Impl: boolean equals(java.lang.Object)
+androidx.compose.foundation.text.input.internal.undo.TextEditType: androidx.compose.foundation.text.input.internal.undo.TextEditType[] values()
+androidx.compose.ui.platform.AndroidComposeViewTranslationCallbackS: void setViewTranslationCallback(android.view.View)
+kotlin.reflect.jvm.internal.impl.builtins.functions.FunctionClassKind: kotlin.reflect.jvm.internal.impl.builtins.functions.FunctionClassKind valueOf(java.lang.String)
+androidx.activity.Api34Impl: float touchX(android.window.BackEvent)
+okhttp3.internal.publicsuffix.PublicSuffixDatabase: PublicSuffixDatabase()
+io.github.jan.supabase.auth.user.UserSession$Companion: kotlinx.serialization.KSerializer serializer()
+androidx.compose.foundation.text.input.internal.LocaleListHelper: void setHintLocales(android.view.inputmethod.EditorInfo,androidx.compose.ui.text.intl.LocaleList)
+androidx.compose.foundation.text.HandleState: androidx.compose.foundation.text.HandleState[] values()
+androidx.compose.foundation.text.input.internal.HandwritingGestureApi34: int performJoinOrSplitGesture(androidx.compose.foundation.text.input.internal.TransformedTextFieldState,android.view.inputmethod.JoinOrSplitGesture,androidx.compose.foundation.text.input.internal.TextLayoutState,androidx.compose.ui.platform.ViewConfiguration)
+androidx.compose.foundation.text.input.internal.HandwritingGestureApi34: void previewDeleteGesture(androidx.compose.foundation.text.LegacyTextFieldState,android.view.inputmethod.DeleteGesture,androidx.compose.foundation.text.selection.TextFieldSelectionManager)
+androidx.compose.foundation.text.input.internal.HandwritingGestureApi34: int performSelectRangeGesture(androidx.compose.foundation.text.input.internal.TransformedTextFieldState,android.view.inputmethod.SelectRangeGesture,androidx.compose.foundation.text.input.internal.TextLayoutState)
+androidx.compose.animation.core.MutatePriority: androidx.compose.animation.core.MutatePriority[] values()
+androidx.core.view.WindowInsetsCompat$Impl20: void setRootWindowInsets(androidx.core.view.WindowInsetsCompat)
+kotlin.reflect.jvm.internal.impl.builtins.UnsignedArrayType: kotlin.reflect.jvm.internal.impl.builtins.UnsignedArrayType[] values()
+androidx.compose.ui.input.pointer.util.VelocityTracker1D$Strategy: androidx.compose.ui.input.pointer.util.VelocityTracker1D$Strategy[] values()
+kotlin.reflect.KVariance: kotlin.reflect.KVariance valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.impl.builtins.jvm.JvmBuiltIns$Kind: kotlin.reflect.jvm.internal.impl.builtins.jvm.JvmBuiltIns$Kind valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$VersionRequirement$VersionKind: kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$VersionRequirement$VersionKind[] values()
+androidx.compose.ui.layout.IntrinsicWidthHeight: androidx.compose.ui.layout.IntrinsicWidthHeight valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.impl.resolve.OverridingUtil$OverrideCompatibilityInfo$Result: kotlin.reflect.jvm.internal.impl.resolve.OverridingUtil$OverrideCompatibilityInfo$Result[] values()
+com.cartvr.app.data.remote.dto.HouseholdDto$$serializer: HouseholdDto$$serializer()
+androidx.compose.ui.platform.ComposeView: void setContent(kotlin.jvm.functions.Function2)
+kotlin.reflect.jvm.internal.calls.AnnotationConstructorCaller$Origin: kotlin.reflect.jvm.internal.calls.AnnotationConstructorCaller$Origin[] values()
+androidx.compose.ui.platform.ViewLayer: androidx.compose.ui.graphics.Path getManualClipPath()
+androidx.compose.ui.graphics.layer.OutlineVerificationHelper: void setPath(android.graphics.Outline,androidx.compose.ui.graphics.Path)
+androidx.compose.ui.node.NodeMeasuringIntrinsics$IntrinsicMinMax: androidx.compose.ui.node.NodeMeasuringIntrinsics$IntrinsicMinMax valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$Visibility: kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$Visibility[] values()
+kotlin.reflect.jvm.internal.impl.load.java.descriptors.JavaMethodDescriptor$ParameterNamesStatus: kotlin.reflect.jvm.internal.impl.load.java.descriptors.JavaMethodDescriptor$ParameterNamesStatus valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.impl.metadata.jvm.JvmProtoBuf$StringTableTypes$Record$Operation: kotlin.reflect.jvm.internal.impl.metadata.jvm.JvmProtoBuf$StringTableTypes$Record$Operation valueOf(java.lang.String)
+com.cartvr.app.data.updater.InstallStatusReceiver$Companion: android.app.PendingIntent createPendingIntent(android.content.Context)
+androidx.compose.foundation.layout.IntrinsicSize: androidx.compose.foundation.layout.IntrinsicSize[] values()
+androidx.compose.foundation.text.input.internal.HandwritingGestureApi34: void performDeletionOnLegacyTextField-vJH6DeI(long,androidx.compose.ui.text.AnnotatedString,boolean,kotlin.jvm.functions.Function1)
+kotlin.reflect.jvm.internal.impl.load.java.SpecialGenericSignatures$TypeSafeBarrierDescription: kotlin.reflect.jvm.internal.impl.load.java.SpecialGenericSignatures$TypeSafeBarrierDescription valueOf(java.lang.String)
+androidx.activity.OnBackPressedDispatcher$Api33Impl: void registerOnBackInvokedCallback(java.lang.Object,int,java.lang.Object)
+org.slf4j.event.Level: org.slf4j.event.Level[] values()
+kotlin.reflect.jvm.internal.calls.AnnotationConstructorCaller$CallMode: kotlin.reflect.jvm.internal.calls.AnnotationConstructorCaller$CallMode[] values()
+com.cartvr.app.data.updater.GitHubRelease: java.lang.String getTagName()
+androidx.activity.Api34Impl: float progress(android.window.BackEvent)
+kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$Annotation$Argument$Value$Type: kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$Annotation$Argument$Value$Type[] values()
+com.cartvr.app.data.updater.GitHubRelease$$serializer: kotlinx.serialization.KSerializer[] childSerializers()
+io.github.jan.supabase.auth.providers.IDTokenProvider$Companion: kotlinx.serialization.KSerializer serializer()
+kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$QualifiedNameTable$QualifiedName$Kind: kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$QualifiedNameTable$QualifiedName$Kind valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.impl.serialization.deserialization.AnnotatedCallableKind: kotlin.reflect.jvm.internal.impl.serialization.deserialization.AnnotatedCallableKind[] values()
+androidx.core.view.WindowInsetsCompat$Impl: androidx.core.graphics.Insets getTappableElementInsets()
+com.cartvr.app.data.sync.SyncState: com.cartvr.app.data.sync.SyncState[] values()
+androidx.compose.ui.platform.AndroidComposeView: androidx.compose.ui.platform.ViewConfiguration getViewConfiguration()
+kotlin.reflect.jvm.internal.impl.renderer.ParameterNameRenderingPolicy: kotlin.reflect.jvm.internal.impl.renderer.ParameterNameRenderingPolicy[] values()
+kotlin.reflect.jvm.internal.impl.resolve.ExternalOverridabilityCondition$Contract: kotlin.reflect.jvm.internal.impl.resolve.ExternalOverridabilityCondition$Contract valueOf(java.lang.String)
+androidx.navigation.serialization.RouteBuilder$ParamType: androidx.navigation.serialization.RouteBuilder$ParamType[] values()
+androidx.compose.ui.graphics.layer.RenderNodeVerificationHelper: void setRenderEffect(android.graphics.RenderNode,androidx.compose.ui.graphics.RenderEffect)
+androidx.compose.ui.platform.AndroidComposeView: void setOnViewTreeOwnersAvailable(kotlin.jvm.functions.Function1)
+kotlin.reflect.jvm.internal.impl.renderer.DescriptorRendererModifier: kotlin.reflect.jvm.internal.impl.renderer.DescriptorRendererModifier valueOf(java.lang.String)
+com.cartvr.app.data.updater.GitHubUpdater$downloadAndInstall$2: java.lang.Object invokeSuspend(java.lang.Object)
+androidx.core.view.ViewCompat$Api30Impl: java.lang.CharSequence getStateDescription(android.view.View)
+com.cartvr.app.data.remote.dto.CategoryDto$$serializer: java.lang.Object deserialize(kotlinx.serialization.encoding.Decoder)
+kotlin.reflect.jvm.internal.impl.load.java.AnnotationQualifierApplicabilityType: kotlin.reflect.jvm.internal.impl.load.java.AnnotationQualifierApplicabilityType valueOf(java.lang.String)
+androidx.datastore.preferences.protobuf.Writer$FieldOrder: androidx.datastore.preferences.protobuf.Writer$FieldOrder[] values()
+androidx.compose.foundation.text.input.internal.Api34LegacyPerformHandwritingGestureImpl: boolean previewHandwritingGesture(androidx.compose.foundation.text.LegacyTextFieldState,androidx.compose.foundation.text.selection.TextFieldSelectionManager,android.view.inputmethod.PreviewableHandwritingGesture,android.os.CancellationSignal)
+kotlin.reflect.jvm.internal.impl.storage.LockBasedStorageManager$NotValue: kotlin.reflect.jvm.internal.impl.storage.LockBasedStorageManager$NotValue valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.impl.load.java.JavaIncompatibilityRulesOverridabilityCondition: JavaIncompatibilityRulesOverridabilityCondition()
+androidx.compose.ui.focus.CustomDestinationResult: androidx.compose.ui.focus.CustomDestinationResult valueOf(java.lang.String)
+androidx.compose.ui.platform.ComposeView: boolean getShouldCreateCompositionOnAttachedToWindow()
+androidx.compose.runtime.InvalidationResult: androidx.compose.runtime.InvalidationResult[] values()
+androidx.datastore.preferences.protobuf.WireFormat$FieldType: androidx.datastore.preferences.protobuf.WireFormat$FieldType[] values()
+com.cartvr.app.data.updater.GitHubUpdater$checkForUpdate$2: java.lang.Object invokeSuspend(java.lang.Object)
+androidx.compose.ui.text.android.CanvasCompatQ: void drawDoubleRoundRect(android.graphics.Canvas,android.graphics.RectF,float[],android.graphics.RectF,float[],android.graphics.Paint)
+androidx.core.view.WindowInsetsCompat$Impl20: void loadReflectionField()
+androidx.core.view.WindowInsetsCompat$Impl20: void copyWindowDataInto(androidx.core.view.WindowInsetsCompat)
+com.cartvr.app.data.updater.GitHubUpdater: boolean access$isNewerVersion(com.cartvr.app.data.updater.GitHubUpdater,java.lang.String,java.lang.String)
+androidx.activity.OnBackPressedDispatcher$Api33Impl: void unregisterOnBackInvokedCallback(java.lang.Object,java.lang.Object)
+kotlin.reflect.jvm.internal.impl.types.error.ErrorEntity: kotlin.reflect.jvm.internal.impl.types.error.ErrorEntity[] values()
+androidx.compose.ui.platform.AndroidComposeView: androidx.compose.ui.node.RootForTest getRootForTest()
+androidx.compose.ui.platform.RenderNodeVerificationHelper23: void destroyDisplayListData(android.view.RenderNode)
+androidx.core.view.WindowInsetsCompat$Impl28: WindowInsetsCompat$Impl28(androidx.core.view.WindowInsetsCompat,android.view.WindowInsets)
+androidx.compose.ui.text.android.StaticLayoutFactory26: void setJustificationMode(android.text.StaticLayout$Builder,int)
+androidx.compose.ui.node.NodeMeasuringIntrinsics$IntrinsicWidthHeight: androidx.compose.ui.node.NodeMeasuringIntrinsics$IntrinsicWidthHeight valueOf(java.lang.String)
+kotlin.coroutines.jvm.internal.BaseContinuationImpl: kotlin.coroutines.Continuation create(java.lang.Object,kotlin.coroutines.Continuation)
+kotlinx.datetime.format.AmPmMarker: kotlinx.datetime.format.AmPmMarker[] values()
+androidx.compose.material3.SnackbarDuration: androidx.compose.material3.SnackbarDuration valueOf(java.lang.String)
+com.cartvr.app.data.updater.GitHubAsset: java.lang.String getName()
+kotlinx.datetime.format.Padding: kotlinx.datetime.format.Padding valueOf(java.lang.String)
+androidx.compose.foundation.text.input.internal.CursorAnchorInfoApi34Helper: android.view.inputmethod.CursorAnchorInfo$Builder addVisibleLineBounds(android.view.inputmethod.CursorAnchorInfo$Builder,androidx.compose.ui.text.TextLayoutResult,androidx.compose.ui.geometry.Rect)
+androidx.compose.ui.platform.CalculateMatrixToWindowApi29: void calculateMatrixToWindow-EL8BTi8(android.view.View,float[])
+androidx.compose.ui.platform.AndroidComposeView: android.view.View getView()
+androidx.compose.ui.text.android.CanvasCompatR: boolean quickReject(android.graphics.Canvas,android.graphics.RectF)
+kotlin.reflect.jvm.internal.impl.load.java.typeEnhancement.MutabilityQualifier: kotlin.reflect.jvm.internal.impl.load.java.typeEnhancement.MutabilityQualifier valueOf(java.lang.String)
+com.cartvr.app.data.updater.GitHubUpdater: void access$installApkWithPackageInstaller(com.cartvr.app.data.updater.GitHubUpdater,java.io.File)
+androidx.core.view.WindowInsetsCompat$BuilderImpl30: WindowInsetsCompat$BuilderImpl30(androidx.core.view.WindowInsetsCompat)
+androidx.navigation.serialization.RouteBuilder$ParamType: androidx.navigation.serialization.RouteBuilder$ParamType valueOf(java.lang.String)
+com.cartvr.app.data.updater.GitHubUpdater$downloadAndInstall$2: java.lang.Object invoke(java.lang.Object,java.lang.Object)
+androidx.compose.ui.input.pointer.MotionEventHelper: long toRawOffset-dBAh8RU(android.view.MotionEvent,int)
+androidx.compose.ui.platform.AbstractComposeView: void setPreviousAttachedWindowToken(android.os.IBinder)
+android.support.v4.app.RemoteActionCompatParcelizer: RemoteActionCompatParcelizer()
+androidx.compose.ui.platform.AndroidComposeView: androidx.compose.ui.platform.WindowInfo getWindowInfo()
+androidx.compose.foundation.text.input.internal.HandwritingGestureApi34: void previewSelectRangeGesture(androidx.compose.foundation.text.input.internal.TransformedTextFieldState,android.view.inputmethod.SelectRangeGesture,androidx.compose.foundation.text.input.internal.TextLayoutState)
+com.cartvr.app.data.remote.dto.StoreDto$$serializer: com.cartvr.app.data.remote.dto.StoreDto deserialize(kotlinx.serialization.encoding.Decoder)
+com.cartvr.app.data.updater.GitHubRelease$$serializer: kotlinx.serialization.KSerializer[] typeParametersSerializers()
+androidx.room.MultiInstanceInvalidationService: MultiInstanceInvalidationService()
+io.github.jan.supabase.auth.SupabaseInitializer: SupabaseInitializer()
+androidx.compose.ui.contentcapture.AndroidContentCaptureManager$TranslateStatus: androidx.compose.ui.contentcapture.AndroidContentCaptureManager$TranslateStatus valueOf(java.lang.String)
+androidx.compose.ui.platform.AndroidComposeView: androidx.compose.ui.text.input.TextInputService getTextInputService()
+com.cartvr.app.data.remote.dto.StoreDto$$serializer: void serialize(kotlinx.serialization.encoding.Encoder,java.lang.Object)
+com.cartvr.app.data.updater.GitHubRelease: java.util.List getAssets()
+androidx.core.view.ViewCompat$Api21Impl$1: ViewCompat$Api21Impl$1(android.view.View,androidx.core.view.OnApplyWindowInsetsListener)
+kotlin.reflect.jvm.internal.impl.load.java.ReportLevel: kotlin.reflect.jvm.internal.impl.load.java.ReportLevel valueOf(java.lang.String)
+com.cartvr.app.data.updater.GitHubRelease: java.lang.String component1()
+androidx.compose.ui.window.PopupLayout: void setLayoutDirection(int)
+com.cartvr.app.data.updater.GitHubUpdater: kotlin.Unit httpClient$lambda$2$lambda$1(io.ktor.client.plugins.contentnegotiation.ContentNegotiationConfig)
+kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$TypeParameter$Variance: kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$TypeParameter$Variance[] values()
+androidx.activity.EdgeToEdgeApi29: void setUp(androidx.activity.SystemBarStyle,androidx.activity.SystemBarStyle,android.view.Window,android.view.View,boolean,boolean)
+kotlin.reflect.jvm.internal.impl.renderer.RenderingFormat: kotlin.reflect.jvm.internal.impl.renderer.RenderingFormat valueOf(java.lang.String)
+androidx.lifecycle.ReportFragment$LifecycleCallbacks: void onActivityPostCreated(android.app.Activity,android.os.Bundle)
+android.support.v4.graphics.drawable.IconCompatParcelizer: void write(androidx.core.graphics.drawable.IconCompat,androidx.versionedparcelable.VersionedParcel)
+androidx.compose.ui.platform.coreshims.ContentCaptureSessionCompat$Api29Impl: void notifyViewsDisappeared(android.view.contentcapture.ContentCaptureSession,android.view.autofill.AutofillId,long[])
+androidx.compose.ui.text.android.CanvasCompatO: boolean clipOutRect(android.graphics.Canvas,int,int,int,int)
+androidx.compose.ui.platform.AndroidViewsHandler: java.util.HashMap getHolderToLayoutNode()
+androidx.compose.ui.layout.IntrinsicWidthHeight: androidx.compose.ui.layout.IntrinsicWidthHeight[] values()
+androidx.compose.foundation.text.input.internal.HandwritingGestureApi34: int performSelectGesture(androidx.compose.foundation.text.input.internal.TransformedTextFieldState,android.view.inputmethod.SelectGesture,androidx.compose.foundation.text.input.internal.TextLayoutState)
+kotlin.Metadata: java.lang.String xs()
+androidx.compose.ui.platform.AndroidComposeView: android.view.View findViewByAccessibilityIdTraversal(int)
+kotlinx.datetime.UtcOffset$Companion: kotlinx.serialization.KSerializer serializer()
+androidx.compose.ui.text.android.CanvasCompatQ: void drawColor(android.graphics.Canvas,long)
+io.github.jan.supabase.postgrest.query.filter.FilterOperator: io.github.jan.supabase.postgrest.query.filter.FilterOperator valueOf(java.lang.String)
+androidx.compose.ui.node.TraversableNode$Companion$TraverseDescendantsAction: androidx.compose.ui.node.TraversableNode$Companion$TraverseDescendantsAction[] values()
+kotlin.reflect.jvm.internal.impl.serialization.deserialization.descriptors.DeserializedContainerAbiStability: kotlin.reflect.jvm.internal.impl.serialization.deserialization.descriptors.DeserializedContainerAbiStability[] values()
+com.cartvr.app.data.updater.GitHubRelease$Companion: GitHubRelease$Companion(kotlin.jvm.internal.DefaultConstructorMarker)
+com.cartvr.app.data.remote.dto.ShoppingItemDto$Companion: kotlinx.serialization.KSerializer serializer()
+androidx.compose.foundation.text.input.internal.Api34LegacyPerformHandwritingGestureImpl: void performHandwritingGesture(androidx.compose.foundation.text.LegacyTextFieldState,androidx.compose.foundation.text.selection.TextFieldSelectionManager,android.view.inputmethod.HandwritingGesture,androidx.compose.ui.platform.ViewConfiguration,java.util.concurrent.Executor,java.util.function.IntConsumer,kotlin.jvm.functions.Function1)
+androidx.compose.foundation.text.input.internal.CursorAnchorInfoApi33Helper: android.view.inputmethod.CursorAnchorInfo$Builder setEditorBoundsInfo(android.view.inputmethod.CursorAnchorInfo$Builder,androidx.compose.ui.geometry.Rect)
+androidx.activity.EdgeToEdgeApi23: void setUp(androidx.activity.SystemBarStyle,androidx.activity.SystemBarStyle,android.view.Window,android.view.View,boolean,boolean)
+androidx.compose.ui.platform.coreshims.ViewCompatShims$Api30Impl: void setImportantForContentCapture(android.view.View,int)
+android.support.v4.app.RemoteActionCompatParcelizer: androidx.core.app.RemoteActionCompat read(androidx.versionedparcelable.VersionedParcel)
+org.slf4j.helpers.Reporter$Level: org.slf4j.helpers.Reporter$Level valueOf(java.lang.String)
+androidx.profileinstaller.ProfileInstallerInitializer$Choreographer16Impl: void postFrameCallback(java.lang.Runnable)
+com.cartvr.app.data.updater.GitHubUpdater$downloadAndInstall$1: java.lang.Object invokeSuspend(java.lang.Object)
+androidx.lifecycle.ProcessLifecycleOwner$attach$1: ProcessLifecycleOwner$attach$1(androidx.lifecycle.ProcessLifecycleOwner)
+com.cartvr.app.data.updater.GitHubRelease$$serializer: void serialize(kotlinx.serialization.encoding.Encoder,java.lang.Object)
+com.cartvr.app.data.updater.GitHubUpdater$checkForUpdate$2: java.lang.Object invoke(java.lang.Object,java.lang.Object)
+com.cartvr.app.data.updater.GitHubUpdater$checkForUpdate$2: java.lang.Object invoke(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.Continuation)
+androidx.compose.ui.text.android.CanvasCompatQ: void disableZ(android.graphics.Canvas)
+androidx.compose.material.ripple.UnprojectedRipple$MRadiusHelper: void setRadius(android.graphics.drawable.RippleDrawable,int)
+kotlin.reflect.jvm.internal.impl.resolve.OverridingUtil$OverrideCompatibilityInfo$Result: kotlin.reflect.jvm.internal.impl.resolve.OverridingUtil$OverrideCompatibilityInfo$Result valueOf(java.lang.String)
+androidx.compose.material3.ModalBottomSheetDialogLayout$Api34Impl: android.window.OnBackAnimationCallback createBackCallback(kotlin.jvm.functions.Function0,androidx.compose.animation.core.Animatable,kotlinx.coroutines.CoroutineScope)
+kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$Effect$EffectType: kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$Effect$EffectType valueOf(java.lang.String)
+androidx.profileinstaller.ProfileInstallReceiver: ProfileInstallReceiver()
+androidx.compose.ui.node.LayoutNode$UsageByParent: androidx.compose.ui.node.LayoutNode$UsageByParent[] values()
+androidx.core.view.WindowInsetsCompat$BuilderImpl29: WindowInsetsCompat$BuilderImpl29(androidx.core.view.WindowInsetsCompat)
+kotlin.reflect.jvm.internal.impl.load.java.typeEnhancement.NullabilityQualifier: kotlin.reflect.jvm.internal.impl.load.java.typeEnhancement.NullabilityQualifier valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.impl.load.kotlin.header.KotlinClassHeader$Kind: kotlin.reflect.jvm.internal.impl.load.kotlin.header.KotlinClassHeader$Kind valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.impl.types.checker.TypeIntersector$ResultNullability: kotlin.reflect.jvm.internal.impl.types.checker.TypeIntersector$ResultNullability valueOf(java.lang.String)
+androidx.compose.ui.platform.AndroidComposeView: androidx.compose.ui.semantics.SemanticsOwner getSemanticsOwner()
+androidx.core.view.WindowInsetsCompat$Impl: androidx.core.view.WindowInsetsCompat consumeSystemWindowInsets()
+androidx.compose.material3.tokens.ColorSchemeKeyTokens: androidx.compose.material3.tokens.ColorSchemeKeyTokens valueOf(java.lang.String)
+com.cartvr.app.data.remote.dto.HouseholdDto$$serializer: void serialize(kotlinx.serialization.encoding.Encoder,java.lang.Object)
+androidx.lifecycle.LifecycleDispatcher$DispatcherActivityCallback: void onActivityCreated(android.app.Activity,android.os.Bundle)
+com.cartvr.app.data.preferences.ThemeMode: com.cartvr.app.data.preferences.ThemeMode valueOf(java.lang.String)
+org.slf4j.helpers.Reporter$TargetChoice: org.slf4j.helpers.Reporter$TargetChoice[] values()
+com.cartvr.app.data.updater.UpdateInfo: java.lang.String getVersionName()
+androidx.datastore.preferences.protobuf.GeneratedMessageLite$MethodToInvoke: androidx.datastore.preferences.protobuf.GeneratedMessageLite$MethodToInvoke[] values()
+kotlin.reflect.jvm.internal.impl.load.java.ReportLevel: kotlin.reflect.jvm.internal.impl.load.java.ReportLevel[] values()
+com.cartvr.app.data.remote.dto.HouseholdMemberDto$$serializer: kotlinx.serialization.KSerializer[] childSerializers()
+com.cartvr.app.data.updater.GitHubAsset: com.cartvr.app.data.updater.GitHubAsset copy(java.lang.String,java.lang.String,long)
+com.cartvr.app.data.updater.GitHubAsset: java.lang.String toString()
+kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$Expression$ConstantValue: kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$Expression$ConstantValue[] values()
+androidx.core.app.RemoteActionCompatParcelizer: RemoteActionCompatParcelizer()
+androidx.lifecycle.ProcessLifecycleOwner$attach$1: void onActivityCreated(android.app.Activity,android.os.Bundle)
+androidx.compose.foundation.text.input.internal.HandwritingGestureApi34: int performDeleteRangeGesture(androidx.compose.foundation.text.LegacyTextFieldState,android.view.inputmethod.DeleteRangeGesture,androidx.compose.ui.text.AnnotatedString,kotlin.jvm.functions.Function1)
+io.github.jan.supabase.auth.GoTrueErrorResponse$Companion: kotlinx.serialization.KSerializer serializer()
+androidx.lifecycle.Lifecycle$Event: androidx.lifecycle.Lifecycle$Event valueOf(java.lang.String)
+kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$Modality: kotlin.reflect.jvm.internal.impl.metadata.ProtoBuf$Modality valueOf(java.lang.String)
+androidx.compose.ui.platform.RenderNodeVerificationHelper24: void discardDisplayList(android.view.RenderNode)
+com.cartvr.app.data.local.CartVrDatabase_Impl: CartVrDatabase_Impl()
+kotlin.reflect.jvm.internal.calls.AnnotationConstructorCaller$CallMode: kotlin.reflect.jvm.internal.calls.AnnotationConstructorCaller$CallMode valueOf(java.lang.String)
+androidx.core.view.WindowInsetsCompat$Impl20: void copyRootViewBounds(android.view.View)
+androidx.compose.foundation.Api31Impl: float getDistance(android.widget.EdgeEffect)
