@@ -140,11 +140,15 @@ fun ListDetailScreen(
         }
     }
 
-    val suggestions = remember(inputText, history, regulars) {
+    val suggestions = remember(inputText, history, regulars, unchecked) {
         val query = inputText.trim().lowercase()
         if (query.isEmpty()) {
             emptyList()
         } else {
+            val activeKeys = unchecked
+                .map { it.name.trim().replace(Regex("\\s+"), " ").lowercase() }
+                .toSet()
+
             val fromHistory = history
                 .filter { it.normalizedName.contains(query) }
                 .map {
@@ -164,7 +168,8 @@ fun ListDetailScreen(
                     )
                 }
             (fromHistory + fromRegulars)
-                .distinctBy { it.displayName.lowercase() }
+                .distinctBy { it.displayName.trim().replace(Regex("\\s+"), " ").lowercase() }
+                .filterNot { it.displayName.trim().replace(Regex("\\s+"), " ").lowercase() in activeKeys }
                 .take(8)
         }
     }
@@ -419,9 +424,15 @@ fun ListDetailScreen(
     }
 
     editingItem?.let { current ->
+        val otherItemNames = remember(items, current.id) {
+            items.filter { it.id != current.id }
+                .map { it.name.trim().replace(Regex("\\s+"), " ").lowercase() }
+                .toSet()
+        }
         EditItemSheet(
             item = current,
             categories = categories,
+            existingItemNames = otherItemNames,
             onDismiss = { editingItem = null },
             onSave = { updated, categoryChanged ->
                 onUpdateItem(updated, categoryChanged)

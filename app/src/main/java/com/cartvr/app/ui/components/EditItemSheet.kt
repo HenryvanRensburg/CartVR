@@ -33,6 +33,7 @@ import com.cartvr.app.data.local.entity.ShoppingItemEntity
 fun EditItemSheet(
     item: ShoppingItemEntity,
     categories: List<CategoryEntity>,
+    existingItemNames: Set<String> = emptySet(),
     onDismiss: () -> Unit,
     onSave: (updatedItem: ShoppingItemEntity, categoryChanged: Boolean) -> Unit
 ) {
@@ -42,6 +43,8 @@ fun EditItemSheet(
     var quantity by remember { mutableStateOf(item.quantity ?: "") }
     var note by remember { mutableStateOf(item.note ?: "") }
     var selectedCategoryId by remember { mutableStateOf(item.categoryId) }
+    val normalizedCurrent = name.trim().replace(Regex("\\s+"), " ").lowercase()
+    val isDuplicate = normalizedCurrent.isNotEmpty() && normalizedCurrent in existingItemNames
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -65,6 +68,10 @@ fun EditItemSheet(
                 onValueChange = { name = it },
                 label = { Text("Item name") },
                 singleLine = true,
+                isError = isDuplicate,
+                supportingText = if (isDuplicate) {
+                    { Text("This item is already on the list") }
+                } else null,
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(14.dp)
             )
@@ -128,7 +135,7 @@ fun EditItemSheet(
                         categoryChanged
                     )
                 },
-                enabled = name.isNotBlank(),
+                enabled = name.isNotBlank() && !isDuplicate,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(52.dp),

@@ -86,6 +86,9 @@ interface CartVrDao {
     @Query("SELECT * FROM shopping_items WHERE listId = :listId AND deletedAt IS NULL ORDER BY isChecked ASC, createdAt DESC")
     fun observeListShoppingItems(listId: String): Flow<List<ShoppingItemEntity>>
 
+    @Query("SELECT * FROM shopping_items WHERE listId = :listId AND deletedAt IS NULL")
+    suspend fun getActiveShoppingItemsForList(listId: String): List<ShoppingItemEntity>
+
     @Query("SELECT * FROM shopping_items WHERE syncStatus != '${SyncStatus.SYNCED}'")
     suspend fun getPendingShoppingItems(): List<ShoppingItemEntity>
 
@@ -107,6 +110,9 @@ interface CartVrDao {
     // --- Regular Items ---
     @Query("SELECT * FROM regular_items WHERE deletedAt IS NULL ORDER BY name ASC")
     fun observeActiveRegularItems(): Flow<List<RegularItemEntity>>
+
+    @Query("SELECT * FROM regular_items WHERE deletedAt IS NULL")
+    suspend fun getActiveRegularItems(): List<RegularItemEntity>
 
     @Query("SELECT * FROM regular_items WHERE syncStatus != '${SyncStatus.SYNCED}'")
     suspend fun getPendingRegularItems(): List<RegularItemEntity>

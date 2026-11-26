@@ -65,4 +65,21 @@ object ListVisuals {
         chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(chooser)
     }
+
+    fun buildFamilyInviteMessage(invitedName: String, code: String): String =
+        "Hi $invitedName! You're invited to join our CartVR family shopping app.\n\n" +
+            "1. Download CartVR: https://github.com/HenryvanRensburg/CartVR/releases/latest\n" +
+            "2. Tap to join: https://henryvanrensburg.github.io/CartVR/invite/?code=$code\n\n" +
+            "Or open CartVR, tap 'Have a family invite code?', and enter: $code"
+
+    fun launchFamilyInviteShareSheet(context: Context, invitedName: String, code: String) {
+        val sendIntent = Intent(Intent.ACTION_SEND).apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, buildFamilyInviteMessage(invitedName, code))
+            type = "text/plain"
+        }
+        val chooser = Intent.createChooser(sendIntent, "Invite $invitedName to CartVR")
+        chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(chooser)
+    }
 }

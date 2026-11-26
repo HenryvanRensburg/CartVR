@@ -100,6 +100,69 @@ data class ItemHistoryDto(
     @SerialName("updated_at") val updatedAt: String
 )
 
+@Serializable
+data class ProfileDto(
+    @SerialName("user_id") val userId: String,
+    @SerialName("display_name") val displayName: String,
+    val email: String
+)
+
+@Serializable
+data class FamilyMemberDto(
+    @SerialName("user_id") val userId: String,
+    @SerialName("display_name") val displayName: String,
+    val email: String,
+    val role: String,
+    @SerialName("joined_at") val joinedAt: String
+)
+
+@Serializable
+data class FamilyInviteDto(
+    val id: String,
+    @SerialName("household_id") val householdId: String,
+    val code: String,
+    @SerialName("invited_name") val invitedName: String,
+    val role: String,
+    @SerialName("auto_list_ids") val autoListIds: List<String> = emptyList(),
+    @SerialName("expires_at") val expiresAt: String,
+    @SerialName("created_at") val createdAt: String
+)
+
+@Serializable
+data class FamilyInviteInsertDto(
+    @SerialName("household_id") val householdId: String,
+    val code: String,
+    @SerialName("invited_name") val invitedName: String,
+    val role: String,
+    @SerialName("auto_list_ids") val autoListIds: List<String>,
+    @SerialName("created_by") val createdBy: String
+)
+
+@Serializable
+data class InvitePreviewResponse(
+    val valid: Boolean = false,
+    @SerialName("invited_name") val invitedName: String? = null,
+    @SerialName("household_name") val householdName: String? = null,
+    val role: String? = null,
+    val error: String? = null
+)
+
+@Serializable
+data class FamilyOverviewResponse(
+    val members: List<FamilyMemberDto> = emptyList(),
+    val invites: List<FamilyInviteDto> = emptyList(),
+    val error: String? = null
+)
+
+@Serializable
+data class EdgeActionResponse(
+    val success: Boolean = false,
+    val error: String? = null,
+    val email: String? = null,
+    @SerialName("display_name") val displayName: String? = null,
+    @SerialName("user_id") val userId: String? = null
+)
+
 fun ShoppingListDto.toEntity() = ShoppingListEntity(
     id = id,
     ownerId = ownerId,

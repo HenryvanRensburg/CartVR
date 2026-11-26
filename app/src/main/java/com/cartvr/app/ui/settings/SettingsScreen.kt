@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Logout
+import androidx.compose.material.icons.rounded.GroupAdd
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.SystemUpdate
 import androidx.compose.material3.Button
@@ -39,9 +40,11 @@ fun SettingsScreen(
     displayName: String,
     userEmail: String?,
     householdName: String,
+    isAdmin: Boolean,
     themeMode: ThemeMode,
     updateState: UpdateUiState,
     onThemeSelected: (ThemeMode) -> Unit,
+    onManageFamily: () -> Unit,
     onSyncNow: () -> Unit,
     onCheckForUpdates: () -> Unit,
     onSignOut: () -> Unit
@@ -134,6 +137,43 @@ fun SettingsScreen(
                     ) {
                         Icon(Icons.Rounded.Refresh, contentDescription = null)
                         Text("  Sync Now")
+                    }
+                }
+            }
+        }
+
+        // Family Admin Card (visible only to Henry / Admins)
+        if (isAdmin) {
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(18.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Text(
+                            text = "Family Admin",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            text = "Invite your son, daughter, or family members directly from CartVR.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Button(
+                            onClick = onManageFamily,
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(14.dp)
+                        ) {
+                            Icon(Icons.Rounded.GroupAdd, contentDescription = null)
+                            Text("  Manage Family")
+                        }
                     }
                 }
             }

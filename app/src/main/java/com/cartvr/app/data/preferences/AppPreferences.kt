@@ -24,6 +24,8 @@ class AppPreferences(private val context: Context) {
         val HOUSEHOLD_ID = stringPreferencesKey("household_id")
         val HOUSEHOLD_NAME = stringPreferencesKey("household_name")
         val LAST_SYNCED_AT = stringPreferencesKey("last_synced_at")
+        val USER_ROLE = stringPreferencesKey("user_role")
+        val USER_DISPLAY_NAME = stringPreferencesKey("user_display_name")
     }
 
     val themeMode: Flow<ThemeMode> = context.dataStore.data.map { prefs ->
@@ -34,6 +36,8 @@ class AppPreferences(private val context: Context) {
     val householdId: Flow<String?> = context.dataStore.data.map { it[Keys.HOUSEHOLD_ID] }
     val householdName: Flow<String?> = context.dataStore.data.map { it[Keys.HOUSEHOLD_NAME] }
     val lastSyncedAt: Flow<String?> = context.dataStore.data.map { it[Keys.LAST_SYNCED_AT] }
+    val isAdmin: Flow<Boolean> = context.dataStore.data.map { it[Keys.USER_ROLE] == "admin" }
+    val displayName: Flow<String?> = context.dataStore.data.map { it[Keys.USER_DISPLAY_NAME] }
 
     suspend fun setThemeMode(mode: ThemeMode) {
         context.dataStore.edit { it[Keys.THEME_MODE] = mode.name }
@@ -46,6 +50,13 @@ class AppPreferences(private val context: Context) {
         }
     }
 
+    suspend fun setUserProfile(displayName: String, role: String) {
+        context.dataStore.edit {
+            it[Keys.USER_DISPLAY_NAME] = displayName
+            it[Keys.USER_ROLE] = role
+        }
+    }
+
     suspend fun setLastSyncedAt(isoTimestamp: String) {
         context.dataStore.edit { it[Keys.LAST_SYNCED_AT] = isoTimestamp }
     }
@@ -55,6 +66,8 @@ class AppPreferences(private val context: Context) {
             it.remove(Keys.HOUSEHOLD_ID)
             it.remove(Keys.HOUSEHOLD_NAME)
             it.remove(Keys.LAST_SYNCED_AT)
+            it.remove(Keys.USER_ROLE)
+            it.remove(Keys.USER_DISPLAY_NAME)
         }
     }
 }

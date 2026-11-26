@@ -26,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,7 +45,8 @@ import androidx.compose.ui.unit.dp
 fun LoginScreen(
     isLoading: Boolean,
     errorMessage: String?,
-    onSignIn: (String, String) -> Unit
+    onSignIn: (String, String) -> Unit,
+    onOpenAcceptInvite: () -> Unit
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -184,6 +186,12 @@ fun LoginScreen(
                         }
                     }
                 }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            TextButton(onClick = onOpenAcceptInvite, enabled = !isLoading) {
+                Text("Have a family invite code?")
             }
         }
     }

@@ -42,6 +42,25 @@
                     android:host="henryvanrensburg.github.io"
                     android:pathPrefix="/CartVR/join" />
             </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="cartvr"
+                    android:host="invite" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="https"
+                    android:host="henryvanrensburg.github.io"
+                    android:pathPrefix="/CartVR/invite" />
+            </intent-filter>
         </activity>
 
         <receiver

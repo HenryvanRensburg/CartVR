@@ -29,6 +29,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -38,15 +39,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.cartvr.app.data.local.entity.CategoryEntity
 import com.cartvr.app.data.local.entity.RegularItemEntity
+import com.cartvr.app.data.local.entity.ShoppingItemEntity
 import com.cartvr.app.data.local.entity.ShoppingListEntity
 
 @Composable
 fun RegularsScreen(
     regulars: List<RegularItemEntity>,
     lists: List<ShoppingListEntity>,
+    allItems: List<ShoppingItemEntity>,
     categories: List<CategoryEntity>,
     onAddToShoppingList: (RegularItemEntity) -> Unit,
     onCreateRegular: (name: String, qty: String?, listId: String?, categoryId: String?) -> Unit,
@@ -120,8 +124,15 @@ fun RegularsScreen(
         }
 
         items(regulars, key = { it.id }) { regular ->
+            val targetListId = regular.defaultListId ?: lists.firstOrNull()?.id
             val listName = listMap[regular.defaultListId]?.name ?: lists.firstOrNull()?.name ?: "Default List"
             val categoryName = categoryMap[regular.defaultCategoryId]?.name
+            val normalizedRegName = regular.name.trim().replace(Regex("\\s+"), " ").lowercase()
+            val isOnList = targetListId != null && allItems.any {
+                it.listId == targetListId &&
+                    !it.isChecked &&
+                    it.name.trim().replace(Regex("\\s+"), " ").lowercase() == normalizedRegName
+            }
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -141,11 +152,30 @@ fun RegularsScreen(
                         } else {
                             regular.name
                         }
-                        Text(
-                            text = title,
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                text = title,
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            if (isOnList) {
+                                Surface(
+                                    shape = RoundedCornerShape(50),
+                                    color = MaterialTheme.colorScheme.primaryContainer
+                                ) {
+                                    Text(
+                                        text = "On list",
+                                        style = MaterialTheme.typography.labelMedium,
+                                        fontWeight = FontWeight.Medium,
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                                    )
+                                }
+                            }
+                        }
                         val subtitle = listOfNotNull(listName, categoryName).joinToString(" • ")
                         Text(
                             text = subtitle,
@@ -177,9 +207,13 @@ fun RegularsScreen(
     }
 
     if (showCreateDialog) {
+        val existingRegularNames = remember(regulars) {
+            regulars.map { it.name.trim().replace(Regex("\\s+"), " ").lowercase() }.toSet()
+        }
         CreateRegularDialog(
             lists = lists,
             categories = categories,
+            existingRegularNames = existingRegularNames,
             onDismiss = { showCreateDialog = false },
             onSave = { name, qty, listId, categoryId ->
                 onCreateRegular(name, qty, listId, categoryId)
@@ -193,6 +227,7 @@ fun RegularsScreen(
 private fun CreateRegularDialog(
     lists: List<ShoppingListEntity>,
     categories: List<CategoryEntity>,
+    existingRegularNames: Set<String>,
     onDismiss: () -> Unit,
     onSave: (name: String, qty: String?, listId: String?, categoryId: String?) -> Unit
 ) {
@@ -200,6 +235,8 @@ private fun CreateRegularDialog(
     var quantity by remember { mutableStateOf("") }
     var selectedListId by remember { mutableStateOf(lists.firstOrNull()?.id) }
     var selectedCategoryId by remember { mutableStateOf(categories.lastOrNull()?.id) }
+    val normalizedInput = name.trim().replace(Regex("\\s+"), " ").lowercase()
+    val isDuplicate = normalizedInput.isNotEmpty() && normalizedInput in existingRegularNames
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -211,6 +248,10 @@ private fun CreateRegularDialog(
                     onValueChange = { name = it },
                     label = { Text("Item name (e.g. Full cream milk)") },
                     singleLine = true,
+                    isError = isDuplicate,
+                    supportingText = if (isDuplicate) {
+                        { Text("Already in Regulars") }
+                    } else null,
                     modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
@@ -264,7 +305,7 @@ private fun CreateRegularDialog(
                         selectedCategoryId
                     )
                 },
-                enabled = name.isNotBlank()
+                enabled = name.isNotBlank() && !isDuplicate
             ) {
                 Text("Save")
             }

@@ -36,8 +36,17 @@ class MainActivity : ComponentActivity() {
     private fun handleDeepLink(intent: Intent?) {
         val data: Uri = intent?.data ?: return
         val code = data.getQueryParameter("code")
-            ?: data.lastPathSegment?.takeIf { !it.equals("join", ignoreCase = true) }
-        if (!code.isNullOrBlank()) {
+            ?: data.lastPathSegment?.takeIf {
+                !it.equals("join", ignoreCase = true) && !it.equals("invite", ignoreCase = true)
+            }
+        if (code.isNullOrBlank()) return
+
+        val isInvite = data.host.equals("invite", ignoreCase = true) ||
+            (data.path?.contains("/invite", ignoreCase = true) == true)
+
+        if (isInvite) {
+            viewModel.handleIncomingFamilyInviteCode(code)
+        } else {
             viewModel.handleIncomingShareCode(code)
         }
     }

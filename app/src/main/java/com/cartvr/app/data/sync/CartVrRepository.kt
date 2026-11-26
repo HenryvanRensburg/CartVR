@@ -9,11 +9,18 @@ import com.cartvr.app.data.local.entity.ShoppingItemEntity
 import com.cartvr.app.data.local.entity.ShoppingListEntity
 import com.cartvr.app.data.local.entity.SyncStatus
 import com.cartvr.app.data.preferences.AppPreferences
+import com.cartvr.app.data.remote.FamilyApiClient
 import com.cartvr.app.data.remote.SupabaseProvider
 import com.cartvr.app.data.remote.dto.CategoryDto
+import com.cartvr.app.data.remote.dto.EdgeActionResponse
+import com.cartvr.app.data.remote.dto.FamilyInviteDto
+import com.cartvr.app.data.remote.dto.FamilyInviteInsertDto
+import com.cartvr.app.data.remote.dto.FamilyOverviewResponse
 import com.cartvr.app.data.remote.dto.HouseholdMemberDto
+import com.cartvr.app.data.remote.dto.InvitePreviewResponse
 import com.cartvr.app.data.remote.dto.ItemHistoryDto
 import com.cartvr.app.data.remote.dto.ListMemberDto
+import com.cartvr.app.data.remote.dto.ProfileDto
 import com.cartvr.app.data.remote.dto.RegularItemDto
 import com.cartvr.app.data.remote.dto.ShoppingItemDto
 import com.cartvr.app.data.remote.dto.ShoppingListDto
@@ -57,12 +64,21 @@ enum class SyncState {
     ERROR
 }
 
+sealed class ItemMutationResult {
+    data class Added(val itemName: String, val listName: String? = null) : ItemMutationResult()
+    data class UpdatedExisting(val itemName: String, val listName: String) : ItemMutationResult()
+    data class AlreadyExists(val itemName: String, val listName: String) : ItemMutationResult()
+    data class RestoredFromCompleted(val itemName: String, val listName: String) : ItemMutationResult()
+    data class DuplicateBlocked(val message: String) : ItemMutationResult()
+}
+
 class CartVrRepository(
     private val dao: CartVrDao,
     private val prefs: AppPreferences,
     private val networkMonitor: NetworkMonitor
 ) {
     private val supabase = SupabaseProvider.client
+    private val familyApi = FamilyApiClient()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val syncMutex = Mutex()
     private val random = SecureRandom()
@@ -77,6 +93,8 @@ class CartVrRepository(
 
     val isOnline: StateFlow<Boolean> = networkMonitor.isOnline
     val sessionStatus: Flow<SessionStatus> = supabase.auth.sessionStatus
+    val isAdmin: Flow<Boolean> = prefs.isAdmin
+    val displayName: Flow<String?> = prefs.displayName
 
     val lists: Flow<List<ShoppingListEntity>> = dao.observeActiveLists()
     val listMembers: Flow<List<ListMemberEntity>> = dao.observeAllListMembers()
@@ -168,23 +186,32 @@ class CartVrRepository(
     }
 
     private suspend fun resolveHouseholdId(userId: String): String? {
-        val cached = prefs.householdId.first()
-        if (!cached.isNullOrBlank()) return cached
-
         val members = runCatching {
             supabase.postgrest["household_members"]
                 .select(columns = Columns.raw("household_id, user_id, role, households(id, name)")) {
                     filter { eq("user_id", userId) }
                 }
                 .decodeList<HouseholdMemberDto>()
-        }.getOrNull() ?: return null
+        }.getOrNull()
 
-        val first = members.firstOrNull() ?: return null
-        prefs.setHousehold(
-            id = first.householdId,
-            name = first.households?.name ?: "Janse van Rensburg"
-        )
-        return first.householdId
+        val first = members?.firstOrNull()
+        if (first != null) {
+            prefs.setHousehold(
+                id = first.householdId,
+                name = first.households?.name ?: "Janse van Rensburg"
+            )
+            val profile = runCatching {
+                supabase.postgrest["profiles"]
+                    .select { filter { eq("user_id", userId) } }
+                    .decodeList<ProfileDto>()
+                    .firstOrNull()
+            }.getOrNull()
+            val resolvedName = profile?.displayName ?: currentUserDisplayName()
+            prefs.setUserProfile(displayName = resolvedName, role = first.role)
+            return first.householdId
+        }
+
+        return prefs.householdId.first()
     }
 
     private suspend fun pushPendingChanges(userId: String) {
@@ -225,14 +252,65 @@ class CartVrRepository(
 
         val pendingItems = dao.getPendingShoppingItems()
         if (pendingItems.isNotEmpty()) {
-            supabase.postgrest["shopping_items"].upsert(pendingItems.map { it.toDto() })
-            dao.upsertShoppingItems(pendingItems.map { it.copy(syncStatus = SyncStatus.SYNCED) })
+            val batchResult = runCatching {
+                supabase.postgrest["shopping_items"].upsert(pendingItems.map { it.toDto() })
+            }
+            if (batchResult.isSuccess) {
+                dao.upsertShoppingItems(pendingItems.map { it.copy(syncStatus = SyncStatus.SYNCED) })
+            } else {
+                pendingItems.forEach { item ->
+                    val singleResult = runCatching {
+                        supabase.postgrest["shopping_items"].upsert(item.toDto())
+                    }
+                    if (singleResult.isSuccess) {
+                        dao.upsertShoppingItem(item.copy(syncStatus = SyncStatus.SYNCED))
+                    } else if (item.deletedAt == null) {
+                        // Offline duplicate conflict: merge onto existing active remote row
+                        val remoteListItems = runCatching {
+                            supabase.postgrest["shopping_items"]
+                                .select { filter { eq("list_id", item.listId) } }
+                                .decodeList<ShoppingItemDto>()
+                        }.getOrNull().orEmpty()
+                        val match = remoteListItems.firstOrNull {
+                            it.deletedAt == null && normalizedKey(it.name) == normalizedKey(item.name)
+                        }
+                        if (match != null) {
+                            val merged = match.copy(
+                                quantity = item.quantity ?: match.quantity,
+                                note = item.note ?: match.note,
+                                isChecked = false,
+                                updatedAt = Instant.now().toString()
+                            )
+                            runCatching {
+                                supabase.postgrest["shopping_items"].upsert(merged)
+                            }
+                            dao.hardDeleteShoppingItem(item.id)
+                        }
+                    }
+                }
+            }
         }
 
         val pendingRegulars = dao.getPendingRegularItems()
         if (pendingRegulars.isNotEmpty()) {
-            supabase.postgrest["regular_items"].upsert(pendingRegulars.map { it.toDto() })
-            dao.upsertRegularItems(pendingRegulars.map { it.copy(syncStatus = SyncStatus.SYNCED) })
+            val batchResult = runCatching {
+                supabase.postgrest["regular_items"].upsert(pendingRegulars.map { it.toDto() })
+            }
+            if (batchResult.isSuccess) {
+                dao.upsertRegularItems(pendingRegulars.map { it.copy(syncStatus = SyncStatus.SYNCED) })
+            } else {
+                pendingRegulars.forEach { reg ->
+                    val singleResult = runCatching {
+                        supabase.postgrest["regular_items"].upsert(reg.toDto())
+                    }
+                    if (singleResult.isSuccess) {
+                        dao.upsertRegularItem(reg.copy(syncStatus = SyncStatus.SYNCED))
+                    } else if (reg.deletedAt == null) {
+                        // Redundant offline regular; drop local duplicate so pull adopts canonical remote row
+                        dao.hardDeleteRegularItem(reg.id)
+                    }
+                }
+            }
         }
 
         val pendingHistory = dao.getPendingItemHistory()
@@ -535,6 +613,12 @@ class CartVrRepository(
 
     // --- Shopping Items & History Learning ---
 
+    private fun normalizeName(raw: String): String =
+        raw.trim().replace(Regex("\\s+"), " ")
+
+    private fun normalizedKey(raw: String): String =
+        normalizeName(raw).lowercase()
+
     suspend fun addShoppingItem(
         listId: String,
         categoryId: String?,
@@ -542,14 +626,58 @@ class CartVrRepository(
         quantity: String?,
         note: String?,
         saveAsRegular: Boolean = false
-    ) {
+    ): ItemMutationResult {
         val userId = currentUserId()
         val householdId = prefs.householdId.first()
         val now = Instant.now().toString()
-        val cleanName = name.trim()
-        if (cleanName.isEmpty()) return
+        val cleanName = normalizeName(name)
+        if (cleanName.isEmpty()) return ItemMutationResult.DuplicateBlocked("Item name cannot be empty")
         val cleanQty = quantity?.trim()?.ifBlank { null }
         val cleanNote = note?.trim()?.ifBlank { null }
+
+        val listName = dao.getListById(listId)?.name ?: "list"
+        val existing = dao.getActiveShoppingItemsForList(listId)
+            .firstOrNull { normalizedKey(it.name) == normalizedKey(cleanName) }
+
+        if (existing != null) {
+            if (existing.isChecked) {
+                val restored = existing.copy(
+                    quantity = cleanQty ?: existing.quantity,
+                    note = cleanNote ?: existing.note,
+                    categoryId = categoryId ?: existing.categoryId,
+                    isChecked = false,
+                    updatedAt = now,
+                    syncStatus = SyncStatus.PENDING_UPSERT
+                )
+                dao.upsertShoppingItem(restored)
+                if (userId != null) {
+                    upsertHistoryInternal(
+                        userId = userId,
+                        name = restored.name,
+                        quantity = restored.quantity,
+                        categoryId = restored.categoryId,
+                        forceUpdateCategory = false
+                    )
+                }
+                scope.launch { syncAll() }
+                return ItemMutationResult.RestoredFromCompleted(existing.name, listName)
+            }
+
+            val hasNewDetails = (cleanQty != null && cleanQty != existing.quantity) ||
+                (cleanNote != null && cleanNote != existing.note)
+            if (hasNewDetails) {
+                val updated = existing.copy(
+                    quantity = cleanQty ?: existing.quantity,
+                    note = cleanNote ?: existing.note,
+                    updatedAt = now,
+                    syncStatus = SyncStatus.PENDING_UPSERT
+                )
+                dao.upsertShoppingItem(updated)
+                scope.launch { syncAll() }
+                return ItemMutationResult.UpdatedExisting(existing.name, listName)
+            }
+            return ItemMutationResult.AlreadyExists(existing.name, listName)
+        }
 
         val item = ShoppingItemEntity(
             id = UUID.randomUUID().toString(),
@@ -578,44 +706,60 @@ class CartVrRepository(
         }
 
         if (saveAsRegular && !householdId.isNullOrBlank()) {
-            val regular = RegularItemEntity(
-                id = UUID.randomUUID().toString(),
-                householdId = householdId,
-                defaultListId = listId,
-                defaultCategoryId = categoryId,
-                name = cleanName,
-                defaultQuantity = cleanQty,
-                updatedAt = now,
-                syncStatus = SyncStatus.PENDING_UPSERT
-            )
-            dao.upsertRegularItem(regular)
+            val existingRegular = dao.getActiveRegularItems()
+                .any { normalizedKey(it.name) == normalizedKey(cleanName) }
+            if (!existingRegular) {
+                val regular = RegularItemEntity(
+                    id = UUID.randomUUID().toString(),
+                    householdId = householdId,
+                    defaultListId = listId,
+                    defaultCategoryId = categoryId,
+                    name = cleanName,
+                    defaultQuantity = cleanQty,
+                    updatedAt = now,
+                    syncStatus = SyncStatus.PENDING_UPSERT
+                )
+                dao.upsertRegularItem(regular)
+            }
         }
 
         scope.launch { syncAll() }
+        return ItemMutationResult.Added(cleanName, listName)
     }
 
     suspend fun updateShoppingItem(
         item: ShoppingItemEntity,
         learnCategory: Boolean = false
-    ) {
+    ): ItemMutationResult {
+        val cleanName = normalizeName(item.name)
+        if (cleanName.isEmpty()) return ItemMutationResult.DuplicateBlocked("Item name cannot be empty")
+        val duplicate = dao.getActiveShoppingItemsForList(item.listId)
+            .any { it.id != item.id && normalizedKey(it.name) == normalizedKey(cleanName) }
+        if (duplicate) {
+            return ItemMutationResult.DuplicateBlocked("\"$cleanName\" is already on this list")
+        }
+
         val now = Instant.now().toString()
-        dao.upsertShoppingItem(
-            item.copy(
-                updatedAt = now,
-                syncStatus = SyncStatus.PENDING_UPSERT
-            )
+        val normalizedItem = item.copy(
+            name = cleanName,
+            quantity = item.quantity?.trim()?.ifBlank { null },
+            note = item.note?.trim()?.ifBlank { null },
+            updatedAt = now,
+            syncStatus = SyncStatus.PENDING_UPSERT
         )
+        dao.upsertShoppingItem(normalizedItem)
         val userId = currentUserId()
         if (learnCategory && userId != null) {
             upsertHistoryInternal(
                 userId = userId,
-                name = item.name,
-                quantity = item.quantity,
-                categoryId = item.categoryId,
+                name = normalizedItem.name,
+                quantity = normalizedItem.quantity,
+                categoryId = normalizedItem.categoryId,
                 forceUpdateCategory = true
             )
         }
         scope.launch { syncAll() }
+        return ItemMutationResult.Added(cleanName)
     }
 
     private suspend fun upsertHistoryInternal(
@@ -700,9 +844,12 @@ class CartVrRepository(
         scope.launch { syncAll() }
     }
 
-    suspend fun addRegularToShoppingList(regular: RegularItemEntity, fallbackListId: String) {
+    suspend fun addRegularToShoppingList(
+        regular: RegularItemEntity,
+        fallbackListId: String
+    ): ItemMutationResult {
         val targetListId = regular.defaultListId ?: fallbackListId
-        addShoppingItem(
+        return addShoppingItem(
             listId = targetListId,
             categoryId = regular.defaultCategoryId,
             name = regular.name,
@@ -718,21 +865,32 @@ class CartVrRepository(
         defaultListId: String?,
         defaultCategoryId: String?,
         existingId: String? = null
-    ) {
-        val householdId = prefs.householdId.first() ?: return
+    ): ItemMutationResult {
+        val householdId = prefs.householdId.first()
+            ?: return ItemMutationResult.DuplicateBlocked("Household not ready yet")
+        val cleanName = normalizeName(name)
+        if (cleanName.isEmpty()) return ItemMutationResult.DuplicateBlocked("Item name cannot be empty")
+
+        val duplicate = dao.getActiveRegularItems()
+            .any { it.id != existingId && normalizedKey(it.name) == normalizedKey(cleanName) }
+        if (duplicate) {
+            return ItemMutationResult.DuplicateBlocked("\"$cleanName\" is already in Regulars")
+        }
+
         val now = Instant.now().toString()
         val entity = RegularItemEntity(
             id = existingId ?: UUID.randomUUID().toString(),
             householdId = householdId,
             defaultListId = defaultListId,
             defaultCategoryId = defaultCategoryId,
-            name = name.trim(),
+            name = cleanName,
             defaultQuantity = defaultQuantity?.trim()?.ifBlank { null },
             updatedAt = now,
             syncStatus = SyncStatus.PENDING_UPSERT
         )
         dao.upsertRegularItem(entity)
         scope.launch { syncAll() }
+        return ItemMutationResult.Added(cleanName)
     }
 
     suspend fun softDeleteRegularItem(regular: RegularItemEntity) {
@@ -758,5 +916,97 @@ class CartVrRepository(
         }
         dao.upsertCategories(updated)
         scope.launch { syncAll() }
+    }
+
+    // --- Family Admin & Invites ---
+
+    private fun generateFamilyInviteCode(): String {
+        val alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+        val suffix = buildString(6) {
+            repeat(6) { append(alphabet[random.nextInt(alphabet.length)]) }
+        }
+        return "FAM-$suffix"
+    }
+
+    suspend fun fetchFamilyOverview(): Result<FamilyOverviewResponse> {
+        val token = supabase.auth.currentSessionOrNull()?.accessToken
+            ?: return Result.failure(IllegalStateException("Not signed in"))
+        return familyApi.fetchFamilyOverview(token)
+    }
+
+    suspend fun createFamilyInvite(
+        invitedName: String,
+        role: String,
+        autoListIds: List<String>
+    ): Result<FamilyInviteDto> = runCatching {
+        val userId = currentUserId() ?: error("Not signed in")
+        val householdId = resolveHouseholdId(userId) ?: error("Household not found")
+        val code = generateFamilyInviteCode()
+        val payload = FamilyInviteInsertDto(
+            householdId = householdId,
+            code = code,
+            invitedName = invitedName.trim(),
+            role = role,
+            autoListIds = autoListIds,
+            createdBy = userId
+        )
+        supabase.postgrest["family_invites"]
+            .insert(payload) { select() }
+            .decodeSingle<FamilyInviteDto>()
+    }
+
+    suspend fun revokeFamilyInvite(inviteId: String): Result<Unit> = runCatching {
+        supabase.postgrest["family_invites"].update({
+            set("revoked_at", Instant.now().toString())
+        }) {
+            filter { eq("id", inviteId) }
+        }
+    }
+
+    suspend fun createMemberDirectly(
+        displayName: String,
+        email: String,
+        password: String,
+        role: String,
+        autoListIds: List<String>
+    ): Result<EdgeActionResponse> {
+        val token = supabase.auth.currentSessionOrNull()?.accessToken
+            ?: return Result.failure(IllegalStateException("Not signed in"))
+        return familyApi.createMemberDirectly(
+            accessToken = token,
+            displayName = displayName,
+            email = email,
+            password = password,
+            role = role,
+            autoListIds = autoListIds
+        )
+    }
+
+    suspend fun removeFamilyMember(targetUserId: String): Result<Unit> {
+        val token = supabase.auth.currentSessionOrNull()?.accessToken
+            ?: return Result.failure(IllegalStateException("Not signed in"))
+        return familyApi.removeMember(token, targetUserId)
+    }
+
+    suspend fun updateFamilyMemberRole(targetUserId: String, role: String): Result<Unit> {
+        val token = supabase.auth.currentSessionOrNull()?.accessToken
+            ?: return Result.failure(IllegalStateException("Not signed in"))
+        return familyApi.updateMemberRole(token, targetUserId, role)
+    }
+
+    suspend fun previewFamilyInvite(code: String): Result<InvitePreviewResponse> =
+        familyApi.previewInvite(code)
+
+    suspend fun acceptFamilyInvite(
+        code: String,
+        email: String,
+        password: String,
+        displayName: String
+    ): Result<Unit> {
+        val res = familyApi.acceptInvite(code, email, password, displayName)
+        return res.fold(
+            onSuccess = { signIn(email, password) },
+            onFailure = { Result.failure(it) }
+        )
     }
 }

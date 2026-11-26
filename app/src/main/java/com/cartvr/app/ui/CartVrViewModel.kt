@@ -12,7 +12,11 @@ import com.cartvr.app.data.local.entity.ShoppingItemEntity
 import com.cartvr.app.data.local.entity.ShoppingListEntity
 import com.cartvr.app.data.preferences.AppPreferences
 import com.cartvr.app.data.preferences.ThemeMode
+import com.cartvr.app.data.remote.dto.FamilyInviteDto
+import com.cartvr.app.data.remote.dto.FamilyMemberDto
+import com.cartvr.app.data.remote.dto.InvitePreviewResponse
 import com.cartvr.app.data.sync.CartVrRepository
+import com.cartvr.app.data.sync.ItemMutationResult
 import com.cartvr.app.data.sync.SyncState
 import com.cartvr.app.data.updater.GitHubUpdater
 import com.cartvr.app.data.updater.UpdateInfo
@@ -41,6 +45,22 @@ data class JoinListUiState(
     val errorMessage: String? = null
 )
 
+data class FamilyUiState(
+    val isLoading: Boolean = false,
+    val isActionInProgress: Boolean = false,
+    val members: List<FamilyMemberDto> = emptyList(),
+    val invites: List<FamilyInviteDto> = emptyList(),
+    val errorMessage: String? = null
+)
+
+data class InviteFlowState(
+    val showAcceptInvite: Boolean = false,
+    val initialCode: String = "",
+    val preview: InvitePreviewResponse? = null,
+    val isLoading: Boolean = false,
+    val errorMessage: String? = null
+)
+
 class CartVrViewModel(
     private val repository: CartVrRepository,
     private val prefs: AppPreferences,
@@ -57,6 +77,18 @@ class CartVrViewModel(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
         "Janse van Rensburg"
+    )
+
+    val isAdmin: StateFlow<Boolean> = repository.isAdmin.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        false
+    )
+
+    val displayName: StateFlow<String?> = repository.displayName.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        null
     )
 
     val sessionStatus: StateFlow<SessionStatus> = repository.sessionStatus.stateIn(
@@ -121,6 +153,12 @@ class CartVrViewModel(
 
     private val _statusBanner = MutableStateFlow<String?>(null)
     val statusBanner: StateFlow<String?> = _statusBanner.asStateFlow()
+
+    private val _familyState = MutableStateFlow(FamilyUiState())
+    val familyState: StateFlow<FamilyUiState> = _familyState.asStateFlow()
+
+    private val _inviteFlowState = MutableStateFlow(InviteFlowState())
+    val inviteFlowState: StateFlow<InviteFlowState> = _inviteFlowState.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -301,13 +339,26 @@ class CartVrViewModel(
         saveAsRegular: Boolean = false
     ) {
         viewModelScope.launch {
-            repository.addShoppingItem(listId, categoryId, name, quantity, note, saveAsRegular)
+            when (val res = repository.addShoppingItem(listId, categoryId, name, quantity, note, saveAsRegular)) {
+                is ItemMutationResult.UpdatedExisting ->
+                    _statusBanner.value = "Updated ${res.itemName} on ${res.listName} (already on list)"
+                is ItemMutationResult.AlreadyExists ->
+                    _statusBanner.value = "${res.itemName} is already on ${res.listName}"
+                is ItemMutationResult.RestoredFromCompleted ->
+                    _statusBanner.value = "Moved ${res.itemName} back to ${res.listName}"
+                is ItemMutationResult.DuplicateBlocked ->
+                    _statusBanner.value = res.message
+                is ItemMutationResult.Added -> Unit
+            }
         }
     }
 
     fun updateShoppingItem(item: ShoppingItemEntity, learnCategory: Boolean) {
         viewModelScope.launch {
-            repository.updateShoppingItem(item, learnCategory)
+            val res = repository.updateShoppingItem(item, learnCategory)
+            if (res is ItemMutationResult.DuplicateBlocked) {
+                _statusBanner.value = res.message
+            }
         }
     }
 
@@ -331,7 +382,18 @@ class CartVrViewModel(
 
     fun addRegularToList(regular: RegularItemEntity, fallbackListId: String) {
         viewModelScope.launch {
-            repository.addRegularToShoppingList(regular, fallbackListId)
+            when (val res = repository.addRegularToShoppingList(regular, fallbackListId)) {
+                is ItemMutationResult.Added ->
+                    _statusBanner.value = "Added ${res.itemName} to ${res.listName ?: "list"}"
+                is ItemMutationResult.UpdatedExisting ->
+                    _statusBanner.value = "Updated ${res.itemName} on ${res.listName} (already on list)"
+                is ItemMutationResult.AlreadyExists ->
+                    _statusBanner.value = "${res.itemName} is already on ${res.listName}"
+                is ItemMutationResult.RestoredFromCompleted ->
+                    _statusBanner.value = "Moved ${res.itemName} back to ${res.listName}"
+                is ItemMutationResult.DuplicateBlocked ->
+                    _statusBanner.value = res.message
+            }
         }
     }
 
@@ -343,7 +405,10 @@ class CartVrViewModel(
         existingId: String? = null
     ) {
         viewModelScope.launch {
-            repository.saveRegularItem(name, defaultQuantity, defaultListId, defaultCategoryId, existingId)
+            val res = repository.saveRegularItem(name, defaultQuantity, defaultListId, defaultCategoryId, existingId)
+            if (res is ItemMutationResult.DuplicateBlocked) {
+                _statusBanner.value = res.message
+            }
         }
     }
 
@@ -425,6 +490,187 @@ class CartVrViewModel(
             errorMessage = null,
             needsUnknownSourcesPermission = false
         )
+    }
+
+    // --- Family Admin & Invites ---
+
+    fun loadFamilyOverview() {
+        viewModelScope.launch {
+            _familyState.value = _familyState.value.copy(isLoading = true, errorMessage = null)
+            repository.fetchFamilyOverview()
+                .onSuccess { res ->
+                    _familyState.value = _familyState.value.copy(
+                        isLoading = false,
+                        members = res.members,
+                        invites = res.invites,
+                        errorMessage = res.error
+                    )
+                }
+                .onFailure { err ->
+                    _familyState.value = _familyState.value.copy(
+                        isLoading = false,
+                        errorMessage = err.localizedMessage ?: "Could not load family members."
+                    )
+                }
+        }
+    }
+
+    fun createFamilyInvite(
+        invitedName: String,
+        role: String,
+        autoListIds: List<String>,
+        onCreated: (FamilyInviteDto) -> Unit
+    ) {
+        viewModelScope.launch {
+            _familyState.value = _familyState.value.copy(isActionInProgress = true, errorMessage = null)
+            repository.createFamilyInvite(invitedName, role, autoListIds)
+                .onSuccess { invite ->
+                    _familyState.value = _familyState.value.copy(isActionInProgress = false)
+                    loadFamilyOverview()
+                    onCreated(invite)
+                }
+                .onFailure { err ->
+                    _familyState.value = _familyState.value.copy(
+                        isActionInProgress = false,
+                        errorMessage = err.localizedMessage ?: "Failed to create invite."
+                    )
+                }
+        }
+    }
+
+    fun createMemberDirectly(
+        displayName: String,
+        email: String,
+        password: String,
+        role: String,
+        autoListIds: List<String>
+    ) {
+        viewModelScope.launch {
+            _familyState.value = _familyState.value.copy(isActionInProgress = true, errorMessage = null)
+            repository.createMemberDirectly(displayName, email, password, role, autoListIds)
+                .onSuccess {
+                    _familyState.value = _familyState.value.copy(isActionInProgress = false)
+                    _statusBanner.value = "Added $displayName to family"
+                    loadFamilyOverview()
+                }
+                .onFailure { err ->
+                    _familyState.value = _familyState.value.copy(
+                        isActionInProgress = false,
+                        errorMessage = err.localizedMessage ?: "Failed to create member."
+                    )
+                }
+        }
+    }
+
+    fun revokeFamilyInvite(invite: FamilyInviteDto) {
+        viewModelScope.launch {
+            _familyState.value = _familyState.value.copy(isActionInProgress = true, errorMessage = null)
+            repository.revokeFamilyInvite(invite.id)
+                .onSuccess {
+                    _familyState.value = _familyState.value.copy(isActionInProgress = false)
+                    _statusBanner.value = "Revoked invite for ${invite.invitedName}"
+                    loadFamilyOverview()
+                }
+                .onFailure { err ->
+                    _familyState.value = _familyState.value.copy(
+                        isActionInProgress = false,
+                        errorMessage = err.localizedMessage ?: "Failed to revoke invite."
+                    )
+                }
+        }
+    }
+
+    fun updateFamilyMemberRole(member: FamilyMemberDto, newRole: String) {
+        viewModelScope.launch {
+            _familyState.value = _familyState.value.copy(isActionInProgress = true, errorMessage = null)
+            repository.updateFamilyMemberRole(member.userId, newRole)
+                .onSuccess {
+                    _familyState.value = _familyState.value.copy(isActionInProgress = false)
+                    _statusBanner.value = "${member.displayName} is now ${newRole.replaceFirstChar { it.uppercase() }}"
+                    loadFamilyOverview()
+                }
+                .onFailure { err ->
+                    _familyState.value = _familyState.value.copy(
+                        isActionInProgress = false,
+                        errorMessage = err.localizedMessage ?: "Failed to update role."
+                    )
+                }
+        }
+    }
+
+    fun removeFamilyMember(member: FamilyMemberDto) {
+        viewModelScope.launch {
+            _familyState.value = _familyState.value.copy(isActionInProgress = true, errorMessage = null)
+            repository.removeFamilyMember(member.userId)
+                .onSuccess {
+                    _familyState.value = _familyState.value.copy(isActionInProgress = false)
+                    _statusBanner.value = "Removed ${member.displayName}"
+                    loadFamilyOverview()
+                }
+                .onFailure { err ->
+                    _familyState.value = _familyState.value.copy(
+                        isActionInProgress = false,
+                        errorMessage = err.localizedMessage ?: "Failed to remove member."
+                    )
+                }
+        }
+    }
+
+    fun openAcceptInviteScreen(initialCode: String = "") {
+        _inviteFlowState.value = InviteFlowState(
+            showAcceptInvite = true,
+            initialCode = initialCode.trim().uppercase()
+        )
+    }
+
+    fun closeAcceptInviteScreen() {
+        _inviteFlowState.value = InviteFlowState(showAcceptInvite = false)
+    }
+
+    fun handleIncomingFamilyInviteCode(code: String) {
+        val clean = code.trim().uppercase()
+        if (clean.isEmpty()) return
+        if (sessionStatus.value is SessionStatus.Authenticated) {
+            _statusBanner.value = "You're already signed in. Sign out first to accept a family invite."
+        } else {
+            openAcceptInviteScreen(clean)
+        }
+    }
+
+    fun previewFamilyInvite(code: String) {
+        viewModelScope.launch {
+            _inviteFlowState.value = _inviteFlowState.value.copy(isLoading = true, errorMessage = null)
+            repository.previewFamilyInvite(code)
+                .onSuccess { preview ->
+                    _inviteFlowState.value = _inviteFlowState.value.copy(
+                        isLoading = false,
+                        preview = preview,
+                        errorMessage = if (!preview.valid) (preview.error ?: "Invalid invite code") else null
+                    )
+                }
+                .onFailure { err ->
+                    _inviteFlowState.value = _inviteFlowState.value.copy(
+                        isLoading = false,
+                        errorMessage = err.localizedMessage ?: "Could not verify invite code."
+                    )
+                }
+        }
+    }
+
+    fun acceptFamilyInvite(code: String, email: String, password: String, displayName: String) {
+        viewModelScope.launch {
+            _inviteFlowState.value = _inviteFlowState.value.copy(isLoading = true, errorMessage = null)
+            repository.acceptFamilyInvite(code, email, password, displayName)
+                .onSuccess {
+                    _inviteFlowState.value = InviteFlowState(showAcceptInvite = false)
+                }
+                .onFailure { err ->
+                    _inviteFlowState.value = _inviteFlowState.value.copy(
+                        isLoading = false,
+                        errorMessage = err.localizedMessage ?: "Failed to create account."
+                    )
+                }
+        }
     }
 
     companion object {

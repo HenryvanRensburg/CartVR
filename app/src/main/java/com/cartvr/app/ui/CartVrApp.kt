@@ -2,6 +2,7 @@ package com.cartvr.app.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
@@ -38,12 +39,14 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.cartvr.app.data.local.entity.ShoppingListEntity
+import com.cartvr.app.ui.auth.AcceptInviteScreen
 import com.cartvr.app.ui.auth.LoginScreen
 import com.cartvr.app.ui.components.CreateListSheet
 import com.cartvr.app.ui.components.JoinListDialog
 import com.cartvr.app.ui.components.ListVisuals
 import com.cartvr.app.ui.components.UpdateDialog
 import com.cartvr.app.ui.dashboard.DashboardScreen
+import com.cartvr.app.ui.family.ManageFamilyScreen
 import com.cartvr.app.ui.list.ListDetailScreen
 import com.cartvr.app.ui.regulars.RegularsScreen
 import com.cartvr.app.ui.settings.SettingsScreen
@@ -64,6 +67,7 @@ fun CartVrApp(viewModel: CartVrViewModel) {
     val authLoading by viewModel.authLoading.collectAsStateWithLifecycle()
     val authError by viewModel.authError.collectAsStateWithLifecycle()
     val updateState by viewModel.updateState.collectAsStateWithLifecycle()
+    val inviteFlowState by viewModel.inviteFlowState.collectAsStateWithLifecycle()
 
     CartVRTheme(themeMode = themeMode) {
         when (sessionStatus) {
@@ -75,11 +79,23 @@ fun CartVrApp(viewModel: CartVrViewModel) {
 
             is SessionStatus.NotAuthenticated,
             is SessionStatus.RefreshFailure -> {
-                LoginScreen(
-                    isLoading = authLoading,
-                    errorMessage = authError,
-                    onSignIn = { email, password -> viewModel.signIn(email, password) }
-                )
+                if (inviteFlowState.showAcceptInvite) {
+                    AcceptInviteScreen(
+                        state = inviteFlowState,
+                        onPreviewCode = { viewModel.previewFamilyInvite(it) },
+                        onAcceptInvite = { code, email, password, name ->
+                            viewModel.acceptFamilyInvite(code, email, password, name)
+                        },
+                        onBackToLogin = { viewModel.closeAcceptInviteScreen() }
+                    )
+                } else {
+                    LoginScreen(
+                        isLoading = authLoading,
+                        errorMessage = authError,
+                        onSignIn = { email, password -> viewModel.signIn(email, password) },
+                        onOpenAcceptInvite = { viewModel.openAcceptInviteScreen() }
+                    )
+                }
             }
 
             is SessionStatus.Authenticated -> {
@@ -107,7 +123,11 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
 
     val themeMode by viewModel.themeMode.collectAsStateWithLifecycle()
     val householdName by viewModel.householdName.collectAsStateWithLifecycle()
+    val isAdmin by viewModel.isAdmin.collectAsStateWithLifecycle()
+    val cachedDisplayName by viewModel.displayName.collectAsStateWithLifecycle()
+    val resolvedDisplayName = cachedDisplayName ?: viewModel.userDisplayName()
     val syncState by viewModel.syncState.collectAsStateWithLifecycle()
+    val familyState by viewModel.familyState.collectAsStateWithLifecycle()
     val lists by viewModel.lists.collectAsStateWithLifecycle()
     val listMembers by viewModel.listMembers.collectAsStateWithLifecycle()
     val categories by viewModel.categories.collectAsStateWithLifecycle()
@@ -141,7 +161,7 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
     }
 
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = { SnackbarHost(snackbarHostState, modifier = Modifier.imePadding()) },
         containerColor = MaterialTheme.colorScheme.background,
         bottomBar = {
             if (showBottomBar) {
@@ -191,7 +211,7 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
         ) {
             composable(TopTab.LISTS.route) {
                 DashboardScreen(
-                    displayName = viewModel.userDisplayName(),
+                    displayName = resolvedDisplayName,
                     currentUserId = viewModel.currentUserId(),
                     syncState = syncState,
                     themeMode = themeMode,
@@ -222,15 +242,11 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
                 RegularsScreen(
                     regulars = regulars,
                     lists = lists,
+                    allItems = allItems,
                     categories = categories,
                     onAddToShoppingList = { regular ->
                         val fallbackList = lists.firstOrNull() ?: return@RegularsScreen
                         viewModel.addRegularToList(regular, fallbackList.id)
-                        val targetName = lists.firstOrNull { it.id == regular.defaultListId }?.name
-                            ?: fallbackList.name
-                        scope.launch {
-                            snackbarHostState.showSnackbar("Added ${regular.name} to $targetName")
-                        }
                     },
                     onCreateRegular = { name, qty, listId, categoryId ->
                         viewModel.saveRegularItem(name, qty, listId, categoryId)
@@ -243,18 +259,54 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
 
             composable(TopTab.SETTINGS.route) {
                 SettingsScreen(
-                    displayName = viewModel.userDisplayName(),
+                    displayName = resolvedDisplayName,
                     userEmail = viewModel.userEmail(),
                     householdName = householdName ?: "Janse van Rensburg",
+                    isAdmin = isAdmin,
                     themeMode = themeMode,
                     updateState = updateState,
                     onThemeSelected = { viewModel.setThemeMode(it) },
+                    onManageFamily = { navController.navigate("manage_family") },
                     onSyncNow = {
                         viewModel.syncNow()
                         scope.launch { snackbarHostState.showSnackbar("Syncing lists...") }
                     },
                     onCheckForUpdates = { viewModel.checkForUpdates(silent = false) },
                     onSignOut = { viewModel.signOut() }
+                )
+            }
+
+            composable("manage_family") {
+                ManageFamilyScreen(
+                    currentUserId = viewModel.currentUserId(),
+                    familyState = familyState,
+                    sharedLists = lists.filter { it.isShared },
+                    onBack = { navController.popBackStack() },
+                    onRefresh = { viewModel.loadFamilyOverview() },
+                    onCreateInvite = { name, role, autoListIds ->
+                        viewModel.createFamilyInvite(name, role, autoListIds) { invite ->
+                            ListVisuals.launchFamilyInviteShareSheet(
+                                context,
+                                invite.invitedName,
+                                invite.code
+                            )
+                        }
+                    },
+                    onCreateMemberDirectly = { name, email, password, role, autoListIds ->
+                        viewModel.createMemberDirectly(name, email, password, role, autoListIds)
+                    },
+                    onShareInvite = { invite ->
+                        ListVisuals.launchFamilyInviteShareSheet(
+                            context,
+                            invite.invitedName,
+                            invite.code
+                        )
+                    },
+                    onRevokeInvite = { invite -> viewModel.revokeFamilyInvite(invite) },
+                    onUpdateRole = { member, newRole ->
+                        viewModel.updateFamilyMemberRole(member, newRole)
+                    },
+                    onRemoveMember = { member -> viewModel.removeFamilyMember(member) }
                 )
             }
 
