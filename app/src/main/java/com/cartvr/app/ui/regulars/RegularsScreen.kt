@@ -41,20 +41,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.cartvr.app.data.local.entity.CategoryEntity
 import com.cartvr.app.data.local.entity.RegularItemEntity
-import com.cartvr.app.data.local.entity.StoreEntity
+import com.cartvr.app.data.local.entity.ShoppingListEntity
 
 @Composable
 fun RegularsScreen(
     regulars: List<RegularItemEntity>,
-    stores: List<StoreEntity>,
+    lists: List<ShoppingListEntity>,
     categories: List<CategoryEntity>,
     onAddToShoppingList: (RegularItemEntity) -> Unit,
-    onCreateRegular: (name: String, qty: String?, storeId: String?, categoryId: String?) -> Unit,
+    onCreateRegular: (name: String, qty: String?, listId: String?, categoryId: String?) -> Unit,
     onDeleteRegular: (RegularItemEntity) -> Unit
 ) {
     var showCreateDialog by remember { mutableStateOf(false) }
 
-    val storeMap = remember(stores) { stores.associateBy { it.id } }
+    val listMap = remember(lists) { lists.associateBy { it.id } }
     val categoryMap = remember(categories) { categories.associateBy { it.id } }
 
     LazyColumn(
@@ -110,7 +110,7 @@ fun RegularsScreen(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Save items you buy every week (like milk, bread, or coffee) for one-tap re-adding.",
+                            text = "Save items you buy every week (like milk, bread, or rusks) for one-tap re-adding.",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -120,7 +120,7 @@ fun RegularsScreen(
         }
 
         items(regulars, key = { it.id }) { regular ->
-            val storeName = storeMap[regular.defaultStoreId]?.name ?: "Default Store"
+            val listName = listMap[regular.defaultListId]?.name ?: lists.firstOrNull()?.name ?: "Default List"
             val categoryName = categoryMap[regular.defaultCategoryId]?.name
 
             Card(
@@ -146,7 +146,7 @@ fun RegularsScreen(
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onSurface
                         )
-                        val subtitle = listOfNotNull(storeName, categoryName).joinToString(" • ")
+                        val subtitle = listOfNotNull(listName, categoryName).joinToString(" • ")
                         Text(
                             text = subtitle,
                             style = MaterialTheme.typography.bodyMedium,
@@ -154,7 +154,10 @@ fun RegularsScreen(
                         )
                     }
 
-                    FilledTonalIconButton(onClick = { onAddToShoppingList(regular) }) {
+                    FilledTonalIconButton(
+                        onClick = { onAddToShoppingList(regular) },
+                        enabled = lists.isNotEmpty()
+                    ) {
                         Icon(
                             imageVector = Icons.Rounded.PlaylistAdd,
                             contentDescription = "Add to shopping list"
@@ -175,11 +178,11 @@ fun RegularsScreen(
 
     if (showCreateDialog) {
         CreateRegularDialog(
-            stores = stores,
+            lists = lists,
             categories = categories,
             onDismiss = { showCreateDialog = false },
-            onSave = { name, qty, storeId, categoryId ->
-                onCreateRegular(name, qty, storeId, categoryId)
+            onSave = { name, qty, listId, categoryId ->
+                onCreateRegular(name, qty, listId, categoryId)
                 showCreateDialog = false
             }
         )
@@ -188,14 +191,14 @@ fun RegularsScreen(
 
 @Composable
 private fun CreateRegularDialog(
-    stores: List<StoreEntity>,
+    lists: List<ShoppingListEntity>,
     categories: List<CategoryEntity>,
     onDismiss: () -> Unit,
-    onSave: (name: String, qty: String?, storeId: String?, categoryId: String?) -> Unit
+    onSave: (name: String, qty: String?, listId: String?, categoryId: String?) -> Unit
 ) {
     var name by remember { mutableStateOf("") }
     var quantity by remember { mutableStateOf("") }
-    var selectedStoreId by remember { mutableStateOf(stores.firstOrNull()?.id) }
+    var selectedListId by remember { mutableStateOf(lists.firstOrNull()?.id) }
     var selectedCategoryId by remember { mutableStateOf(categories.lastOrNull()?.id) }
 
     AlertDialog(
@@ -217,19 +220,21 @@ private fun CreateRegularDialog(
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
-                Text("Default Store", style = MaterialTheme.typography.labelMedium)
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    stores.forEach { store ->
-                        FilterChip(
-                            selected = store.id == selectedStoreId,
-                            onClick = { selectedStoreId = store.id },
-                            label = { Text(store.name) }
-                        )
+                if (lists.isNotEmpty()) {
+                    Text("Default List", style = MaterialTheme.typography.labelMedium)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        lists.forEach { list ->
+                            FilterChip(
+                                selected = list.id == selectedListId,
+                                onClick = { selectedListId = list.id },
+                                label = { Text(list.name) }
+                            )
+                        }
                     }
                 }
                 Text("Default Aisle", style = MaterialTheme.typography.labelMedium)
@@ -255,7 +260,7 @@ private fun CreateRegularDialog(
                     onSave(
                         name.trim(),
                         quantity.trim().ifBlank { null },
-                        selectedStoreId,
+                        selectedListId,
                         selectedCategoryId
                     )
                 },

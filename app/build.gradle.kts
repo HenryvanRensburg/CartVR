@@ -22,13 +22,13 @@ android {
         applicationId = "com.cartvr.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.1.0"
 
         buildConfigField("String", "SUPABASE_URL", "\"https://dqbjxuuladymxlcedbvx.supabase.co\"")
         buildConfigField("String", "SUPABASE_KEY", "\"sb_publishable_02TccoaCz3gUG3Gl6KkNLQ_l_1cHBdD\"")
         buildConfigField("String", "GITHUB_OWNER", "\"HenryvanRensburg\"")
-        buildConfigField("String", "GITHUB_REPO", "\"cartvr\"")
+        buildConfigField("String", "GITHUB_REPO", "\"CartVR\"")
     }
 
     signingConfigs {

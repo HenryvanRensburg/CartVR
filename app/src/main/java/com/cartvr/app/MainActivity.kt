@@ -1,22 +1,44 @@
 package com.cartvr.app
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.ViewModelProvider
 import com.cartvr.app.ui.CartVrApp
 import com.cartvr.app.ui.CartVrViewModel
 
 class MainActivity : ComponentActivity() {
+
+    private lateinit var viewModel: CartVrViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
         val app = application as CartVRApplication
+        viewModel = ViewModelProvider(this, CartVrViewModel.factory(app))[CartVrViewModel::class.java]
+        handleDeepLink(intent)
+
         setContent {
-            val vm: CartVrViewModel = viewModel(factory = CartVrViewModel.factory(app))
-            CartVrApp(viewModel = vm)
+            CartVrApp(viewModel = viewModel)
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleDeepLink(intent)
+    }
+
+    private fun handleDeepLink(intent: Intent?) {
+        val data: Uri = intent?.data ?: return
+        val code = data.getQueryParameter("code")
+            ?: data.lastPathSegment?.takeIf { !it.equals("join", ignoreCase = true) }
+        if (!code.isNullOrBlank()) {
+            viewModel.handleIncomingShareCode(code)
         }
     }
 }

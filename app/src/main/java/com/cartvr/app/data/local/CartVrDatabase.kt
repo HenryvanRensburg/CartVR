@@ -6,18 +6,22 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.cartvr.app.data.local.dao.CartVrDao
 import com.cartvr.app.data.local.entity.CategoryEntity
+import com.cartvr.app.data.local.entity.ItemHistoryEntity
+import com.cartvr.app.data.local.entity.ListMemberEntity
 import com.cartvr.app.data.local.entity.RegularItemEntity
 import com.cartvr.app.data.local.entity.ShoppingItemEntity
-import com.cartvr.app.data.local.entity.StoreEntity
+import com.cartvr.app.data.local.entity.ShoppingListEntity
 
 @Database(
     entities = [
-        StoreEntity::class,
+        ShoppingListEntity::class,
+        ListMemberEntity::class,
         CategoryEntity::class,
         ShoppingItemEntity::class,
-        RegularItemEntity::class
+        RegularItemEntity::class,
+        ItemHistoryEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class CartVrDatabase : RoomDatabase() {
@@ -33,7 +37,10 @@ abstract class CartVrDatabase : RoomDatabase() {
                     context.applicationContext,
                     CartVrDatabase::class.java,
                     "cartvr.db"
-                ).build().also { INSTANCE = it }
+                )
+                    .fallbackToDestructiveMigration()
+                    .build()
+                    .also { INSTANCE = it }
             }
         }
     }

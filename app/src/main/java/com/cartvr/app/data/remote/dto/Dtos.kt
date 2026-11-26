@@ -1,9 +1,11 @@
 package com.cartvr.app.data.remote.dto
 
 import com.cartvr.app.data.local.entity.CategoryEntity
+import com.cartvr.app.data.local.entity.ItemHistoryEntity
+import com.cartvr.app.data.local.entity.ListMemberEntity
 import com.cartvr.app.data.local.entity.RegularItemEntity
 import com.cartvr.app.data.local.entity.ShoppingItemEntity
-import com.cartvr.app.data.local.entity.StoreEntity
+import com.cartvr.app.data.local.entity.ShoppingListEntity
 import com.cartvr.app.data.local.entity.SyncStatus
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -23,13 +25,26 @@ data class HouseholdMemberDto(
 )
 
 @Serializable
-data class StoreDto(
+data class ShoppingListDto(
     val id: String,
-    @SerialName("household_id") val householdId: String,
+    @SerialName("owner_id") val ownerId: String,
     val name: String,
+    @SerialName("icon_key") val iconKey: String = "cart",
+    @SerialName("color_hex") val colorHex: String = "#0D9488",
+    @SerialName("is_shared") val isShared: Boolean = false,
+    @SerialName("share_code") val shareCode: String? = null,
     @SerialName("sort_order") val sortOrder: Int = 0,
+    @SerialName("created_at") val createdAt: String,
     @SerialName("updated_at") val updatedAt: String,
     @SerialName("deleted_at") val deletedAt: String? = null
+)
+
+@Serializable
+data class ListMemberDto(
+    @SerialName("list_id") val listId: String,
+    @SerialName("user_id") val userId: String,
+    val role: String = "member",
+    @SerialName("joined_at") val joinedAt: String
 )
 
 @Serializable
@@ -45,8 +60,9 @@ data class CategoryDto(
 @Serializable
 data class ShoppingItemDto(
     val id: String,
-    @SerialName("household_id") val householdId: String,
-    @SerialName("store_id") val storeId: String,
+    @SerialName("list_id") val listId: String? = null,
+    @SerialName("household_id") val householdId: String? = null,
+    @SerialName("store_id") val storeId: String? = null,
     @SerialName("category_id") val categoryId: String? = null,
     val name: String,
     val quantity: String? = null,
@@ -63,7 +79,7 @@ data class ShoppingItemDto(
 data class RegularItemDto(
     val id: String,
     @SerialName("household_id") val householdId: String,
-    @SerialName("default_store_id") val defaultStoreId: String? = null,
+    @SerialName("default_list_id") val defaultListId: String? = null,
     @SerialName("default_category_id") val defaultCategoryId: String? = null,
     val name: String,
     @SerialName("default_quantity") val defaultQuantity: String? = null,
@@ -71,23 +87,60 @@ data class RegularItemDto(
     @SerialName("deleted_at") val deletedAt: String? = null
 )
 
-fun StoreDto.toEntity() = StoreEntity(
+@Serializable
+data class ItemHistoryDto(
+    val id: String,
+    @SerialName("user_id") val userId: String,
+    @SerialName("normalized_name") val normalizedName: String,
+    @SerialName("display_name") val displayName: String,
+    @SerialName("default_quantity") val defaultQuantity: String? = null,
+    @SerialName("default_category_id") val defaultCategoryId: String? = null,
+    @SerialName("use_count") val useCount: Int = 1,
+    @SerialName("last_used_at") val lastUsedAt: String,
+    @SerialName("updated_at") val updatedAt: String
+)
+
+fun ShoppingListDto.toEntity() = ShoppingListEntity(
     id = id,
-    householdId = householdId,
+    ownerId = ownerId,
     name = name,
+    iconKey = iconKey,
+    colorHex = colorHex,
+    isShared = isShared,
+    shareCode = shareCode,
     sortOrder = sortOrder,
+    createdAt = createdAt,
     updatedAt = updatedAt,
     deletedAt = deletedAt,
     syncStatus = SyncStatus.SYNCED
 )
 
-fun StoreEntity.toDto() = StoreDto(
+fun ShoppingListEntity.toDto() = ShoppingListDto(
     id = id,
-    householdId = householdId,
+    ownerId = ownerId,
     name = name,
+    iconKey = iconKey,
+    colorHex = colorHex,
+    isShared = isShared,
+    shareCode = shareCode,
     sortOrder = sortOrder,
+    createdAt = createdAt,
     updatedAt = updatedAt,
     deletedAt = deletedAt
+)
+
+fun ListMemberDto.toEntity() = ListMemberEntity(
+    listId = listId,
+    userId = userId,
+    role = role,
+    joinedAt = joinedAt
+)
+
+fun ListMemberEntity.toDto() = ListMemberDto(
+    listId = listId,
+    userId = userId,
+    role = role,
+    joinedAt = joinedAt
 )
 
 fun CategoryDto.toEntity() = CategoryEntity(
@@ -109,27 +162,31 @@ fun CategoryEntity.toDto() = CategoryDto(
     deletedAt = deletedAt
 )
 
-fun ShoppingItemDto.toEntity() = ShoppingItemEntity(
-    id = id,
-    householdId = householdId,
-    storeId = storeId,
-    categoryId = categoryId,
-    name = name,
-    quantity = quantity,
-    note = note,
-    isChecked = isChecked,
-    estimatedPrice = estimatedPrice,
-    addedBy = addedBy,
-    createdAt = createdAt,
-    updatedAt = updatedAt,
-    deletedAt = deletedAt,
-    syncStatus = SyncStatus.SYNCED
-)
+fun ShoppingItemDto.toEntity(): ShoppingItemEntity? {
+    val resolvedListId = listId ?: return null
+    return ShoppingItemEntity(
+        id = id,
+        listId = resolvedListId,
+        householdId = householdId,
+        categoryId = categoryId,
+        name = name,
+        quantity = quantity,
+        note = note,
+        isChecked = isChecked,
+        estimatedPrice = estimatedPrice,
+        addedBy = addedBy,
+        createdAt = createdAt,
+        updatedAt = updatedAt,
+        deletedAt = deletedAt,
+        syncStatus = SyncStatus.SYNCED
+    )
+}
 
 fun ShoppingItemEntity.toDto() = ShoppingItemDto(
     id = id,
+    listId = listId,
     householdId = householdId,
-    storeId = storeId,
+    storeId = null,
     categoryId = categoryId,
     name = name,
     quantity = quantity,
@@ -145,7 +202,7 @@ fun ShoppingItemEntity.toDto() = ShoppingItemDto(
 fun RegularItemDto.toEntity() = RegularItemEntity(
     id = id,
     householdId = householdId,
-    defaultStoreId = defaultStoreId,
+    defaultListId = defaultListId,
     defaultCategoryId = defaultCategoryId,
     name = name,
     defaultQuantity = defaultQuantity,
@@ -157,10 +214,35 @@ fun RegularItemDto.toEntity() = RegularItemEntity(
 fun RegularItemEntity.toDto() = RegularItemDto(
     id = id,
     householdId = householdId,
-    defaultStoreId = defaultStoreId,
+    defaultListId = defaultListId,
     defaultCategoryId = defaultCategoryId,
     name = name,
     defaultQuantity = defaultQuantity,
     updatedAt = updatedAt,
     deletedAt = deletedAt
+)
+
+fun ItemHistoryDto.toEntity() = ItemHistoryEntity(
+    id = id,
+    userId = userId,
+    normalizedName = normalizedName,
+    displayName = displayName,
+    defaultQuantity = defaultQuantity,
+    defaultCategoryId = defaultCategoryId,
+    useCount = useCount,
+    lastUsedAt = lastUsedAt,
+    updatedAt = updatedAt,
+    syncStatus = SyncStatus.SYNCED
+)
+
+fun ItemHistoryEntity.toDto() = ItemHistoryDto(
+    id = id,
+    userId = userId,
+    normalizedName = normalizedName,
+    displayName = displayName,
+    defaultQuantity = defaultQuantity,
+    defaultCategoryId = defaultCategoryId,
+    useCount = useCount,
+    lastUsedAt = lastUsedAt,
+    updatedAt = updatedAt
 )

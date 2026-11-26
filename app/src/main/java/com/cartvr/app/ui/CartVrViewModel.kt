@@ -5,9 +5,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.cartvr.app.CartVRApplication
 import com.cartvr.app.data.local.entity.CategoryEntity
+import com.cartvr.app.data.local.entity.ItemHistoryEntity
+import com.cartvr.app.data.local.entity.ListMemberEntity
 import com.cartvr.app.data.local.entity.RegularItemEntity
 import com.cartvr.app.data.local.entity.ShoppingItemEntity
-import com.cartvr.app.data.local.entity.StoreEntity
+import com.cartvr.app.data.local.entity.ShoppingListEntity
 import com.cartvr.app.data.preferences.AppPreferences
 import com.cartvr.app.data.preferences.ThemeMode
 import com.cartvr.app.data.sync.CartVrRepository
@@ -33,6 +35,12 @@ data class UpdateUiState(
     val noUpdateMessage: String? = null
 )
 
+data class JoinListUiState(
+    val showDialog: Boolean = false,
+    val isJoining: Boolean = false,
+    val errorMessage: String? = null
+)
+
 class CartVrViewModel(
     private val repository: CartVrRepository,
     private val prefs: AppPreferences,
@@ -51,12 +59,6 @@ class CartVrViewModel(
         "Janse van Rensburg"
     )
 
-    val lastSyncedAt: StateFlow<String?> = prefs.lastSyncedAt.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5000),
-        null
-    )
-
     val sessionStatus: StateFlow<SessionStatus> = repository.sessionStatus.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
@@ -65,7 +67,13 @@ class CartVrViewModel(
 
     val syncState: StateFlow<SyncState> = repository.syncState
 
-    val stores: StateFlow<List<StoreEntity>> = repository.stores.stateIn(
+    val lists: StateFlow<List<ShoppingListEntity>> = repository.lists.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        emptyList()
+    )
+
+    val listMembers: StateFlow<List<ListMemberEntity>> = repository.listMembers.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
         emptyList()
@@ -89,6 +97,12 @@ class CartVrViewModel(
         emptyList()
     )
 
+    val itemHistory: StateFlow<List<ItemHistoryEntity>> = repository.itemHistory.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        emptyList()
+    )
+
     private val _authLoading = MutableStateFlow(false)
     val authLoading: StateFlow<Boolean> = _authLoading.asStateFlow()
 
@@ -98,21 +112,37 @@ class CartVrViewModel(
     private val _updateState = MutableStateFlow(UpdateUiState())
     val updateState: StateFlow<UpdateUiState> = _updateState.asStateFlow()
 
+    private val _joinState = MutableStateFlow(JoinListUiState())
+    val joinState: StateFlow<JoinListUiState> = _joinState.asStateFlow()
+
+    private val _pendingDeepLinkCode = MutableStateFlow<String?>(null)
+    private val _joinedListEvent = MutableStateFlow<ShoppingListEntity?>(null)
+    val joinedListEvent: StateFlow<ShoppingListEntity?> = _joinedListEvent.asStateFlow()
+
+    private val _statusBanner = MutableStateFlow<String?>(null)
+    val statusBanner: StateFlow<String?> = _statusBanner.asStateFlow()
+
     init {
         viewModelScope.launch {
             sessionStatus.collect { status ->
                 if (status is SessionStatus.Authenticated) {
                     repository.syncAll()
                     repository.ensureRealtimeSubscribed()
+                    val code = _pendingDeepLinkCode.value
+                    if (!code.isNullOrBlank()) {
+                        _pendingDeepLinkCode.value = null
+                        joinListByCode(code)
+                    }
                 }
             }
         }
         checkForUpdates(silent = true)
     }
 
-    fun observeStoreItems(storeId: String): Flow<List<ShoppingItemEntity>> =
-        repository.observeStoreItems(storeId)
+    fun observeListItems(listId: String): Flow<List<ShoppingItemEntity>> =
+        repository.observeListItems(listId)
 
+    fun currentUserId(): String? = repository.currentUserId()
     fun userDisplayName(): String = repository.currentUserDisplayName()
     fun userEmail(): String? = repository.currentUserEmail()
 
@@ -152,22 +182,132 @@ class CartVrViewModel(
         }
     }
 
+    // --- Lists ---
+
+    fun createList(
+        name: String,
+        iconKey: String,
+        colorHex: String,
+        isShared: Boolean,
+        onCreated: (ShoppingListEntity) -> Unit
+    ) {
+        viewModelScope.launch {
+            val created = repository.createList(name, iconKey, colorHex, isShared) ?: return@launch
+            onCreated(created)
+        }
+    }
+
+    fun updateList(list: ShoppingListEntity, name: String, iconKey: String, colorHex: String) {
+        viewModelScope.launch {
+            repository.updateList(list, name, iconKey, colorHex)
+        }
+    }
+
+    fun prepareShare(list: ShoppingListEntity, onReady: (ShoppingListEntity) -> Unit) {
+        viewModelScope.launch {
+            val shared = if (list.isShared && !list.shareCode.isNullOrBlank()) {
+                list
+            } else {
+                repository.enableSharing(list)
+            }
+            onReady(shared)
+        }
+    }
+
+    fun makeListPrivate(list: ShoppingListEntity) {
+        viewModelScope.launch {
+            repository.makeListPrivate(list)
+            _statusBanner.value = "\"${list.name}\" is now private"
+        }
+    }
+
+    fun deleteList(list: ShoppingListEntity) {
+        viewModelScope.launch {
+            repository.deleteList(list)
+            _statusBanner.value = "Deleted \"${list.name}\""
+        }
+    }
+
+    fun leaveSharedList(list: ShoppingListEntity, onLeft: () -> Unit = {}) {
+        viewModelScope.launch {
+            repository.leaveSharedList(list)
+                .onSuccess {
+                    _statusBanner.value = "Left \"${list.name}\""
+                    onLeft()
+                }
+                .onFailure {
+                    _statusBanner.value = it.localizedMessage ?: "Could not leave list"
+                }
+        }
+    }
+
+    fun openJoinDialog() {
+        _joinState.value = JoinListUiState(showDialog = true)
+    }
+
+    fun dismissJoinDialog() {
+        _joinState.value = JoinListUiState(showDialog = false)
+    }
+
+    fun handleIncomingShareCode(code: String) {
+        val clean = code.trim().uppercase()
+        if (clean.isEmpty()) return
+        if (sessionStatus.value is SessionStatus.Authenticated) {
+            joinListByCode(clean)
+        } else {
+            _pendingDeepLinkCode.value = clean
+        }
+    }
+
+    fun joinListByCode(code: String) {
+        viewModelScope.launch {
+            _joinState.value = _joinState.value.copy(isJoining = true, errorMessage = null)
+            repository.joinListByCode(code)
+                .onSuccess { joined ->
+                    _joinState.value = JoinListUiState(showDialog = false)
+                    if (joined != null) {
+                        _joinedListEvent.value = joined
+                        _statusBanner.value = "Joined \"${joined.name}\""
+                    } else {
+                        _statusBanner.value = "Joined shared list"
+                    }
+                }
+                .onFailure { err ->
+                    _joinState.value = _joinState.value.copy(
+                        isJoining = false,
+                        errorMessage = err.localizedMessage ?: "Invalid invite code or offline."
+                    )
+                    _statusBanner.value = "Could not join list: ${err.localizedMessage ?: "check code or connection"}"
+                }
+        }
+    }
+
+    fun consumeJoinedListEvent() {
+        _joinedListEvent.value = null
+    }
+
+    fun consumeStatusBanner() {
+        _statusBanner.value = null
+    }
+
+    // --- Items ---
+
     fun addShoppingItem(
-        storeId: String,
+        listId: String,
         categoryId: String?,
         name: String,
         quantity: String?,
         note: String?,
-        saveAsRegular: Boolean
+        saveAsRegular: Boolean = false
     ) {
         viewModelScope.launch {
-            repository.addShoppingItem(storeId, categoryId, name, quantity, note, saveAsRegular)
+            repository.addShoppingItem(listId, categoryId, name, quantity, note, saveAsRegular)
         }
     }
 
-    fun updateShoppingItem(item: ShoppingItemEntity) {
+    fun updateShoppingItem(item: ShoppingItemEntity, learnCategory: Boolean) {
         viewModelScope.launch {
-            repository.updateShoppingItem(item)
+            repository.updateShoppingItem(item, learnCategory)
         }
     }
 
@@ -183,27 +323,27 @@ class CartVrViewModel(
         }
     }
 
-    fun clearCompletedInStore(storeId: String) {
+    fun clearCompletedInList(listId: String) {
         viewModelScope.launch {
-            repository.clearCompletedInStore(storeId)
+            repository.clearCompletedInList(listId)
         }
     }
 
-    fun addRegularToList(regular: RegularItemEntity, fallbackStoreId: String) {
+    fun addRegularToList(regular: RegularItemEntity, fallbackListId: String) {
         viewModelScope.launch {
-            repository.addRegularToShoppingList(regular, fallbackStoreId)
+            repository.addRegularToShoppingList(regular, fallbackListId)
         }
     }
 
     fun saveRegularItem(
         name: String,
         defaultQuantity: String?,
-        defaultStoreId: String?,
+        defaultListId: String?,
         defaultCategoryId: String?,
         existingId: String? = null
     ) {
         viewModelScope.launch {
-            repository.saveRegularItem(name, defaultQuantity, defaultStoreId, defaultCategoryId, existingId)
+            repository.saveRegularItem(name, defaultQuantity, defaultListId, defaultCategoryId, existingId)
         }
     }
 
@@ -218,6 +358,8 @@ class CartVrViewModel(
             repository.updateCategoryOrder(reordered)
         }
     }
+
+    // --- App Updates ---
 
     fun checkForUpdates(silent: Boolean = false) {
         viewModelScope.launch {
@@ -283,10 +425,6 @@ class CartVrViewModel(
             errorMessage = null,
             needsUnknownSourcesPermission = false
         )
-    }
-
-    fun clearNoUpdateMessage() {
-        _updateState.value = _updateState.value.copy(noUpdateMessage = null)
     }
 
     companion object {
