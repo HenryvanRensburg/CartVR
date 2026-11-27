@@ -1,5 +1,6 @@
 package com.cartvr.app.ui.regulars
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,10 +19,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.DeleteOutline
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.PlaylistAdd
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilledTonalIconButton
@@ -54,11 +57,14 @@ fun RegularsScreen(
     lists: List<ShoppingListEntity>,
     allItems: List<ShoppingItemEntity>,
     categories: List<CategoryEntity>,
+    isAdmin: Boolean,
     onAddToShoppingList: (RegularItemEntity) -> Unit,
-    onCreateRegular: (name: String, qty: String?, listId: String?, categoryId: String?) -> Unit,
+    onSaveRegular: (name: String, qty: String?, listId: String?, categoryId: String?, existingId: String?) -> Unit,
     onDeleteRegular: (RegularItemEntity) -> Unit
 ) {
-    var showCreateDialog by remember { mutableStateOf(false) }
+    var showEditorDialog by remember { mutableStateOf(false) }
+    var editingRegular by remember { mutableStateOf<RegularItemEntity?>(null) }
+    var confirmDeleteTarget by remember { mutableStateOf<RegularItemEntity?>(null) }
     var searchQuery by remember { mutableStateOf("") }
 
     val listMap = remember(lists) { lists.associateBy { it.id } }
@@ -99,7 +105,7 @@ fun RegularsScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = "Regulars",
                         style = MaterialTheme.typography.headlineMedium,
@@ -112,12 +118,17 @@ fun RegularsScreen(
                     )
                 }
 
-                OutlinedButton(
-                    onClick = { showCreateDialog = true },
-                    shape = RoundedCornerShape(14.dp)
-                ) {
-                    Icon(Icons.Rounded.Add, contentDescription = null)
-                    Text(" New")
+                if (isAdmin) {
+                    OutlinedButton(
+                        onClick = {
+                            editingRegular = null
+                            showEditorDialog = true
+                        },
+                        shape = RoundedCornerShape(14.dp)
+                    ) {
+                        Icon(Icons.Rounded.Add, contentDescription = null)
+                        Text(" New")
+                    }
                 }
             }
         }
@@ -164,7 +175,7 @@ fun RegularsScreen(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Save items you buy every week (like melk, brood, or beskuit) for one-tap re-adding.",
+                            text = "Weekly staples (like melk, brood, or beskuit) will appear here for one-tap adding.",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -222,10 +233,23 @@ fun RegularsScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                            .padding(horizontal = 14.dp, vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Column(modifier = Modifier.weight(1f)) {
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .then(
+                                    if (isAdmin) {
+                                        Modifier.clickable {
+                                            editingRegular = regular
+                                            showEditorDialog = true
+                                        }
+                                    } else {
+                                        Modifier
+                                    }
+                                )
+                        ) {
                             val title = if (!regular.defaultQuantity.isNullOrBlank()) {
                                 "${regular.defaultQuantity} ${regular.name}"
                             } else {
@@ -272,12 +296,27 @@ fun RegularsScreen(
                             )
                         }
 
-                        IconButton(onClick = { onDeleteRegular(regular) }) {
-                            Icon(
-                                imageVector = Icons.Rounded.DeleteOutline,
-                                contentDescription = "Delete regular",
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                        if (isAdmin) {
+                            IconButton(
+                                onClick = {
+                                    editingRegular = regular
+                                    showEditorDialog = true
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Rounded.Edit,
+                                    contentDescription = "Edit regular",
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+
+                            IconButton(onClick = { confirmDeleteTarget = regular }) {
+                                Icon(
+                                    imageVector = Icons.Rounded.DeleteOutline,
+                                    contentDescription = "Delete regular",
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
                         }
                     }
                 }
@@ -285,41 +324,81 @@ fun RegularsScreen(
         }
     }
 
-    if (showCreateDialog) {
-        val existingRegularNames = remember(regulars) {
-            regulars.map { it.name.trim().replace(Regex("\\s+"), " ").lowercase() }.toSet()
+    if (showEditorDialog && isAdmin) {
+        val current = editingRegular
+        val existingRegularNames = remember(regulars, current?.id) {
+            regulars
+                .filter { it.id != current?.id }
+                .map { it.name.trim().replace(Regex("\\s+"), " ").lowercase() }
+                .toSet()
         }
-        CreateRegularDialog(
+        RegularEditorDialog(
+            editingRegular = current,
             lists = lists,
             categories = categories,
             existingRegularNames = existingRegularNames,
-            onDismiss = { showCreateDialog = false },
+            onDismiss = {
+                showEditorDialog = false
+                editingRegular = null
+            },
             onSave = { name, qty, listId, categoryId ->
-                onCreateRegular(name, qty, listId, categoryId)
-                showCreateDialog = false
+                onSaveRegular(name, qty, listId, categoryId, current?.id)
+                showEditorDialog = false
+                editingRegular = null
+            }
+        )
+    }
+
+    confirmDeleteTarget?.let { target ->
+        AlertDialog(
+            onDismissRequest = { confirmDeleteTarget = null },
+            title = { Text("Delete \"${target.name}\"?") },
+            text = { Text("This will remove \"${target.name}\" from your family's Regulars list.") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        onDeleteRegular(target)
+                        confirmDeleteTarget = null
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { confirmDeleteTarget = null }) {
+                    Text("Cancel")
+                }
             }
         )
     }
 }
 
 @Composable
-private fun CreateRegularDialog(
+private fun RegularEditorDialog(
+    editingRegular: RegularItemEntity?,
     lists: List<ShoppingListEntity>,
     categories: List<CategoryEntity>,
     existingRegularNames: Set<String>,
     onDismiss: () -> Unit,
     onSave: (name: String, qty: String?, listId: String?, categoryId: String?) -> Unit
 ) {
-    var name by remember { mutableStateOf("") }
-    var quantity by remember { mutableStateOf("") }
-    var selectedListId by remember { mutableStateOf(lists.firstOrNull()?.id) }
-    var selectedCategoryId by remember { mutableStateOf(categories.lastOrNull()?.id) }
+    var name by remember(editingRegular?.id) { mutableStateOf(editingRegular?.name ?: "") }
+    var quantity by remember(editingRegular?.id) { mutableStateOf(editingRegular?.defaultQuantity ?: "") }
+    var selectedListId by remember(editingRegular?.id) {
+        mutableStateOf(editingRegular?.defaultListId ?: lists.firstOrNull()?.id)
+    }
+    var selectedCategoryId by remember(editingRegular?.id) {
+        mutableStateOf(editingRegular?.defaultCategoryId ?: categories.lastOrNull()?.id)
+    }
     val normalizedInput = name.trim().replace(Regex("\\s+"), " ").lowercase()
     val isDuplicate = normalizedInput.isNotEmpty() && normalizedInput in existingRegularNames
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("New Regular Item") },
+        title = {
+            Text(if (editingRegular == null) "New Regular Item" else "Edit Regular Item")
+        },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 OutlinedTextField(
@@ -386,7 +465,7 @@ private fun CreateRegularDialog(
                 },
                 enabled = name.isNotBlank() && !isDuplicate
             ) {
-                Text("Save")
+                Text(if (editingRegular == null) "Save" else "Save Changes")
             }
         },
         dismissButton = {

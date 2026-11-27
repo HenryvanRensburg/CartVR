@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.cartvr.app.data.local.dao.CartVrDao
 import com.cartvr.app.data.local.entity.CategoryEntity
 import com.cartvr.app.data.local.entity.ItemHistoryEntity
@@ -21,7 +23,7 @@ import com.cartvr.app.data.local.entity.ShoppingListEntity
         RegularItemEntity::class,
         ItemHistoryEntity::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class CartVrDatabase : RoomDatabase() {
@@ -31,6 +33,12 @@ abstract class CartVrDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: CartVrDatabase? = null
 
+        private val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE shopping_items ADD COLUMN updatedBy TEXT")
+            }
+        }
+
         fun getInstance(context: Context): CartVrDatabase {
             return INSTANCE ?: synchronized(this) {
                 INSTANCE ?: Room.databaseBuilder(
@@ -38,6 +46,7 @@ abstract class CartVrDatabase : RoomDatabase() {
                     CartVrDatabase::class.java,
                     "cartvr.db"
                 )
+                    .addMigrations(MIGRATION_2_3)
                     .fallbackToDestructiveMigration()
                     .build()
                     .also { INSTANCE = it }

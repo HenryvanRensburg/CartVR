@@ -67,6 +67,7 @@ data class ShoppingItemEntity(
     val isChecked: Boolean = false,
     val estimatedPrice: Double? = null,
     val addedBy: String? = null,
+    val updatedBy: String? = null,
     val createdAt: String,
     val updatedAt: String,
     val deletedAt: String? = null,

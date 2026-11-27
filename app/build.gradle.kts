@@ -20,10 +20,10 @@ android {
 
     defaultConfig {
         applicationId = "com.cartvr.app"
-        minSdk = 26
+                minSdk = 26
         targetSdk = 35
-        versionCode = 5
-        versionName = "1.2.2"
+        versionCode = 7
+        versionName = "1.3.0"
 
         buildConfigField("String", "SUPABASE_URL", "\"https://dqbjxuuladymxlcedbvx.supabase.co\"")
         buildConfigField("String", "SUPABASE_KEY", "\"sb_publishable_02TccoaCz3gUG3Gl6KkNLQ_l_1cHBdD\"")
@@ -95,6 +95,7 @@ dependencies {
     ksp(libs.androidx.room.compiler)
 
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.work.runtime.ktx)
 
     implementation(platform(libs.supabase.bom))
     implementation(libs.supabase.postgrest)

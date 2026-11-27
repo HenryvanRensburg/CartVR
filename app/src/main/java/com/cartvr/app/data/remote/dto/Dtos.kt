@@ -70,6 +70,7 @@ data class ShoppingItemDto(
     @SerialName("is_checked") val isChecked: Boolean = false,
     @SerialName("estimated_price") val estimatedPrice: Double? = null,
     @SerialName("added_by") val addedBy: String? = null,
+    @SerialName("updated_by") val updatedBy: String? = null,
     @SerialName("created_at") val createdAt: String,
     @SerialName("updated_at") val updatedAt: String,
     @SerialName("deleted_at") val deletedAt: String? = null
@@ -238,6 +239,7 @@ fun ShoppingItemDto.toEntity(): ShoppingItemEntity? {
         isChecked = isChecked,
         estimatedPrice = estimatedPrice,
         addedBy = addedBy,
+        updatedBy = updatedBy,
         createdAt = createdAt,
         updatedAt = updatedAt,
         deletedAt = deletedAt,
@@ -257,6 +259,7 @@ fun ShoppingItemEntity.toDto() = ShoppingItemDto(
     isChecked = isChecked,
     estimatedPrice = estimatedPrice,
     addedBy = addedBy,
+    updatedBy = updatedBy,
     createdAt = createdAt,
     updatedAt = updatedAt,
     deletedAt = deletedAt

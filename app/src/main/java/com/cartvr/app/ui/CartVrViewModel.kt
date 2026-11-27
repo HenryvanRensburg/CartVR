@@ -1,5 +1,6 @@
 package com.cartvr.app.ui
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -10,6 +11,9 @@ import com.cartvr.app.data.local.entity.ListMemberEntity
 import com.cartvr.app.data.local.entity.RegularItemEntity
 import com.cartvr.app.data.local.entity.ShoppingItemEntity
 import com.cartvr.app.data.local.entity.ShoppingListEntity
+import com.cartvr.app.data.notifications.ListSyncWorker
+import com.cartvr.app.data.notifications.LiveSyncService
+import com.cartvr.app.data.notifications.NotificationHelper
 import com.cartvr.app.data.preferences.AppPreferences
 import com.cartvr.app.data.preferences.ThemeMode
 import com.cartvr.app.data.remote.dto.FamilyInviteDto
@@ -26,8 +30,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.time.Instant
 
 data class UpdateUiState(
     val isChecking: Boolean = false,
@@ -62,6 +69,7 @@ data class InviteFlowState(
 )
 
 class CartVrViewModel(
+    private val appContext: Context,
     private val repository: CartVrRepository,
     private val prefs: AppPreferences,
     private val updater: GitHubUpdater
@@ -136,6 +144,45 @@ class CartVrViewModel(
         emptyList()
     )
 
+    val notificationsEnabled: StateFlow<Boolean> = prefs.notificationsEnabled.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        false
+    )
+
+    val notifyOnChecked: StateFlow<Boolean> = prefs.notifyOnChecked.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        false
+    )
+
+    val liveModeDurationHours: StateFlow<Int> = prefs.liveModeDurationHours.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        LiveSyncService.DEFAULT_DURATION_HOURS
+    )
+
+    val liveModeStopAtMs: StateFlow<Long> = prefs.liveModeStopAtMs.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        0L
+    )
+
+    val liveModeEnabled: StateFlow<Boolean> = combine(
+        LiveSyncService.isRunning,
+        prefs.liveModeEnabled,
+        prefs.liveModeStopAtMs
+    ) { running, saved, stopAt ->
+        running || (saved && stopAt > System.currentTimeMillis())
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        LiveSyncService.isRunning.value
+    )
+
+    private val _pendingNotificationListId = MutableStateFlow<String?>(null)
+    val pendingNotificationListId: StateFlow<String?> = _pendingNotificationListId.asStateFlow()
+
     private val _authLoading = MutableStateFlow(false)
     val authLoading: StateFlow<Boolean> = _authLoading.asStateFlow()
 
@@ -198,9 +245,80 @@ class CartVrViewModel(
     }
 
     fun signOut() {
+        LiveSyncService.stop(appContext)
+        ListSyncWorker.WorkScheduler.cancel(appContext)
         viewModelScope.launch {
             repository.signOut()
         }
+    }
+
+    fun setNotificationsEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            prefs.setNotificationsEnabled(enabled)
+            if (enabled) {
+                if (prefs.lastNotifiedAt.first().isNullOrBlank()) {
+                    prefs.setLastNotifiedAt(Instant.now().toString())
+                }
+                ListSyncWorker.WorkScheduler.schedule(appContext)
+            } else {
+                ListSyncWorker.WorkScheduler.cancel(appContext)
+                LiveSyncService.stop(appContext)
+                prefs.setLiveMode(enabled = false, stopAtMs = 0L)
+            }
+        }
+    }
+
+    fun setNotifyOnChecked(enabled: Boolean) {
+        viewModelScope.launch {
+            prefs.setNotifyOnChecked(enabled)
+        }
+    }
+
+    fun setLiveModeEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            if (enabled) {
+                prefs.setNotificationsEnabled(true)
+                if (prefs.lastNotifiedAt.first().isNullOrBlank()) {
+                    prefs.setLastNotifiedAt(Instant.now().toString())
+                }
+                ListSyncWorker.WorkScheduler.schedule(appContext)
+                val hours = prefs.liveModeDurationHours.first()
+                LiveSyncService.start(appContext, hours)
+            } else {
+                LiveSyncService.stop(appContext)
+                prefs.setLiveMode(enabled = false, stopAtMs = 0L)
+            }
+        }
+    }
+
+    fun setLiveModeDurationHours(hours: Int) {
+        viewModelScope.launch {
+            val clamped = hours.coerceIn(1, 4)
+            prefs.setLiveModeDurationHours(clamped)
+            if (LiveSyncService.isRunning.value) {
+                LiveSyncService.start(appContext, clamped)
+            }
+        }
+    }
+
+    fun previewNotificationChime() {
+        NotificationHelper.previewChime(appContext)
+    }
+
+    fun openNotificationChannelSettings() {
+        NotificationHelper.openChannelSoundSettings(appContext)
+    }
+
+    fun openListFromNotification(listId: String) {
+        _pendingNotificationListId.value = listId
+    }
+
+    fun consumePendingNotificationListId() {
+        _pendingNotificationListId.value = null
+    }
+
+    fun setActiveOpenListId(listId: String?) {
+        repository.setActiveOpenListId(listId)
     }
 
     fun setThemeMode(mode: ThemeMode) {
@@ -680,7 +798,12 @@ class CartVrViewModel(
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return CartVrViewModel(app.repository, app.preferences, app.updater) as T
+                    return CartVrViewModel(
+                        app.applicationContext,
+                        app.repository,
+                        app.preferences,
+                        app.updater
+                    ) as T
                 }
             }
     }

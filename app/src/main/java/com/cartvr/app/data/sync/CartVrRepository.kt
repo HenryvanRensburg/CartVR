@@ -8,6 +8,9 @@ import com.cartvr.app.data.local.entity.RegularItemEntity
 import com.cartvr.app.data.local.entity.ShoppingItemEntity
 import com.cartvr.app.data.local.entity.ShoppingListEntity
 import com.cartvr.app.data.local.entity.SyncStatus
+import com.cartvr.app.data.notifications.ItemChangeKind
+import com.cartvr.app.data.notifications.NotificationBundler
+import com.cartvr.app.data.notifications.PendingListChange
 import com.cartvr.app.data.preferences.AppPreferences
 import com.cartvr.app.data.remote.FamilyApiClient
 import com.cartvr.app.data.remote.SupabaseProvider
@@ -51,11 +54,13 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import java.security.SecureRandom
 import java.time.Instant
 import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 
 enum class SyncState {
     SYNCED,
@@ -75,13 +80,21 @@ sealed class ItemMutationResult {
 class CartVrRepository(
     private val dao: CartVrDao,
     private val prefs: AppPreferences,
-    private val networkMonitor: NetworkMonitor
+    private val networkMonitor: NetworkMonitor,
+    private val notificationBundler: NotificationBundler? = null
 ) {
     private val supabase = SupabaseProvider.client
     private val familyApi = FamilyApiClient()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val syncMutex = Mutex()
     private val random = SecureRandom()
+    private val profileNameCache = ConcurrentHashMap<String, String>()
+
+    @Volatile
+    private var activeOpenListId: String? = null
+
+    @Volatile
+    private var isAppInForeground: Boolean = false
 
     private var realtimeChannel: RealtimeChannel? = null
     private var realtimeJob: Job? = null
@@ -122,6 +135,14 @@ class CartVrRepository(
                 }
             }
             .launchIn(scope)
+    }
+
+    fun setActiveOpenListId(listId: String?) {
+        activeOpenListId = listId
+    }
+
+    fun setAppForeground(inForeground: Boolean) {
+        isAppInForeground = inForeground
     }
 
     fun currentUserId(): String? = supabase.auth.currentUserOrNull()?.id
@@ -290,6 +311,7 @@ class CartVrRepository(
                                 quantity = item.quantity ?: match.quantity,
                                 note = item.note ?: match.note,
                                 isChecked = false,
+                                updatedBy = userId,
                                 updatedAt = Instant.now().toString()
                             )
                             runCatching {
@@ -362,6 +384,17 @@ class CartVrRepository(
                 .select { filter { eq("household_id", householdId) } }
                 .decodeList<RegularItemDto>()
             dao.upsertRegularItems(remoteRegulars.map { it.toEntity() })
+
+            runCatching {
+                supabase.postgrest["profiles"]
+                    .select()
+                    .decodeList<ProfileDto>()
+                    .forEach { profile ->
+                        if (profile.displayName.isNotBlank()) {
+                            profileNameCache[profile.userId] = profile.displayName.trim()
+                        }
+                    }
+            }
         }
 
         val remoteItems = supabase.postgrest["shopping_items"]
@@ -377,11 +410,19 @@ class CartVrRepository(
         dao.upsertItemHistory(remoteHistory.map { it.toEntity() })
     }
 
-    suspend fun ensureRealtimeSubscribed() {
+    suspend fun ensureRealtimeSubscribed(forceReconnect: Boolean = false) {
         if (!networkMonitor.refresh() || currentUserId() == null) return
-        if (realtimeChannel != null) return
+        if (realtimeChannel != null && !forceReconnect) return
 
-        runCatching {
+        if (forceReconnect) {
+            runCatching {
+                realtimeJob?.cancel()
+                realtimeChannel?.unsubscribe()
+            }
+            realtimeChannel = null
+        }
+
+        val subscribeResult = runCatching {
             val channel = supabase.realtime.channel("cartvr-live")
             realtimeChannel = channel
 
@@ -422,17 +463,26 @@ class CartVrRepository(
 
             channel.subscribe()
         }
+
+        if (subscribeResult.isFailure) {
+            realtimeJob?.cancel()
+            realtimeChannel = null
+        }
     }
 
     private suspend fun handleShoppingItemRealtime(action: PostgresAction) {
         when (action) {
             is PostgresAction.Insert -> {
                 val entity = action.decodeRecord<ShoppingItemDto>().toEntity() ?: return
+                val previous = dao.getShoppingItemById(entity.id)
                 dao.upsertShoppingItem(entity)
+                maybeEmitRealtimeNotification(previous = previous, current = entity, isInsert = true)
             }
             is PostgresAction.Update -> {
                 val entity = action.decodeRecord<ShoppingItemDto>().toEntity() ?: return
+                val previous = dao.getShoppingItemById(entity.id)
                 dao.upsertShoppingItem(entity)
+                maybeEmitRealtimeNotification(previous = previous, current = entity, isInsert = false)
             }
             is PostgresAction.Delete -> {
                 val id = action.oldRecord["id"]?.toString()?.trim('"') ?: return
@@ -440,6 +490,156 @@ class CartVrRepository(
             }
             else -> Unit
         }
+    }
+
+    private suspend fun maybeEmitRealtimeNotification(
+        previous: ShoppingItemEntity?,
+        current: ShoppingItemEntity,
+        isInsert: Boolean
+    ) {
+        val bundler = notificationBundler ?: return
+        if (!prefs.notificationsEnabled.first()) return
+        val currentUid = currentUserId() ?: return
+        val actorId = current.updatedBy ?: current.addedBy ?: return
+        if (actorId == currentUid || current.deletedAt != null) return
+
+        val list = dao.getListById(current.listId) ?: return
+        if (!list.isShared || list.deletedAt != null) return
+
+        val notifyOnChecked = prefs.notifyOnChecked.first()
+        val kind = when {
+            isInsert && !current.isChecked -> ItemChangeKind.ADDED
+            !isInsert && !current.isChecked && (previous == null || previous.isChecked) -> ItemChangeKind.ADDED
+            current.isChecked && (previous == null || !previous.isChecked) -> {
+                if (notifyOnChecked) ItemChangeKind.CHECKED else return
+            }
+            else -> return
+        }
+
+        if (isAppInForeground && activeOpenListId == current.listId) {
+            bundler.advanceLastNotifiedAt(current.updatedAt)
+            return
+        }
+
+        val actorName = resolveActorName(actorId)
+        bundler.enqueueRealtimeChange(
+            PendingListChange(
+                itemId = current.id,
+                listId = current.listId,
+                listName = list.name,
+                itemName = current.name,
+                quantity = current.quantity,
+                actorName = actorName,
+                kind = kind,
+                updatedAt = current.updatedAt
+            )
+        )
+    }
+
+    private suspend fun resolveActorName(userId: String): String {
+        profileNameCache[userId]?.let { return it }
+
+        val fetched = runCatching {
+            supabase.postgrest["profiles"]
+                .select { filter { eq("user_id", userId) } }
+                .decodeList<ProfileDto>()
+                .firstOrNull()
+                ?.displayName
+                ?.trim()
+                ?.takeIf { it.isNotEmpty() }
+        }.getOrNull()
+
+        if (fetched != null) {
+            profileNameCache[userId] = fetched
+            return fetched
+        }
+
+        return when (userId) {
+            "862590df-507f-4c03-9417-f3703b8327c2" -> "Henry"
+            "fc1b039d-1b1a-4dce-bbc4-a4f8dd5a94d2" -> "Jolene"
+            else -> "Family"
+        }
+    }
+
+    suspend fun awaitAuthReady(): String? {
+        withTimeoutOrNull(8_000L) {
+            sessionStatus.first { it !is SessionStatus.Initializing }
+        }
+        return currentUserId()
+    }
+
+    suspend fun pollAndNotifyBackgroundChanges() {
+        val bundler = notificationBundler ?: return
+        val currentUid = awaitAuthReady() ?: return
+        if (!prefs.notificationsEnabled.first()) return
+
+        val sinceIso = prefs.lastNotifiedAt.first()
+        if (sinceIso.isNullOrBlank()) {
+            syncAll(force = true)
+            prefs.setLastNotifiedAt(Instant.now().toString())
+            return
+        }
+
+        val previousItemsById = dao.observeAllActiveShoppingItems().first().associateBy { it.id }
+        syncAll(force = true)
+        if (_syncState.value == SyncState.OFFLINE) return
+
+        val sinceInstant = runCatching { Instant.parse(sinceIso) }.getOrNull() ?: Instant.now()
+        val sharedLists = dao.observeActiveLists().first()
+            .filter { it.isShared && it.deletedAt == null }
+            .associateBy { it.id }
+        if (sharedLists.isEmpty()) {
+            bundler.advanceLastNotifiedAt(Instant.now().toString())
+            return
+        }
+
+        val notifyOnChecked = prefs.notifyOnChecked.first()
+        val allActiveItems = dao.observeAllActiveShoppingItems().first()
+        val changes = mutableListOf<PendingListChange>()
+        var latestSeenIso: String? = null
+
+        for (item in allActiveItems) {
+            val list = sharedLists[item.listId] ?: continue
+            val updatedInstant = runCatching { Instant.parse(item.updatedAt) }.getOrNull() ?: continue
+            if (!updatedInstant.isAfter(sinceInstant)) continue
+
+            if (latestSeenIso == null || updatedInstant.isAfter(Instant.parse(latestSeenIso))) {
+                latestSeenIso = item.updatedAt
+            }
+
+            if (isAppInForeground && activeOpenListId == item.listId) continue
+
+            val actorId = item.updatedBy ?: item.addedBy ?: continue
+            if (actorId == currentUid) continue
+
+            val prev = previousItemsById[item.id]
+            val kind = if (item.isChecked) {
+                if (!notifyOnChecked || prev?.isChecked == true) continue
+                ItemChangeKind.CHECKED
+            } else {
+                val createdInstant = runCatching { Instant.parse(item.createdAt) }.getOrNull()
+                val isNewlyCreated = createdInstant != null && createdInstant.isAfter(sinceInstant)
+                val isNewlyAppeared = prev == null || prev.isChecked
+                if (!isNewlyCreated && !isNewlyAppeared) continue
+                ItemChangeKind.ADDED
+            }
+
+            changes += PendingListChange(
+                itemId = item.id,
+                listId = item.listId,
+                listName = list.name,
+                itemName = item.name,
+                quantity = item.quantity,
+                actorName = resolveActorName(actorId),
+                kind = kind,
+                updatedAt = item.updatedAt
+            )
+        }
+
+        if (changes.isNotEmpty()) {
+            bundler.postImmediateBatch(changes)
+        }
+        bundler.advanceLastNotifiedAt(latestSeenIso ?: Instant.now().toString())
     }
 
     private suspend fun handleListRealtime(action: PostgresAction) {
@@ -657,6 +857,7 @@ class CartVrRepository(
                     note = cleanNote ?: existing.note,
                     categoryId = categoryId ?: existing.categoryId,
                     isChecked = false,
+                    updatedBy = userId,
                     updatedAt = now,
                     syncStatus = SyncStatus.PENDING_UPSERT
                 )
@@ -680,6 +881,7 @@ class CartVrRepository(
                 val updated = existing.copy(
                     quantity = cleanQty ?: existing.quantity,
                     note = cleanNote ?: existing.note,
+                    updatedBy = userId,
                     updatedAt = now,
                     syncStatus = SyncStatus.PENDING_UPSERT
                 )
@@ -700,6 +902,7 @@ class CartVrRepository(
             note = cleanNote,
             isChecked = false,
             addedBy = userId,
+            updatedBy = userId,
             createdAt = now,
             updatedAt = now,
             syncStatus = SyncStatus.PENDING_UPSERT
@@ -751,15 +954,16 @@ class CartVrRepository(
         }
 
         val now = Instant.now().toString()
+        val userId = currentUserId()
         val normalizedItem = item.copy(
             name = cleanName,
             quantity = item.quantity?.trim()?.ifBlank { null },
             note = item.note?.trim()?.ifBlank { null },
+            updatedBy = userId,
             updatedAt = now,
             syncStatus = SyncStatus.PENDING_UPSERT
         )
         dao.upsertShoppingItem(normalizedItem)
-        val userId = currentUserId()
         if (learnCategory && userId != null) {
             upsertHistoryInternal(
                 userId = userId,
@@ -820,6 +1024,7 @@ class CartVrRepository(
         dao.upsertShoppingItem(
             item.copy(
                 isChecked = !item.isChecked,
+                updatedBy = currentUserId(),
                 updatedAt = now,
                 syncStatus = SyncStatus.PENDING_UPSERT
             )
@@ -831,6 +1036,7 @@ class CartVrRepository(
         val now = Instant.now().toString()
         dao.upsertShoppingItem(
             item.copy(
+                updatedBy = currentUserId(),
                 updatedAt = now,
                 deletedAt = now,
                 syncStatus = SyncStatus.PENDING_DELETE
@@ -841,11 +1047,13 @@ class CartVrRepository(
 
     suspend fun clearCompletedInList(listId: String) {
         val now = Instant.now().toString()
+        val userId = currentUserId()
         val items = dao.observeListShoppingItems(listId).first().filter { it.isChecked }
         if (items.isEmpty()) return
         dao.upsertShoppingItems(
             items.map {
                 it.copy(
+                    updatedBy = userId,
                     updatedAt = now,
                     deletedAt = now,
                     syncStatus = SyncStatus.PENDING_DELETE
@@ -888,6 +1096,7 @@ class CartVrRepository(
             return ItemMutationResult.DuplicateBlocked("\"$cleanName\" is already in Regulars")
         }
 
+        val cleanQty = defaultQuantity?.trim()?.ifBlank { null }
         val now = Instant.now().toString()
         val entity = RegularItemEntity(
             id = existingId ?: UUID.randomUUID().toString(),
@@ -895,11 +1104,21 @@ class CartVrRepository(
             defaultListId = defaultListId,
             defaultCategoryId = defaultCategoryId,
             name = cleanName,
-            defaultQuantity = defaultQuantity?.trim()?.ifBlank { null },
+            defaultQuantity = cleanQty,
             updatedAt = now,
             syncStatus = SyncStatus.PENDING_UPSERT
         )
         dao.upsertRegularItem(entity)
+        val userId = currentUserId()
+        if (userId != null) {
+            upsertHistoryInternal(
+                userId = userId,
+                name = cleanName,
+                quantity = cleanQty,
+                categoryId = defaultCategoryId,
+                forceUpdateCategory = true
+            )
+        }
         scope.launch { syncAll() }
         return ItemMutationResult.Added(cleanName)
     }

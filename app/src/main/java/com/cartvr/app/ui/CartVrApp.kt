@@ -138,7 +138,13 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
     val updateState by viewModel.updateState.collectAsStateWithLifecycle()
     val joinState by viewModel.joinState.collectAsStateWithLifecycle()
     val joinedListEvent by viewModel.joinedListEvent.collectAsStateWithLifecycle()
+    val pendingNotificationListId by viewModel.pendingNotificationListId.collectAsStateWithLifecycle()
     val statusBanner by viewModel.statusBanner.collectAsStateWithLifecycle()
+    val notificationsEnabled by viewModel.notificationsEnabled.collectAsStateWithLifecycle()
+    val notifyOnChecked by viewModel.notifyOnChecked.collectAsStateWithLifecycle()
+    val liveModeEnabled by viewModel.liveModeEnabled.collectAsStateWithLifecycle()
+    val liveModeDurationHours by viewModel.liveModeDurationHours.collectAsStateWithLifecycle()
+    val liveModeStopAtMs by viewModel.liveModeStopAtMs.collectAsStateWithLifecycle()
 
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
@@ -148,6 +154,23 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
 
     val showBottomBar = currentRoute in TopTab.entries.map { it.route }
     val showFab = currentRoute == TopTab.LISTS.route
+
+    LaunchedEffect(currentRoute, backStackEntry) {
+        val activeListId = if (currentRoute == "list/{listId}") {
+            backStackEntry?.arguments?.getString("listId")
+        } else {
+            null
+        }
+        viewModel.setActiveOpenListId(activeListId)
+    }
+
+    LaunchedEffect(pendingNotificationListId) {
+        val targetListId = pendingNotificationListId ?: return@LaunchedEffect
+        viewModel.consumePendingNotificationListId()
+        navController.navigate("list/$targetListId") {
+            launchSingleTop = true
+        }
+    }
 
     LaunchedEffect(joinedListEvent) {
         val joined = joinedListEvent ?: return@LaunchedEffect
@@ -245,12 +268,13 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
                     lists = lists,
                     allItems = allItems,
                     categories = categories,
+                    isAdmin = isAdmin,
                     onAddToShoppingList = { regular ->
                         val fallbackList = lists.firstOrNull() ?: return@RegularsScreen
                         viewModel.addRegularToList(regular, fallbackList.id)
                     },
-                    onCreateRegular = { name, qty, listId, categoryId ->
-                        viewModel.saveRegularItem(name, qty, listId, categoryId)
+                    onSaveRegular = { name, qty, listId, categoryId, existingId ->
+                        viewModel.saveRegularItem(name, qty, listId, categoryId, existingId)
                     },
                     onDeleteRegular = { regular ->
                         viewModel.deleteRegularItem(regular)
@@ -267,7 +291,18 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
                     themeMode = themeMode,
                     lastSyncError = lastSyncError,
                     updateState = updateState,
+                    notificationsEnabled = notificationsEnabled,
+                    notifyOnChecked = notifyOnChecked,
+                    liveModeEnabled = liveModeEnabled,
+                    liveModeDurationHours = liveModeDurationHours,
+                    liveModeStopAtMs = liveModeStopAtMs,
                     onThemeSelected = { viewModel.setThemeMode(it) },
+                    onNotificationsEnabledChanged = { viewModel.setNotificationsEnabled(it) },
+                    onNotifyOnCheckedChanged = { viewModel.setNotifyOnChecked(it) },
+                    onLiveModeEnabledChanged = { viewModel.setLiveModeEnabled(it) },
+                    onLiveModeDurationChanged = { viewModel.setLiveModeDurationHours(it) },
+                    onPreviewChime = { viewModel.previewNotificationChime() },
+                    onOpenSoundSettings = { viewModel.openNotificationChannelSettings() },
                     onManageFamily = { navController.navigate("manage_family") },
                     onSyncNow = {
                         viewModel.syncNow()

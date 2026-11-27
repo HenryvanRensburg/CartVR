@@ -86,6 +86,9 @@ interface CartVrDao {
     @Query("SELECT * FROM shopping_items WHERE listId = :listId AND deletedAt IS NULL ORDER BY isChecked ASC, name COLLATE NOCASE ASC")
     fun observeListShoppingItems(listId: String): Flow<List<ShoppingItemEntity>>
 
+    @Query("SELECT * FROM shopping_items WHERE id = :id LIMIT 1")
+    suspend fun getShoppingItemById(id: String): ShoppingItemEntity?
+
     @Query("SELECT * FROM shopping_items WHERE listId = :listId AND deletedAt IS NULL")
     suspend fun getActiveShoppingItemsForList(listId: String): List<ShoppingItemEntity>
 
