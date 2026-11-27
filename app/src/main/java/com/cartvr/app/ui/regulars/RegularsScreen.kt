@@ -16,8 +16,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.material.icons.rounded.PlaylistAdd
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -57,14 +59,39 @@ fun RegularsScreen(
     onDeleteRegular: (RegularItemEntity) -> Unit
 ) {
     var showCreateDialog by remember { mutableStateOf(false) }
+    var searchQuery by remember { mutableStateOf("") }
 
     val listMap = remember(lists) { lists.associateBy { it.id } }
     val categoryMap = remember(categories) { categories.associateBy { it.id } }
 
+    val groupedRegulars = remember(regulars, categories, searchQuery) {
+        val q = searchQuery.trim().lowercase()
+        val filtered = if (q.isEmpty()) {
+            regulars
+        } else {
+            regulars.filter { reg ->
+                val catName = categoryMap[reg.defaultCategoryId]?.name?.lowercase().orEmpty()
+                reg.name.lowercase().contains(q) || catName.contains(q)
+            }
+        }
+        val grouped = filtered.groupBy { it.defaultCategoryId }
+        buildList {
+            categories.forEach { cat ->
+                val itemsInCat = grouped[cat.id].orEmpty().sortedBy { it.name.lowercase() }
+                if (itemsInCat.isNotEmpty()) add(cat to itemsInCat)
+            }
+            val knownIds = categories.map { it.id }.toSet()
+            val uncategorized = filtered
+                .filter { it.defaultCategoryId == null || it.defaultCategoryId !in knownIds }
+                .sortedBy { it.name.lowercase() }
+            if (uncategorized.isNotEmpty()) add(null to uncategorized)
+        }
+    }
+
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 96.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         item {
             Row(
@@ -79,7 +106,7 @@ fun RegularsScreen(
                         color = MaterialTheme.colorScheme.onBackground
                     )
                     Text(
-                        text = "Weekly staples for one-tap adding",
+                        text = "${regulars.size} staples • sorted by aisle A–Z",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -92,6 +119,29 @@ fun RegularsScreen(
                     Icon(Icons.Rounded.Add, contentDescription = null)
                     Text(" New")
                 }
+            }
+        }
+
+        if (regulars.isNotEmpty()) {
+            item {
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    placeholder = { Text("Search regulars (e.g. melk, brood, wors)...") },
+                    leadingIcon = {
+                        Icon(Icons.Rounded.Search, contentDescription = null)
+                    },
+                    trailingIcon = {
+                        if (searchQuery.isNotEmpty()) {
+                            IconButton(onClick = { searchQuery = "" }) {
+                                Icon(Icons.Rounded.Close, contentDescription = "Clear search")
+                            }
+                        }
+                    },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp)
+                )
             }
         }
 
@@ -114,92 +164,121 @@ fun RegularsScreen(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Save items you buy every week (like milk, bread, or rusks) for one-tap re-adding.",
+                            text = "Save items you buy every week (like melk, brood, or beskuit) for one-tap re-adding.",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
             }
+        } else if (groupedRegulars.isEmpty()) {
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "No matches for \"$searchQuery\"",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+                }
+            }
         }
 
-        items(regulars, key = { it.id }) { regular ->
-            val targetListId = regular.defaultListId ?: lists.firstOrNull()?.id
-            val listName = listMap[regular.defaultListId]?.name ?: lists.firstOrNull()?.name ?: "Default List"
-            val categoryName = categoryMap[regular.defaultCategoryId]?.name
-            val normalizedRegName = regular.name.trim().replace(Regex("\\s+"), " ").lowercase()
-            val isOnList = targetListId != null && allItems.any {
-                it.listId == targetListId &&
-                    !it.isChecked &&
-                    it.name.trim().replace(Regex("\\s+"), " ").lowercase() == normalizedRegName
+        groupedRegulars.forEach { (category, catRegulars) ->
+            item(key = "reg_header_${category?.id ?: "other"}") {
+                Text(
+                    text = category?.name ?: "Other",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(top = 8.dp, bottom = 2.dp)
+                )
             }
 
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(18.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
+            items(catRegulars, key = { it.id }) { regular ->
+                val targetListId = regular.defaultListId ?: lists.firstOrNull()?.id
+                val listName = listMap[regular.defaultListId]?.name ?: lists.firstOrNull()?.name ?: "Default List"
+                val normalizedRegName = regular.name.trim().replace(Regex("\\s+"), " ").lowercase()
+                val isOnList = targetListId != null && allItems.any {
+                    it.listId == targetListId &&
+                        !it.isChecked &&
+                        it.name.trim().replace(Regex("\\s+"), " ").lowercase() == normalizedRegName
+                }
+
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
                 ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        val title = if (!regular.defaultQuantity.isNullOrBlank()) {
-                            "${regular.defaultQuantity} ${regular.name}"
-                        } else {
-                            regular.name
-                        }
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Text(
-                                text = title,
-                                style = MaterialTheme.typography.titleMedium,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            if (isOnList) {
-                                Surface(
-                                    shape = RoundedCornerShape(50),
-                                    color = MaterialTheme.colorScheme.primaryContainer
-                                ) {
-                                    Text(
-                                        text = "On list",
-                                        style = MaterialTheme.typography.labelMedium,
-                                        fontWeight = FontWeight.Medium,
-                                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
-                                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            val title = if (!regular.defaultQuantity.isNullOrBlank()) {
+                                "${regular.defaultQuantity} ${regular.name}"
+                            } else {
+                                regular.name
+                            }
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Text(
+                                    text = title,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                if (isOnList) {
+                                    Surface(
+                                        shape = RoundedCornerShape(50),
+                                        color = MaterialTheme.colorScheme.primaryContainer
+                                    ) {
+                                        Text(
+                                            text = "On list",
+                                            style = MaterialTheme.typography.labelMedium,
+                                            fontWeight = FontWeight.Medium,
+                                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                                        )
+                                    }
                                 }
                             }
+                            Text(
+                                text = listName,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                         }
-                        val subtitle = listOfNotNull(listName, categoryName).joinToString(" • ")
-                        Text(
-                            text = subtitle,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
 
-                    FilledTonalIconButton(
-                        onClick = { onAddToShoppingList(regular) },
-                        enabled = lists.isNotEmpty()
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.PlaylistAdd,
-                            contentDescription = "Add to shopping list"
-                        )
-                    }
+                        FilledTonalIconButton(
+                            onClick = { onAddToShoppingList(regular) },
+                            enabled = lists.isNotEmpty()
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.PlaylistAdd,
+                                contentDescription = "Add to shopping list"
+                            )
+                        }
 
-                    IconButton(onClick = { onDeleteRegular(regular) }) {
-                        Icon(
-                            imageVector = Icons.Rounded.DeleteOutline,
-                            contentDescription = "Delete regular",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                        IconButton(onClick = { onDeleteRegular(regular) }) {
+                            Icon(
+                                imageVector = Icons.Rounded.DeleteOutline,
+                                contentDescription = "Delete regular",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     }
                 }
             }
@@ -246,7 +325,7 @@ private fun CreateRegularDialog(
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Item name (e.g. Full cream milk)") },
+                    label = { Text("Item name (e.g. Melk)") },
                     singleLine = true,
                     isError = isDuplicate,
                     supportingText = if (isDuplicate) {

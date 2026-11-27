@@ -125,17 +125,17 @@ fun ListDetailScreen(
     var extraQty by remember { mutableStateOf("") }
     var extraNote by remember { mutableStateOf("") }
 
-    val unchecked = items.filter { !it.isChecked }
-    val checked = items.filter { it.isChecked }
+    val unchecked = items.filter { !it.isChecked }.sortedBy { it.name.lowercase() }
+    val checked = items.filter { it.isChecked }.sortedBy { it.name.lowercase() }
 
     val groupedUnchecked = remember(unchecked, categories) {
         val grouped = unchecked.groupBy { it.categoryId }
         buildList {
             categories.forEach { cat ->
-                val listInCat = grouped[cat.id].orEmpty()
+                val listInCat = grouped[cat.id].orEmpty().sortedBy { it.name.lowercase() }
                 if (listInCat.isNotEmpty()) add(cat to listInCat)
             }
-            val uncategorized = grouped[null].orEmpty()
+            val uncategorized = grouped[null].orEmpty().sortedBy { it.name.lowercase() }
             if (uncategorized.isNotEmpty()) add(null to uncategorized)
         }
     }

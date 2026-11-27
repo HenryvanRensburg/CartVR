@@ -105,11 +105,12 @@ fun DashboardScreen(
     var confirmLeaveTarget by remember { mutableStateOf<ShoppingListEntity?>(null) }
 
     val filteredLists = remember(lists, selectedFilter) {
-        when (selectedFilter) {
+        val base = when (selectedFilter) {
             ListFilter.ALL -> lists
             ListFilter.SHARED -> lists.filter { it.isShared }
             ListFilter.PRIVATE -> lists.filter { !it.isShared }
         }
+        base.sortedBy { it.name.lowercase() }
     }
 
     LazyColumn(

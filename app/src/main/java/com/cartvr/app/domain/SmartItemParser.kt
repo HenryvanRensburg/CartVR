@@ -27,63 +27,94 @@ object SmartItemParser {
 
     private val categoryKeywords: Map<String, List<String>> = mapOf(
         "Dairy & Fridge" to listOf(
-            "milk", "cheese", "cheddar", "gouda", "mozzarella", "butter", "rama",
-            "stork", "margarine", "yogurt", "yoghurt", "cream", "egg", "eggs",
-            "custard", "ultramel", "feta", "cottage cheese", "maas", "amasi"
+            "milk", "melk", "cheese", "kaas", "cheddar", "gouda", "mozzarella", "feta",
+            "maaskaas", "smeerkaas", "cottage cheese", "butter", "botter", "butro",
+            "rama", "stork", "margarine", "yogurt", "yoghurt", "cream", "room",
+            "suurroom", "egg", "eggs", "eiers", "custard", "vla", "ultramel",
+            "maas", "amasi"
         ),
         "Fresh Produce" to listOf(
-            "apple", "apples", "banana", "bananas", "tomato", "tomatoes", "onion",
-            "onions", "potato", "potatoes", "carrot", "carrots", "lettuce", "spinach",
-            "avocado", "avo", "lemon", "orange", "oranges", "naartjie", "naartjies",
-            "butternut", "gem squash", "mielies", "sweet potato", "berry", "berries",
-            "cucumber", "pepper", "peppers", "garlic", "ginger", "broccoli", "grape",
-            "grapes", "mushroom", "mushrooms"
+            "apple", "apples", "appels", "banana", "bananas", "piesang", "piesangs",
+            "tomato", "tomatoes", "tamaties", "onion", "onions", "ui", "uie",
+            "potato", "potatoes", "aartappel", "aartappels", "carrot", "carrots",
+            "wortels", "lettuce", "slaai", "groenslaai", "blare", "spinach",
+            "spinasie", "avocado", "avo", "lemon", "orange", "oranges", "naartjie",
+            "naartjies", "butternut", "gem squash", "mielies", "sweet potato",
+            "berry", "berries", "cucumber", "komkommer", "pepper", "peppers",
+            "garlic", "knoffel", "ginger", "broccoli", "grape", "grapes", "mushroom",
+            "mushrooms", "kool", "boontjies", "pynappel", "waartlemoen", "groente",
+            "vrugte", "chillies", "parsley", "basil", "herbs"
         ),
         "Meat & Poultry" to listOf(
-            "chicken", "beef", "mince", "steak", "pork", "lamb", "boerewors",
-            "wors", "biltong", "droewors", "droëwors", "polony", "viennas",
-            "russians", "sosaties", "chops", "tjops", "eisbein", "sausage",
-            "bacon", "ham", "fish", "salmon", "hake", "tuna", "fillet",
-            "drumstick", "thigh", "ribs"
+            "chicken", "hoender", "beef", "mince", "steak", "pork", "vark", "lamb",
+            "boerewors", "wors", "biltong", "droewors", "droëwors", "polony",
+            "viennas", "russians", "sosaties", "chops", "tjops", "eisbein", "sausage",
+            "bacon", "rashers", "ham", "fish", "vis", "salmon", "hake", "tuna",
+            "mossels", "prawns", "fillet", "drumstick", "thigh", "ribs", "vleis",
+            "skilpaadjies", "patties", "hamburgers", "pies", "sushi"
         ),
         "Bakery" to listOf(
-            "bread", "albany", "sasko", "loaf", "rolls", "bun", "buns", "vetkoek",
-            "roosterkoek", "croissant", "muffin", "bagel", "wrap", "wraps", "pita",
-            "cake", "rusk", "rusks", "ouma", "scones"
+            "bread", "brood", "albany", "sasko", "loaf", "rolls", "bun", "buns",
+            "vetkoek", "vetkoeke", "deeg", "roosterkoek", "croissant", "muffin",
+            "muffins", "bagel", "wrap", "wraps", "pita", "cake", "koek", "rolkoek",
+            "melktert", "koeksisters", "doughnuts", "panini", "pannekoek",
+            "knoffelbrood", "piesangbrood", "potbrood", "rusk", "rusks", "beskuit",
+            "ouma", "scones", "skons"
         ),
         "Frozen" to listOf(
-            "frozen", "ice cream", "ola", "mccain", "peas", "mixed veg",
-            "oven chips", "chips", "fries", "nuggets", "fish fingers", "pizza",
-            "ice", "sorbet"
+            "frozen", "ice cream", "roomys", "ola", "mccain", "peas", "ertjies",
+            "mixed veg", "oven chips", "chips", "fries", "nuggets", "schnitzel",
+            "fish fingers", "visvingers", "pizza", "puff pastry", "quiche",
+            "stir fry", "ice", "ys", "sorbet"
         ),
         "Drinks & Snacks" to listOf(
-            "juice", "water", "coke", "cola", "sparletta", "creme soda", "stoney",
-            "oros", "appletiser", "grapetiser", "soda", "coffee", "ricoffy", "jacobs",
-            "tea", "rooibos", "five roses", "joko", "beer", "wine", "simba",
-            "niknaks", "flings", "crisps", "doritos", "chocolate", "tennis biscuits",
-            "marie biscuits", "biscuit", "biscuits", "cookies", "provita", "nuts",
-            "popcorn", "sweets", "candy", "energade", "powerade"
+            "juice", "sap", "water", "coke", "cola", "sparletta", "creme soda",
+            "stoney", "oros", "appletiser", "grapetiser", "soda", "sodastream",
+            "koeldrank", "coffee", "koffie", "ricoffy", "jacobs", "tea", "tee",
+            "rooibos", "five roses", "joko", "beer", "bier", "wine", "wyn",
+            "brandewyn", "savanna", "simba", "niknaks", "flings", "crisps", "doritos",
+            "chocolate", "sjokolade", "tennis biscuits", "marie biscuits", "biscuit",
+            "biscuits", "koekies", "cookies", "provita", "salticrax", "kips",
+            "rice cakes", "nuts", "peanuts", "popcorn", "sweets", "candy",
+            "chappies", "marshmallow", "halls", "energade", "powerade", "monster",
+            "prime", "tropika", "liquifruits", "hot chocolate", "dip", "nachos"
         ),
         "Household & Cleaning" to listOf(
-            "braai wood", "charcoal", "briquettes", "firelighters", "blitz",
-            "doom", "peaceful sleep", "soap", "detergent", "omo", "skip", "sta-soft",
-            "bleach", "jeyes", "domestos", "toilet paper", "twinsaver", "baby soft",
-            "tissues", "paper towel", "sponge", "bin bag", "bin bags", "trash bag",
-            "dishwash", "sunlight", "foil", "cling wrap", "handy andy", "shampoo",
-            "toothpaste", "deodorant"
+            "braai wood", "hout", "charcoal", "briquettes", "firelighters", "blits",
+            "blitz", "doom", "peaceful sleep", "muskiet", "soap", "seep",
+            "detergent", "waspoeier", "omo", "skip", "sta-soft", "bleach", "chloor",
+            "jik", "jeyes", "domestos", "pine gel", "toilet paper", "toilet papier",
+            "toilet block", "toilet spray", "twinsaver", "baby soft", "tissues",
+            "servette", "paper towel", "sponge", "sponsies", "bin bag", "bin bags",
+            "swartsakke", "vuilgoedsakke", "broodsakkies", "trash bag", "dishwash",
+            "dishwasher", "skottelgoed", "sunlight", "foil", "foelie", "cling wrap",
+            "handy andy", "windowlene", "mr min", "shampoo", "conditioner",
+            "body wash", "handwash", "toothpaste", "tandepaste", "tandeborsels",
+            "vlos", "mouthwash", "deodorant", "underarm", "pads", "tampons",
+            "vaseline", "zambuk", "nivea", "lyfroom", "gesig", "sonskerm", "skeer",
+            "pleisters", "verband", "compral", "corenza", "rennies", "med lemon",
+            "hoesstroop", "vitamiene", "watte", "oorstokkies", "batteries", "globes",
+            "kerse", "lighter", "rattax", "gif", "goldilocks"
         ),
         "Pet Supplies" to listOf(
             "dog", "cat", "pet", "bobtail", "montego", "whiskas", "kibble",
-            "cat food", "dog food", "litter", "treats"
+            "cat food", "dog food", "hondekos", "haaskos", "haas", "hase",
+            "teff", "lucern", "amos", "mienkie", "litter", "treats"
         ),
         "Pantry & Tins" to listOf(
-            "pap", "mielie meal", "maize meal", "iwisa", "chakalaka", "mrs balls",
-            "chutney", "all gold", "tomato sauce", "bovril", "marmite", "black cat",
-            "peanut butter", "weetbix", "pronutro", "oats", "milo", "condensed milk",
-            "rice", "pasta", "spaghetti", "macaroni", "flour", "sugar", "salt",
-            "pepper", "oil", "olive oil", "vinegar", "sauce", "baked beans",
-            "beans", "koo", "tin", "cereal", "honey", "jam", "mayo", "mayonnaise",
-            "spices", "aromat", "braai salt", "stock"
+            "pap", "mielie meal", "mielie meel", "maize meal", "iwisa", "chakalaka",
+            "mrs balls", "chutney", "all gold", "tomato sauce", "tamatiesous",
+            "tomato paste", "bovril", "marmite", "black cat", "peanut butter",
+            "weetbix", "pronutro", "oats", "muesli", "milo", "condensed milk",
+            "kondensmelk", "rice", "rys", "pasta", "spaghetti", "macaroni",
+            "noodles", "flour", "meel", "koekmeel", "bakpoeier", "koeksoda",
+            "sugar", "suiker", "stroop", "salt", "sout", "pepper", "peper",
+            "swartpeper", "oil", "olie", "olive oil", "vinegar", "asyn", "sauce",
+            "sous", "bisto", "gravy", "marinade", "mostert", "baked beans", "beans",
+            "koo", "tin", "blikkie", "cereal", "honey", "jam", "konfyt",
+            "appelkooskonfyt", "mayo", "mayonnaise", "spices", "paprika", "kerrie",
+            "aromat", "braai salt", "stock", "sop", "jelly", "poeding", "klapper",
+            "soya", "jalapeno", "gherkins"
         )
     )
 

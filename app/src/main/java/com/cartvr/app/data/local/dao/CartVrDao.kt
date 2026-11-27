@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.Flow
 interface CartVrDao {
 
     // --- Shopping Lists ---
-    @Query("SELECT * FROM shopping_lists WHERE deletedAt IS NULL ORDER BY sortOrder ASC, createdAt ASC")
+    @Query("SELECT * FROM shopping_lists WHERE deletedAt IS NULL ORDER BY name COLLATE NOCASE ASC")
     fun observeActiveLists(): Flow<List<ShoppingListEntity>>
 
     @Query("SELECT * FROM shopping_lists WHERE id = :id LIMIT 1")
@@ -80,10 +80,10 @@ interface CartVrDao {
     suspend fun upsertCategory(category: CategoryEntity)
 
     // --- Shopping Items ---
-    @Query("SELECT * FROM shopping_items WHERE deletedAt IS NULL ORDER BY isChecked ASC, createdAt DESC")
+    @Query("SELECT * FROM shopping_items WHERE deletedAt IS NULL ORDER BY isChecked ASC, name COLLATE NOCASE ASC")
     fun observeAllActiveShoppingItems(): Flow<List<ShoppingItemEntity>>
 
-    @Query("SELECT * FROM shopping_items WHERE listId = :listId AND deletedAt IS NULL ORDER BY isChecked ASC, createdAt DESC")
+    @Query("SELECT * FROM shopping_items WHERE listId = :listId AND deletedAt IS NULL ORDER BY isChecked ASC, name COLLATE NOCASE ASC")
     fun observeListShoppingItems(listId: String): Flow<List<ShoppingItemEntity>>
 
     @Query("SELECT * FROM shopping_items WHERE listId = :listId AND deletedAt IS NULL")
@@ -108,7 +108,7 @@ interface CartVrDao {
     suspend fun pruneOrphanedSyncedItems()
 
     // --- Regular Items ---
-    @Query("SELECT * FROM regular_items WHERE deletedAt IS NULL ORDER BY name ASC")
+    @Query("SELECT * FROM regular_items WHERE deletedAt IS NULL ORDER BY name COLLATE NOCASE ASC")
     fun observeActiveRegularItems(): Flow<List<RegularItemEntity>>
 
     @Query("SELECT * FROM regular_items WHERE deletedAt IS NULL")
