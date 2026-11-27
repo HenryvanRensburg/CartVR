@@ -98,6 +98,7 @@ class CartVrViewModel(
     )
 
     val syncState: StateFlow<SyncState> = repository.syncState
+    val lastSyncError: StateFlow<String?> = repository.lastSyncError
 
     val lists: StateFlow<List<ShoppingListEntity>> = repository.lists.stateIn(
         viewModelScope,
@@ -216,7 +217,8 @@ class CartVrViewModel(
 
     fun syncNow() {
         viewModelScope.launch {
-            repository.syncAll()
+            repository.syncAll(force = true)
+            repository.ensureRealtimeSubscribed()
         }
     }
 

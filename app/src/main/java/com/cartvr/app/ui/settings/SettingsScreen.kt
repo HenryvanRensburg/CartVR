@@ -42,6 +42,7 @@ fun SettingsScreen(
     householdName: String,
     isAdmin: Boolean,
     themeMode: ThemeMode,
+    lastSyncError: String? = null,
     updateState: UpdateUiState,
     onThemeSelected: (ThemeMode) -> Unit,
     onManageFamily: () -> Unit,
@@ -129,6 +130,13 @@ fun SettingsScreen(
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                    if (!lastSyncError.isNullOrBlank()) {
+                        Text(
+                            text = "Last sync error: $lastSyncError",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
                     Spacer(modifier = Modifier.height(4.dp))
                     OutlinedButton(
                         onClick = onSyncNow,

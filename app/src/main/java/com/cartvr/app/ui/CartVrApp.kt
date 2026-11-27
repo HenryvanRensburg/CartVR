@@ -127,6 +127,7 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
     val cachedDisplayName by viewModel.displayName.collectAsStateWithLifecycle()
     val resolvedDisplayName = cachedDisplayName ?: viewModel.userDisplayName()
     val syncState by viewModel.syncState.collectAsStateWithLifecycle()
+    val lastSyncError by viewModel.lastSyncError.collectAsStateWithLifecycle()
     val familyState by viewModel.familyState.collectAsStateWithLifecycle()
     val lists by viewModel.lists.collectAsStateWithLifecycle()
     val listMembers by viewModel.listMembers.collectAsStateWithLifecycle()
@@ -264,6 +265,7 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
                     householdName = householdName ?: "Janse van Rensburg",
                     isAdmin = isAdmin,
                     themeMode = themeMode,
+                    lastSyncError = lastSyncError,
                     updateState = updateState,
                     onThemeSelected = { viewModel.setThemeMode(it) },
                     onManageFamily = { navController.navigate("manage_family") },

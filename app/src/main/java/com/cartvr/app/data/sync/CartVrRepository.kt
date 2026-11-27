@@ -91,6 +91,9 @@ class CartVrRepository(
     )
     val syncState: StateFlow<SyncState> = _syncState.asStateFlow()
 
+    private val _lastSyncError = MutableStateFlow<String?>(null)
+    val lastSyncError: StateFlow<String?> = _lastSyncError.asStateFlow()
+
     val isOnline: StateFlow<Boolean> = networkMonitor.isOnline
     val sessionStatus: Flow<SessionStatus> = supabase.auth.sessionStatus
     val isAdmin: Flow<Boolean> = prefs.isAdmin
@@ -160,8 +163,9 @@ class CartVrRepository(
         prefs.clearSessionData()
     }
 
-    suspend fun syncAll() {
-        if (!networkMonitor.isOnline.value) {
+    suspend fun syncAll(force: Boolean = false) {
+        val online = networkMonitor.refresh()
+        if (!force && !online) {
             _syncState.value = SyncState.OFFLINE
             return
         }
@@ -169,18 +173,25 @@ class CartVrRepository(
 
         syncMutex.withLock {
             _syncState.value = SyncState.SYNCING
+            _lastSyncError.value = null
             val result = runCatching {
                 val householdId = resolveHouseholdId(userId)
                 pushPendingChanges(userId)
                 pullRemoteData(userId, householdId)
                 prefs.setLastSyncedAt(Instant.now().toString())
             }
-            _syncState.value = if (result.isSuccess) {
-                SyncState.SYNCED
-            } else if (!networkMonitor.isOnline.value) {
-                SyncState.OFFLINE
+            if (result.isSuccess) {
+                networkMonitor.markOnline()
+                _syncState.value = SyncState.SYNCED
+                scope.launch { ensureRealtimeSubscribed() }
             } else {
-                SyncState.ERROR
+                val err = result.exceptionOrNull()
+                _lastSyncError.value = err?.localizedMessage ?: err?.javaClass?.simpleName ?: "Unknown sync error"
+                _syncState.value = if (!networkMonitor.refresh() || err is java.io.IOException) {
+                    SyncState.OFFLINE
+                } else {
+                    SyncState.ERROR
+                }
             }
         }
     }
@@ -367,7 +378,7 @@ class CartVrRepository(
     }
 
     suspend fun ensureRealtimeSubscribed() {
-        if (!networkMonitor.isOnline.value || currentUserId() == null) return
+        if (!networkMonitor.refresh() || currentUserId() == null) return
         if (realtimeChannel != null) return
 
         runCatching {

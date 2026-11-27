@@ -4,7 +4,6 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
-import android.net.NetworkRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,7 +18,7 @@ class NetworkMonitor(context: Context) {
 
     private val callback = object : ConnectivityManager.NetworkCallback() {
         override fun onAvailable(network: Network) {
-            _isOnline.value = checkCurrentConnectivity()
+            _isOnline.value = true
         }
 
         override fun onLost(network: Network) {
@@ -30,21 +29,35 @@ class NetworkMonitor(context: Context) {
             network: Network,
             networkCapabilities: NetworkCapabilities
         ) {
-            _isOnline.value = checkCurrentConnectivity()
+            _isOnline.value = hasInternetCapability(networkCapabilities)
         }
     }
 
     init {
-        val request = NetworkRequest.Builder()
-            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-            .build()
-        runCatching { connectivityManager.registerNetworkCallback(request, callback) }
+        runCatching { connectivityManager.registerDefaultNetworkCallback(callback) }
+    }
+
+    fun refresh(): Boolean {
+        val online = checkCurrentConnectivity()
+        _isOnline.value = online
+        return online
+    }
+
+    fun markOnline() {
+        _isOnline.value = true
     }
 
     private fun checkCurrentConnectivity(): Boolean {
         val network = connectivityManager.activeNetwork ?: return false
         val caps = connectivityManager.getNetworkCapabilities(network) ?: return false
-        return caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
-            caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+        return hasInternetCapability(caps)
+    }
+
+    private fun hasInternetCapability(caps: NetworkCapabilities): Boolean {
+        if (!caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) return false
+        return caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+            caps.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ||
+            caps.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) ||
+            caps.hasTransport(NetworkCapabilities.TRANSPORT_VPN)
     }
 }
