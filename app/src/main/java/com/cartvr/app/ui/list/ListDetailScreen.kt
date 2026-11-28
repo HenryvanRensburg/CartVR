@@ -106,7 +106,7 @@ fun ListDetailScreen(
     categories: List<CategoryEntity>,
     history: List<ItemHistoryEntity>,
     regulars: List<RegularItemEntity>,
-    linkedCards: List<LoyaltyCardEntity> = emptyList(),
+    allLoyaltyCards: List<LoyaltyCardEntity> = emptyList(),
     defaultKeepAwakeOnList: Boolean = false,
     keepAwakeInLiveMode: Boolean = true,
     liveModeEnabled: Boolean = false,
@@ -135,6 +135,13 @@ fun ListDetailScreen(
         onDispose {
             view.keepScreenOn = false
         }
+    }
+
+    val linkedCards = remember(allLoyaltyCards, list.id) {
+        allLoyaltyCards.filter { it.linkedListId == list.id }
+    }
+    val otherCards = remember(allLoyaltyCards, list.id) {
+        allLoyaltyCards.filter { it.linkedListId != list.id }
     }
 
     var activeLoyaltyCardDialog by remember { mutableStateOf<LoyaltyCardEntity?>(null) }
@@ -264,11 +271,11 @@ fun ListDetailScreen(
                             }
                         )
                     }
-                    if (linkedCards.isNotEmpty()) {
+                    if (allLoyaltyCards.isNotEmpty()) {
                         IconButton(
                             onClick = {
-                                if (linkedCards.size == 1) {
-                                    activeLoyaltyCardDialog = linkedCards.first()
+                                if (allLoyaltyCards.size == 1) {
+                                    activeLoyaltyCardDialog = allLoyaltyCards.first()
                                 } else {
                                     showLinkedCardsPicker = true
                                 }
@@ -524,13 +531,19 @@ fun ListDetailScreen(
     activeLoyaltyCardDialog?.let { card ->
         LoyaltyCardDisplayDialog(
             card = card,
-            onDismiss = { activeLoyaltyCardDialog = null }
+            onDismiss = { activeLoyaltyCardDialog = null },
+            onSwitchCard = if (allLoyaltyCards.size > 1) {
+                { showLinkedCardsPicker = true }
+            } else {
+                null
+            }
         )
     }
 
     if (showLinkedCardsPicker) {
         LinkedCardsPickerSheet(
-            cards = linkedCards,
+            linkedCards = linkedCards,
+            otherCards = otherCards,
             listName = list.name,
             onSelectCard = { selected ->
                 activeLoyaltyCardDialog = selected

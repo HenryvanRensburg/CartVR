@@ -590,8 +590,13 @@ fun AddEditLoyaltyCardSheet(
             if (lists.isNotEmpty()) {
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Text(
-                        text = "Link to Shopping List (optional)",
+                        text = "Pin to a Shopping List (optional)",
                         style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = "All cards are available on every shopping list. Picking a list just pins this card to the top there.",
+                        style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Row(
@@ -603,7 +608,7 @@ fun AddEditLoyaltyCardSheet(
                         FilterChip(
                             selected = linkedListId == null,
                             onClick = { linkedListId = null },
-                            label = { Text("None") }
+                            label = { Text("All Lists") }
                         )
                         lists.forEach { list ->
                             FilterChip(

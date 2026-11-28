@@ -36,6 +36,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -73,7 +74,8 @@ import com.cartvr.app.ui.components.ListVisuals
 fun LoyaltyCardDisplayDialog(
     card: LoyaltyCardEntity,
     onDismiss: () -> Unit,
-    onEdit: ((LoyaltyCardEntity) -> Unit)? = null
+    onEdit: ((LoyaltyCardEntity) -> Unit)? = null,
+    onSwitchCard: (() -> Unit)? = null
 ) {
     val accent = ListVisuals.parseColor(card.accentColor)
     val renderResult = remember(card.cardNumber, card.barcodeFormat) {
@@ -304,11 +306,34 @@ fun LoyaltyCardDisplayDialog(
                         )
                     }
 
-                    Button(
-                        onClick = onDismiss,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text("Done")
+                    if (onSwitchCard != null) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            OutlinedButton(
+                                onClick = {
+                                    onDismiss()
+                                    onSwitchCard()
+                                },
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text("All Cards")
+                            }
+                            Button(
+                                onClick = onDismiss,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text("Done")
+                            }
+                        }
+                    } else {
+                        Button(
+                            onClick = onDismiss,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Done")
+                        }
                     }
                 }
             }
@@ -317,12 +342,14 @@ fun LoyaltyCardDisplayDialog(
 }
 
 /**
- * Quick picker sheet shown when 2 or more loyalty cards are linked to a shopping list.
+ * Quick picker sheet shown inside a shopping list, pinning list-linked cards at the top
+ * while keeping all other loyalty cards directly accessible underneath.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LinkedCardsPickerSheet(
-    cards: List<LoyaltyCardEntity>,
+    linkedCards: List<LoyaltyCardEntity>,
+    otherCards: List<LoyaltyCardEntity>,
     listName: String,
     onSelectCard: (LoyaltyCardEntity) -> Unit,
     onOpenWallet: () -> Unit,
@@ -352,7 +379,7 @@ fun LinkedCardsPickerSheet(
                         fontWeight = FontWeight.SemiBold
                     )
                     Text(
-                        text = "Linked to $listName",
+                        text = "Tap any card to flash at the till",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -370,64 +397,104 @@ fun LinkedCardsPickerSheet(
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(cards, key = { it.id }) { card ->
-                    val accent = ListVisuals.parseColor(card.accentColor)
-                    Surface(
-                        shape = RoundedCornerShape(16.dp),
-                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(16.dp))
-                            .clickable {
+                if (linkedCards.isNotEmpty()) {
+                    item {
+                        Text(
+                            text = "Pinned to $listName",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    items(linkedCards, key = { it.id }) { card ->
+                        LoyaltyPickerCardRow(
+                            card = card,
+                            onClick = {
                                 onDismiss()
                                 onSelectCard(card)
                             }
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 14.dp, vertical = 12.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(CircleShape)
-                                    .background(accent),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Rounded.CreditCard,
-                                    contentDescription = null,
-                                    tint = Color.White,
-                                    modifier = Modifier.size(20.dp)
-                                )
+                        )
+                    }
+                }
+
+                if (otherCards.isNotEmpty()) {
+                    item {
+                        Text(
+                            text = if (linkedCards.isNotEmpty()) "Other Loyalty Cards" else "Your Loyalty Cards",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(top = if (linkedCards.isNotEmpty()) 6.dp else 0.dp)
+                        )
+                    }
+                    items(otherCards, key = { it.id }) { card ->
+                        LoyaltyPickerCardRow(
+                            card = card,
+                            onClick = {
+                                onDismiss()
+                                onSelectCard(card)
                             }
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = card.storeName,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                                Text(
-                                    text = "${card.cardName} • ${BarcodeUtils.formatSpacedDisplayNumber(card.cardNumber)}",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
-                            Icon(
-                                imageVector = if (card.isShared) Icons.Rounded.People else Icons.Rounded.Lock,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
+                        )
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun LoyaltyPickerCardRow(
+    card: LoyaltyCardEntity,
+    onClick: () -> Unit
+) {
+    val accent = ListVisuals.parseColor(card.accentColor)
+    Surface(
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .clickable(onClick = onClick)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 14.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(accent),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.CreditCard,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = card.storeName,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    text = "${card.cardName} • ${BarcodeUtils.formatSpacedDisplayNumber(card.cardNumber)}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+            Icon(
+                imageVector = if (card.isShared) Icons.Rounded.People else Icons.Rounded.Lock,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(18.dp)
+            )
         }
     }
 }

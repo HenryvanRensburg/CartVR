@@ -812,9 +812,6 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
                 if (list != null) {
                     val isOwner = list.ownerId == viewModel.currentUserId()
                     val memberCount = listMembers.count { it.listId == list.id }.coerceAtLeast(1)
-                    val linkedCards = remember(loyaltyCards, list.id) {
-                        loyaltyCards.filter { it.linkedListId == list.id }
-                    }
 
                     ListDetailScreen(
                         list = list,
@@ -824,7 +821,7 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
                         categories = categories,
                         history = history,
                         regulars = regulars,
-                        linkedCards = linkedCards,
+                        allLoyaltyCards = loyaltyCards,
                         defaultKeepAwakeOnList = keepScreenAwakeOnList,
                         keepAwakeInLiveMode = keepScreenAwakeInLiveMode,
                         liveModeEnabled = liveModeEnabled,
