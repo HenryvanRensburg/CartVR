@@ -30,6 +30,9 @@ interface OrganizerDao {
     @Query("SELECT * FROM task_lists WHERE deletedAt IS NULL ORDER BY sortOrder ASC, name COLLATE NOCASE ASC")
     fun observeActiveTaskLists(): Flow<List<TaskListEntity>>
 
+    @Query("SELECT * FROM task_lists WHERE id = :id LIMIT 1")
+    suspend fun getTaskListById(id: String): TaskListEntity?
+
     @Query("SELECT * FROM task_lists WHERE syncStatus != '${SyncStatus.SYNCED}'")
     suspend fun getPendingTaskLists(): List<TaskListEntity>
 
@@ -52,6 +55,15 @@ interface OrganizerDao {
     @Query("SELECT * FROM tasks WHERE deletedAt IS NULL ORDER BY sortOrder ASC, createdAt DESC")
     fun observeActiveTasks(): Flow<List<TaskEntity>>
 
+    @Query("SELECT * FROM tasks WHERE id = :id LIMIT 1")
+    suspend fun getTaskById(id: String): TaskEntity?
+
+    @Query("SELECT EXISTS(SELECT 1 FROM tasks WHERE recurrenceSourceId = :sourceId AND deletedAt IS NULL)")
+    suspend fun hasTaskWithRecurrenceSource(sourceId: String): Boolean
+
+    @Query("SELECT * FROM tasks WHERE taskListId = :taskListId AND deletedAt IS NULL")
+    suspend fun getActiveTasksForList(taskListId: String): List<TaskEntity>
+
     @Query("SELECT * FROM tasks WHERE syncStatus != '${SyncStatus.SYNCED}'")
     suspend fun getPendingTasks(): List<TaskEntity>
 
@@ -67,7 +79,7 @@ interface OrganizerDao {
     @Query("DELETE FROM tasks WHERE taskListId = :taskListId")
     suspend fun deleteTasksByListId(taskListId: String)
 
-    @Query("UPDATE tasks SET isShared = :isShared, updatedAt = :updatedAt WHERE taskListId = :taskListId AND isShared != :isShared")
+    @Query("UPDATE tasks SET isShared = :isShared, updatedAt = :updatedAt, syncStatus = '${SyncStatus.PENDING_UPSERT}' WHERE taskListId = :taskListId AND isShared != :isShared")
     suspend fun updateTasksSharedForList(taskListId: String, isShared: Boolean, updatedAt: String)
 
     @Query("DELETE FROM tasks WHERE syncStatus = '${SyncStatus.SYNCED}' AND id NOT IN (:activeIds)")
@@ -79,6 +91,9 @@ interface OrganizerDao {
     // --- Task Subtasks ---
     @Query("SELECT * FROM task_subtasks WHERE deletedAt IS NULL ORDER BY sortOrder ASC, createdAt ASC")
     fun observeActiveSubtasks(): Flow<List<TaskSubtaskEntity>>
+
+    @Query("SELECT * FROM task_subtasks WHERE taskId = :taskId AND deletedAt IS NULL ORDER BY sortOrder ASC, createdAt ASC")
+    suspend fun getActiveSubtasksForTask(taskId: String): List<TaskSubtaskEntity>
 
     @Query("SELECT * FROM task_subtasks WHERE syncStatus != '${SyncStatus.SYNCED}'")
     suspend fun getPendingSubtasks(): List<TaskSubtaskEntity>
@@ -98,10 +113,10 @@ interface OrganizerDao {
     @Query("DELETE FROM task_subtasks WHERE taskId IN (SELECT id FROM tasks WHERE taskListId = :taskListId)")
     suspend fun deleteSubtasksByListId(taskListId: String)
 
-    @Query("UPDATE task_subtasks SET isShared = :isShared, updatedAt = :updatedAt WHERE taskId = :taskId AND isShared != :isShared")
+    @Query("UPDATE task_subtasks SET isShared = :isShared, updatedAt = :updatedAt, syncStatus = '${SyncStatus.PENDING_UPSERT}' WHERE taskId = :taskId AND isShared != :isShared")
     suspend fun updateSubtasksSharedForTask(taskId: String, isShared: Boolean, updatedAt: String)
 
-    @Query("UPDATE task_subtasks SET isShared = :isShared, updatedAt = :updatedAt WHERE taskId IN (SELECT id FROM tasks WHERE taskListId = :taskListId)")
+    @Query("UPDATE task_subtasks SET isShared = :isShared, updatedAt = :updatedAt, syncStatus = '${SyncStatus.PENDING_UPSERT}' WHERE taskId IN (SELECT id FROM tasks WHERE taskListId = :taskListId) AND isShared != :isShared")
     suspend fun updateSubtasksSharedForList(taskListId: String, isShared: Boolean, updatedAt: String)
 
     @Query("DELETE FROM task_subtasks WHERE syncStatus = '${SyncStatus.SYNCED}' AND id NOT IN (:activeIds)")

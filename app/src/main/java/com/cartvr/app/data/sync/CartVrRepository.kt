@@ -39,6 +39,7 @@ import com.cartvr.app.data.remote.dto.TaskListDto
 import com.cartvr.app.data.remote.dto.TaskSubtaskDto
 import com.cartvr.app.data.remote.dto.toDto
 import com.cartvr.app.data.remote.dto.toEntity
+import com.cartvr.app.domain.TaskRecurrence
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.builtin.Email
 import io.github.jan.supabase.auth.status.SessionStatus
@@ -1374,6 +1375,363 @@ class CartVrRepository(
             )
         }
         dao.upsertCategories(updated)
+        scope.launch { syncAll() }
+    }
+
+    // --- Task Manager (Folders, Tasks & Subtasks) ---
+
+    suspend fun saveTaskList(
+        existing: TaskListEntity?,
+        name: String,
+        iconKey: String,
+        colorHex: String,
+        isShared: Boolean,
+        defaultView: String
+    ): TaskListEntity? {
+        val userId = currentUserId() ?: return null
+        val householdId = prefs.householdId.first() ?: return null
+        val cleanName = normalizeName(name)
+        if (cleanName.isEmpty()) return null
+        val now = Instant.now().toString()
+
+        val list = if (existing == null) {
+            val count = organizerDao.observeActiveTaskLists().first().size
+            TaskListEntity(
+                id = UUID.randomUUID().toString(),
+                householdId = householdId,
+                ownerId = userId,
+                name = cleanName,
+                iconKey = iconKey,
+                colorHex = colorHex,
+                isShared = isShared,
+                defaultView = defaultView,
+                sortOrder = count,
+                createdAt = now,
+                updatedAt = now,
+                syncStatus = SyncStatus.PENDING_UPSERT
+            )
+        } else {
+            existing.copy(
+                name = cleanName,
+                iconKey = iconKey,
+                colorHex = colorHex,
+                isShared = isShared,
+                defaultView = defaultView,
+                updatedAt = now,
+                syncStatus = SyncStatus.PENDING_UPSERT
+            )
+        }
+
+        organizerDao.upsertTaskList(list)
+        if (existing != null && existing.isShared != isShared) {
+            organizerDao.updateTasksSharedForList(list.id, isShared, now)
+            organizerDao.updateSubtasksSharedForList(list.id, isShared, now)
+        }
+        scope.launch { syncAll() }
+        return list
+    }
+
+    suspend fun updateTaskListDefaultView(list: TaskListEntity, defaultView: String) {
+        if (list.defaultView == defaultView) return
+        val now = Instant.now().toString()
+        organizerDao.upsertTaskList(
+            list.copy(
+                defaultView = defaultView,
+                updatedAt = now,
+                syncStatus = SyncStatus.PENDING_UPSERT
+            )
+        )
+        scope.launch { syncAll() }
+    }
+
+    suspend fun softDeleteTaskList(list: TaskListEntity) {
+        val now = Instant.now().toString()
+        val tasksInList = organizerDao.getActiveTasksForList(list.id)
+        if (tasksInList.isNotEmpty()) {
+            organizerDao.upsertTasks(
+                tasksInList.map {
+                    it.copy(
+                        updatedBy = currentUserId(),
+                        updatedAt = now,
+                        deletedAt = now,
+                        syncStatus = SyncStatus.PENDING_DELETE
+                    )
+                }
+            )
+        }
+        organizerDao.upsertTaskList(
+            list.copy(
+                updatedAt = now,
+                deletedAt = now,
+                syncStatus = SyncStatus.PENDING_DELETE
+            )
+        )
+        scope.launch { syncAll() }
+    }
+
+    suspend fun saveTask(
+        existing: TaskEntity?,
+        taskListId: String,
+        title: String,
+        notes: String?,
+        assignedTo: String?,
+        status: String,
+        priority: String,
+        dueDate: String?,
+        dueTime: String?,
+        reminderMinutesBefore: Int?,
+        recurrenceRule: String?,
+        initialSubtasks: List<String> = emptyList()
+    ): Pair<TaskEntity?, String?> {
+        val userId = currentUserId() ?: return null to null
+        val householdId = prefs.householdId.first() ?: return null to null
+        val cleanTitle = normalizeName(title)
+        if (cleanTitle.isEmpty()) return null to null
+
+        val parentList = organizerDao.getTaskListById(taskListId)
+        val inheritedShared = parentList?.isShared ?: existing?.isShared ?: true
+        val now = Instant.now().toString()
+        val wasDone = existing?.status == "done"
+        val isNowDone = status == "done"
+
+        val saved = if (existing == null) {
+            TaskEntity(
+                id = UUID.randomUUID().toString(),
+                householdId = householdId,
+                taskListId = taskListId,
+                ownerId = userId,
+                assignedTo = assignedTo,
+                title = cleanTitle,
+                notes = notes?.trim()?.ifBlank { null },
+                status = status,
+                priority = priority,
+                isShared = inheritedShared,
+                dueDate = dueDate?.ifBlank { null },
+                dueTime = if (dueDate.isNullOrBlank()) null else dueTime?.ifBlank { null },
+                reminderMinutesBefore = if (dueDate.isNullOrBlank()) null else reminderMinutesBefore,
+                recurrenceRule = recurrenceRule?.ifBlank { null },
+                completedAt = if (isNowDone) now else null,
+                updatedBy = userId,
+                sortOrder = 0,
+                createdAt = now,
+                updatedAt = now,
+                syncStatus = SyncStatus.PENDING_UPSERT
+            )
+        } else {
+            existing.copy(
+                taskListId = taskListId,
+                assignedTo = assignedTo,
+                title = cleanTitle,
+                notes = notes?.trim()?.ifBlank { null },
+                status = status,
+                priority = priority,
+                isShared = inheritedShared,
+                dueDate = dueDate?.ifBlank { null },
+                dueTime = if (dueDate.isNullOrBlank()) null else dueTime?.ifBlank { null },
+                reminderMinutesBefore = if (dueDate.isNullOrBlank()) null else reminderMinutesBefore,
+                recurrenceRule = recurrenceRule?.ifBlank { null },
+                completedAt = if (isNowDone) (existing.completedAt ?: now) else null,
+                updatedBy = userId,
+                updatedAt = now,
+                syncStatus = SyncStatus.PENDING_UPSERT
+            )
+        }
+
+        organizerDao.upsertTask(saved)
+
+        if (existing != null && existing.isShared != inheritedShared) {
+            organizerDao.updateSubtasksSharedForTask(saved.id, inheritedShared, now)
+        }
+
+        if (existing == null && initialSubtasks.isNotEmpty()) {
+            val subtasks = initialSubtasks
+                .map { normalizeName(it) }
+                .filter { it.isNotEmpty() }
+                .mapIndexed { idx, subTitle ->
+                    TaskSubtaskEntity(
+                        id = UUID.randomUUID().toString(),
+                        taskId = saved.id,
+                        householdId = householdId,
+                        ownerId = userId,
+                        isShared = inheritedShared,
+                        title = subTitle,
+                        isCompleted = false,
+                        sortOrder = idx,
+                        createdAt = now,
+                        updatedAt = now,
+                        syncStatus = SyncStatus.PENDING_UPSERT
+                    )
+                }
+            if (subtasks.isNotEmpty()) {
+                organizerDao.upsertSubtasks(subtasks)
+            }
+        }
+
+        val nextDue = if (isNowDone && !wasDone) {
+            spawnNextRecurringTaskIfNeeded(saved)
+        } else {
+            null
+        }
+
+        scope.launch { syncAll() }
+        return saved to nextDue
+    }
+
+    suspend fun setTaskStatus(task: TaskEntity, newStatus: String): String? {
+        if (task.status == newStatus) return null
+        val userId = currentUserId() ?: return null
+        val now = Instant.now().toString()
+        val wasDone = task.status == "done"
+        val isNowDone = newStatus == "done"
+
+        val updated = task.copy(
+            status = newStatus,
+            completedAt = if (isNowDone) now else null,
+            updatedBy = userId,
+            updatedAt = now,
+            syncStatus = SyncStatus.PENDING_UPSERT
+        )
+        organizerDao.upsertTask(updated)
+
+        val nextDue = if (isNowDone && !wasDone) {
+            spawnNextRecurringTaskIfNeeded(updated)
+        } else {
+            null
+        }
+
+        scope.launch { syncAll() }
+        return nextDue
+    }
+
+    private suspend fun spawnNextRecurringTaskIfNeeded(completedTask: TaskEntity): String? {
+        val rule = completedTask.recurrenceRule?.takeIf { it.isNotBlank() } ?: return null
+        if (organizerDao.hasTaskWithRecurrenceSource(completedTask.id)) return null
+
+        val nextDueDate = TaskRecurrence.computeNextDueDate(
+            rule = rule,
+            currentDueDateIso = completedTask.dueDate
+        ) ?: return null
+
+        val userId = currentUserId() ?: completedTask.ownerId
+        val now = Instant.now().toString()
+        val nextTask = TaskEntity(
+            id = UUID.randomUUID().toString(),
+            householdId = completedTask.householdId,
+            taskListId = completedTask.taskListId,
+            ownerId = completedTask.ownerId,
+            assignedTo = completedTask.assignedTo,
+            title = completedTask.title,
+            notes = completedTask.notes,
+            status = "todo",
+            priority = completedTask.priority,
+            isShared = completedTask.isShared,
+            dueDate = nextDueDate,
+            dueTime = completedTask.dueTime,
+            reminderMinutesBefore = completedTask.reminderMinutesBefore,
+            recurrenceRule = rule,
+            recurrenceSourceId = completedTask.id,
+            completedAt = null,
+            updatedBy = userId,
+            sortOrder = completedTask.sortOrder,
+            createdAt = now,
+            updatedAt = now,
+            syncStatus = SyncStatus.PENDING_UPSERT
+        )
+        organizerDao.upsertTask(nextTask)
+
+        val existingSubtasks = organizerDao.getActiveSubtasksForTask(completedTask.id)
+        if (existingSubtasks.isNotEmpty()) {
+            organizerDao.upsertSubtasks(
+                existingSubtasks.mapIndexed { idx, sub ->
+                    TaskSubtaskEntity(
+                        id = UUID.randomUUID().toString(),
+                        taskId = nextTask.id,
+                        householdId = completedTask.householdId,
+                        ownerId = completedTask.ownerId,
+                        isShared = completedTask.isShared,
+                        title = sub.title,
+                        isCompleted = false,
+                        sortOrder = idx,
+                        createdAt = now,
+                        updatedAt = now,
+                        syncStatus = SyncStatus.PENDING_UPSERT
+                    )
+                }
+            )
+        }
+
+        return nextDueDate
+    }
+
+    suspend fun softDeleteTask(task: TaskEntity) {
+        val now = Instant.now().toString()
+        val subtasks = organizerDao.getActiveSubtasksForTask(task.id)
+        if (subtasks.isNotEmpty()) {
+            organizerDao.upsertSubtasks(
+                subtasks.map {
+                    it.copy(
+                        updatedAt = now,
+                        deletedAt = now,
+                        syncStatus = SyncStatus.PENDING_DELETE
+                    )
+                }
+            )
+        }
+        organizerDao.upsertTask(
+            task.copy(
+                updatedBy = currentUserId(),
+                updatedAt = now,
+                deletedAt = now,
+                syncStatus = SyncStatus.PENDING_DELETE
+            )
+        )
+        scope.launch { syncAll() }
+    }
+
+    suspend fun addSubtask(task: TaskEntity, title: String) {
+        val userId = currentUserId() ?: return
+        val cleanTitle = normalizeName(title)
+        if (cleanTitle.isEmpty()) return
+        val now = Instant.now().toString()
+        val existing = organizerDao.getActiveSubtasksForTask(task.id)
+        val subtask = TaskSubtaskEntity(
+            id = UUID.randomUUID().toString(),
+            taskId = task.id,
+            householdId = task.householdId,
+            ownerId = userId,
+            isShared = task.isShared,
+            title = cleanTitle,
+            isCompleted = false,
+            sortOrder = existing.size,
+            createdAt = now,
+            updatedAt = now,
+            syncStatus = SyncStatus.PENDING_UPSERT
+        )
+        organizerDao.upsertSubtask(subtask)
+        scope.launch { syncAll() }
+    }
+
+    suspend fun toggleSubtask(subtask: TaskSubtaskEntity) {
+        val now = Instant.now().toString()
+        organizerDao.upsertSubtask(
+            subtask.copy(
+                isCompleted = !subtask.isCompleted,
+                updatedAt = now,
+                syncStatus = SyncStatus.PENDING_UPSERT
+            )
+        )
+        scope.launch { syncAll() }
+    }
+
+    suspend fun softDeleteSubtask(subtask: TaskSubtaskEntity) {
+        val now = Instant.now().toString()
+        organizerDao.upsertSubtask(
+            subtask.copy(
+                updatedAt = now,
+                deletedAt = now,
+                syncStatus = SyncStatus.PENDING_DELETE
+            )
+        )
         scope.launch { syncAll() }
     }
 

@@ -6,11 +6,16 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.cartvr.app.CartVRApplication
 import com.cartvr.app.data.local.entity.CategoryEntity
+import com.cartvr.app.data.local.entity.HouseholdProfileEntity
 import com.cartvr.app.data.local.entity.ItemHistoryEntity
 import com.cartvr.app.data.local.entity.ListMemberEntity
 import com.cartvr.app.data.local.entity.RegularItemEntity
 import com.cartvr.app.data.local.entity.ShoppingItemEntity
 import com.cartvr.app.data.local.entity.ShoppingListEntity
+import com.cartvr.app.data.local.entity.TaskEntity
+import com.cartvr.app.data.local.entity.TaskListEntity
+import com.cartvr.app.data.local.entity.TaskSubtaskEntity
+import com.cartvr.app.domain.SmartItemParser
 import com.cartvr.app.data.notifications.ListSyncWorker
 import com.cartvr.app.data.notifications.LiveSyncService
 import com.cartvr.app.data.notifications.NotificationHelper
@@ -139,6 +144,30 @@ class CartVrViewModel(
     )
 
     val itemHistory: StateFlow<List<ItemHistoryEntity>> = repository.itemHistory.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        emptyList()
+    )
+
+    val householdProfiles: StateFlow<List<HouseholdProfileEntity>> = repository.householdProfiles.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        emptyList()
+    )
+
+    val taskLists: StateFlow<List<TaskListEntity>> = repository.taskLists.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        emptyList()
+    )
+
+    val tasks: StateFlow<List<TaskEntity>> = repository.tasks.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        emptyList()
+    )
+
+    val taskSubtasks: StateFlow<List<TaskSubtaskEntity>> = repository.taskSubtasks.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
         emptyList()
@@ -541,6 +570,136 @@ class CartVrViewModel(
     fun updateCategoryOrder(reordered: List<CategoryEntity>) {
         viewModelScope.launch {
             repository.updateCategoryOrder(reordered)
+        }
+    }
+
+    // --- Task Manager ---
+
+    fun saveTaskList(
+        existing: TaskListEntity?,
+        name: String,
+        iconKey: String,
+        colorHex: String,
+        isShared: Boolean,
+        defaultView: String,
+        onSaved: (TaskListEntity) -> Unit = {}
+    ) {
+        viewModelScope.launch {
+            val saved = repository.saveTaskList(existing, name, iconKey, colorHex, isShared, defaultView)
+            if (saved != null) onSaved(saved)
+        }
+    }
+
+    fun updateTaskListDefaultView(list: TaskListEntity, defaultView: String) {
+        viewModelScope.launch {
+            repository.updateTaskListDefaultView(list, defaultView)
+        }
+    }
+
+    fun deleteTaskList(list: TaskListEntity) {
+        viewModelScope.launch {
+            repository.softDeleteTaskList(list)
+            _statusBanner.value = "Deleted \"${list.name}\""
+        }
+    }
+
+    fun saveTask(
+        existing: TaskEntity?,
+        taskListId: String,
+        title: String,
+        notes: String?,
+        assignedTo: String?,
+        status: String,
+        priority: String,
+        dueDate: String?,
+        dueTime: String?,
+        reminderMinutesBefore: Int?,
+        recurrenceRule: String?,
+        initialSubtasks: List<String> = emptyList()
+    ) {
+        viewModelScope.launch {
+            val (_, nextDue) = repository.saveTask(
+                existing = existing,
+                taskListId = taskListId,
+                title = title,
+                notes = notes,
+                assignedTo = assignedTo,
+                status = status,
+                priority = priority,
+                dueDate = dueDate,
+                dueTime = dueTime,
+                reminderMinutesBefore = reminderMinutesBefore,
+                recurrenceRule = recurrenceRule,
+                initialSubtasks = initialSubtasks
+            )
+            if (!nextDue.isNullOrBlank()) {
+                _statusBanner.value = "Next occurrence scheduled for $nextDue"
+            }
+        }
+    }
+
+    fun setTaskStatus(task: TaskEntity, newStatus: String) {
+        viewModelScope.launch {
+            val nextDue = repository.setTaskStatus(task, newStatus)
+            if (!nextDue.isNullOrBlank()) {
+                _statusBanner.value = "Completed! Next occurrence scheduled for $nextDue"
+            }
+        }
+    }
+
+    fun deleteTask(task: TaskEntity) {
+        viewModelScope.launch {
+            repository.softDeleteTask(task)
+            _statusBanner.value = "Deleted \"${task.title}\""
+        }
+    }
+
+    fun addSubtask(task: TaskEntity, title: String) {
+        viewModelScope.launch {
+            repository.addSubtask(task, title)
+        }
+    }
+
+    fun toggleSubtask(subtask: TaskSubtaskEntity) {
+        viewModelScope.launch {
+            repository.toggleSubtask(subtask)
+        }
+    }
+
+    fun deleteSubtask(subtask: TaskSubtaskEntity) {
+        viewModelScope.launch {
+            repository.softDeleteSubtask(subtask)
+        }
+    }
+
+    fun sendTaskItemToShoppingList(
+        listId: String,
+        rawItemText: String,
+        explicitQty: String?
+    ) {
+        viewModelScope.launch {
+            val parsed = SmartItemParser.parse(rawItemText, categories.value, itemHistory.value)
+            if (parsed.name.isBlank()) return@launch
+            val qty = explicitQty?.trim()?.ifBlank { null } ?: parsed.quantity
+            when (val res = repository.addShoppingItem(
+                listId = listId,
+                categoryId = parsed.suggestedCategoryId,
+                name = parsed.name,
+                quantity = qty,
+                note = parsed.note,
+                saveAsRegular = false
+            )) {
+                is ItemMutationResult.Added ->
+                    _statusBanner.value = "Added ${res.itemName} to ${res.listName ?: "shopping list"}"
+                is ItemMutationResult.UpdatedExisting ->
+                    _statusBanner.value = "Updated ${res.itemName} on ${res.listName}"
+                is ItemMutationResult.AlreadyExists ->
+                    _statusBanner.value = "${res.itemName} is already on ${res.listName}"
+                is ItemMutationResult.RestoredFromCompleted ->
+                    _statusBanner.value = "Moved ${res.itemName} back to ${res.listName}"
+                is ItemMutationResult.DuplicateBlocked ->
+                    _statusBanner.value = res.message
+            }
         }
     }
 

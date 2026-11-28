@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.ShoppingCart
+import androidx.compose.material.icons.rounded.TaskAlt
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -39,6 +40,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.cartvr.app.data.local.entity.ShoppingListEntity
+import com.cartvr.app.data.local.entity.TaskEntity
+import com.cartvr.app.data.local.entity.TaskListEntity
 import com.cartvr.app.ui.auth.AcceptInviteScreen
 import com.cartvr.app.ui.auth.LoginScreen
 import com.cartvr.app.ui.components.CreateListSheet
@@ -50,12 +53,17 @@ import com.cartvr.app.ui.list.ListDetailScreen
 import com.cartvr.app.ui.settings.SettingsScreen
 import com.cartvr.app.ui.shopping.ShoppingHubScreen
 import com.cartvr.app.ui.shopping.ShoppingSubTab
+import com.cartvr.app.ui.tasks.TaskEditorSheet
+import com.cartvr.app.ui.tasks.TaskFolderScreen
+import com.cartvr.app.ui.tasks.TaskFolderSheet
+import com.cartvr.app.ui.tasks.TasksHubScreen
 import com.cartvr.app.ui.theme.CartVRTheme
 import io.github.jan.supabase.auth.status.SessionStatus
 import kotlinx.coroutines.launch
 
 private enum class TopTab(val route: String, val label: String, val icon: ImageVector) {
     SHOPPING("shopping", "Shopping", Icons.Rounded.ShoppingCart),
+    TASKS("tasks", "Tasks", Icons.Rounded.TaskAlt),
     SETTINGS("settings", "Settings", Icons.Rounded.Settings)
 }
 
@@ -144,6 +152,10 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
     val liveModeEnabled by viewModel.liveModeEnabled.collectAsStateWithLifecycle()
     val liveModeDurationHours by viewModel.liveModeDurationHours.collectAsStateWithLifecycle()
     val liveModeStopAtMs by viewModel.liveModeStopAtMs.collectAsStateWithLifecycle()
+    val householdProfiles by viewModel.householdProfiles.collectAsStateWithLifecycle()
+    val taskLists by viewModel.taskLists.collectAsStateWithLifecycle()
+    val tasks by viewModel.tasks.collectAsStateWithLifecycle()
+    val taskSubtasks by viewModel.taskSubtasks.collectAsStateWithLifecycle()
 
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
@@ -152,8 +164,17 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
     var showListSheet by remember { mutableStateOf(false) }
     var editingList by remember { mutableStateOf<ShoppingListEntity?>(null) }
 
+    var showTaskFolderSheet by remember { mutableStateOf(false) }
+    var editingTaskFolder by remember { mutableStateOf<TaskListEntity?>(null) }
+    var showTaskEditorSheet by remember { mutableStateOf(false) }
+    var editingTask by remember { mutableStateOf<TaskEntity?>(null) }
+    var taskEditorFolderId by remember { mutableStateOf("") }
+    var taskEditorInitialStatus by remember { mutableStateOf("todo") }
+
     val showBottomBar = currentRoute in TopTab.entries.map { it.route }
-    val showFab = currentRoute == TopTab.SHOPPING.route && selectedShoppingSubTab == ShoppingSubTab.LISTS
+    val showShoppingFab = currentRoute == TopTab.SHOPPING.route && selectedShoppingSubTab == ShoppingSubTab.LISTS
+    val showTasksFab = currentRoute == TopTab.TASKS.route && taskLists.isNotEmpty()
+    val showFab = showShoppingFab || showTasksFab
 
     LaunchedEffect(currentRoute, backStackEntry) {
         val activeListId = if (currentRoute == "list/{listId}") {
@@ -215,11 +236,18 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
             if (showFab) {
                 ExtendedFloatingActionButton(
                     onClick = {
-                        editingList = null
-                        showListSheet = true
+                        if (showTasksFab) {
+                            editingTask = null
+                            taskEditorFolderId = taskLists.firstOrNull()?.id ?: ""
+                            taskEditorInitialStatus = "todo"
+                            showTaskEditorSheet = true
+                        } else {
+                            editingList = null
+                            showListSheet = true
+                        }
                     },
                     icon = { Icon(Icons.Rounded.Add, contentDescription = null) },
-                    text = { Text("New List") },
+                    text = { Text(if (showTasksFab) "New Task" else "New List") },
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 )
@@ -275,6 +303,92 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
                         viewModel.deleteRegularItem(regular)
                     }
                 )
+            }
+
+            composable(TopTab.TASKS.route) {
+                TasksHubScreen(
+                    displayName = resolvedDisplayName,
+                    currentUserId = viewModel.currentUserId(),
+                    syncState = syncState,
+                    themeMode = themeMode,
+                    folders = taskLists,
+                    tasks = tasks,
+                    subtasks = taskSubtasks,
+                    profiles = householdProfiles,
+                    onToggleTheme = { isDark -> viewModel.toggleQuickTheme(isDark) },
+                    onSyncClick = { viewModel.syncNow() },
+                    onFolderClick = { folder -> navController.navigate("task_folder/${folder.id}") },
+                    onCreateFolder = {
+                        editingTaskFolder = null
+                        showTaskFolderSheet = true
+                    },
+                    onEditFolder = { folder ->
+                        editingTaskFolder = folder
+                        showTaskFolderSheet = true
+                    },
+                    onToggleFolderPrivacy = { folder ->
+                        viewModel.saveTaskList(
+                            existing = folder,
+                            name = folder.name,
+                            iconKey = folder.iconKey,
+                            colorHex = folder.colorHex,
+                            isShared = !folder.isShared,
+                            defaultView = folder.defaultView
+                        )
+                    },
+                    onDeleteFolder = { folder -> viewModel.deleteTaskList(folder) },
+                    onToggleTaskDone = { task ->
+                        viewModel.setTaskStatus(task, if (task.status == "done") "todo" else "done")
+                    },
+                    onTaskClick = { task ->
+                        editingTask = task
+                        taskEditorFolderId = task.taskListId
+                        taskEditorInitialStatus = task.status
+                        showTaskEditorSheet = true
+                    }
+                )
+            }
+
+            composable(
+                route = "task_folder/{folderId}",
+                arguments = listOf(navArgument("folderId") { type = NavType.StringType })
+            ) { entry ->
+                val folderId = entry.arguments?.getString("folderId") ?: return@composable
+                val folder = taskLists.firstOrNull { it.id == folderId }
+                if (folder != null) {
+                    val folderTasks = tasks.filter { it.taskListId == folder.id }
+                    TaskFolderScreen(
+                        folder = folder,
+                        tasks = folderTasks,
+                        subtasks = taskSubtasks,
+                        profiles = householdProfiles,
+                        onBack = { navController.popBackStack() },
+                        onToggleViewMode = { view -> viewModel.updateTaskListDefaultView(folder, view) },
+                        onEditFolder = {
+                            editingTaskFolder = folder
+                            showTaskFolderSheet = true
+                        },
+                        onDeleteFolder = {
+                            viewModel.deleteTaskList(folder)
+                            navController.popBackStack()
+                        },
+                        onCreateTask = { initialStatus ->
+                            editingTask = null
+                            taskEditorFolderId = folder.id
+                            taskEditorInitialStatus = initialStatus
+                            showTaskEditorSheet = true
+                        },
+                        onEditTask = { task ->
+                            editingTask = task
+                            taskEditorFolderId = task.taskListId
+                            taskEditorInitialStatus = task.status
+                            showTaskEditorSheet = true
+                        },
+                        onSetTaskStatus = { task, status ->
+                            viewModel.setTaskStatus(task, status)
+                        }
+                    )
+                }
             }
 
             composable(TopTab.SETTINGS.route) {
@@ -427,6 +541,86 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
             errorMessage = joinState.errorMessage,
             onDismiss = { viewModel.dismissJoinDialog() },
             onJoin = { code -> viewModel.joinListByCode(code) }
+        )
+    }
+
+    if (showTaskFolderSheet) {
+        val currentFolder = editingTaskFolder
+        TaskFolderSheet(
+            editingFolder = currentFolder,
+            canEditPrivacy = currentFolder == null || currentFolder.ownerId == viewModel.currentUserId(),
+            onDismiss = {
+                showTaskFolderSheet = false
+                editingTaskFolder = null
+            },
+            onSave = { name, iconKey, colorHex, isShared, defaultView ->
+                viewModel.saveTaskList(
+                    existing = currentFolder,
+                    name = name,
+                    iconKey = iconKey,
+                    colorHex = colorHex,
+                    isShared = isShared,
+                    defaultView = defaultView
+                ) { saved ->
+                    if (currentFolder == null) {
+                        navController.navigate("task_folder/${saved.id}")
+                    }
+                }
+                showTaskFolderSheet = false
+                editingTaskFolder = null
+            }
+        )
+    }
+
+    if (showTaskEditorSheet) {
+        val liveEditingTask = editingTask?.let { target ->
+            tasks.firstOrNull { it.id == target.id } ?: target
+        }
+        val activeSubtasks = liveEditingTask?.let { t ->
+            taskSubtasks.filter { it.taskId == t.id }
+        }.orEmpty()
+
+        TaskEditorSheet(
+            editingTask = liveEditingTask,
+            initialFolderId = taskEditorFolderId,
+            initialStatus = taskEditorInitialStatus,
+            folders = taskLists,
+            profiles = householdProfiles,
+            existingSubtasks = activeSubtasks,
+            shoppingLists = lists,
+            onDismiss = {
+                showTaskEditorSheet = false
+                editingTask = null
+            },
+            onSave = { listId, title, notes, assignedTo, status, priority, dueDate, dueTime, recurrenceRule, initialSubs ->
+                viewModel.saveTask(
+                    existing = liveEditingTask,
+                    taskListId = listId,
+                    title = title,
+                    notes = notes,
+                    assignedTo = assignedTo,
+                    status = status,
+                    priority = priority,
+                    dueDate = dueDate,
+                    dueTime = dueTime,
+                    reminderMinutesBefore = liveEditingTask?.reminderMinutesBefore,
+                    recurrenceRule = recurrenceRule,
+                    initialSubtasks = initialSubs
+                )
+                showTaskEditorSheet = false
+                editingTask = null
+            },
+            onDeleteTask = { target ->
+                viewModel.deleteTask(target)
+                showTaskEditorSheet = false
+                editingTask = null
+            },
+            onAddSubtask = { target, subTitle -> viewModel.addSubtask(target, subTitle) },
+            onToggleSubtask = { sub -> viewModel.toggleSubtask(sub) },
+            onDeleteSubtask = { sub -> viewModel.deleteSubtask(sub) },
+            onSendToShoppingList = { listId, itemName, qty ->
+                viewModel.sendTaskItemToShoppingList(listId, itemName, qty)
+            }
         )
     }
 }
