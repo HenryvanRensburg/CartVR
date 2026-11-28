@@ -55,11 +55,60 @@ class GitHubUpdater(private val context: Context) {
         }
     }
 
+    private val noRedirectClient = HttpClient(OkHttp) {
+        followRedirects = false
+    }
+
     suspend fun checkForUpdate(): Result<UpdateInfo?> = withContext(Dispatchers.IO) {
         runCatching {
-            val url = "https://api.github.com/repos/${BuildConfig.GITHUB_OWNER}/${BuildConfig.GITHUB_REPO}/releases/latest"
-            val release: GitHubRelease = httpClient.get(url) {
+            val owner = BuildConfig.GITHUB_OWNER
+            val repo = BuildConfig.GITHUB_REPO
+
+            // 1. Primary rate-limit-free check via GitHub web /releases/latest redirect
+            val resolvedTag = runCatching {
+                val resp = noRedirectClient.get("https://github.com/$owner/$repo/releases/latest") {
+                    header("User-Agent", "CartVR/${BuildConfig.VERSION_NAME}")
+                }
+                val location = resp.headers["Location"] ?: return@runCatching null
+                val marker = "/releases/tag/"
+                val idx = location.indexOf(marker)
+                if (idx >= 0) location.substring(idx + marker.length).substringBefore("?").trim() else null
+            }.getOrNull()
+
+            if (!resolvedTag.isNullOrBlank()) {
+                val remoteVersion = resolvedTag.removePrefix("v")
+                if (!isNewerVersion(remoteVersion, BuildConfig.VERSION_NAME)) {
+                    return@runCatching null
+                }
+
+                // Best-effort metadata from GitHub API (falls back gracefully if 403 rate limited)
+                val optionalRelease = runCatching {
+                    httpClient.get("https://api.github.com/repos/$owner/$repo/releases/tags/$resolvedTag") {
+                        header("Accept", "application/vnd.github+json")
+                        header("User-Agent", "CartVR/${BuildConfig.VERSION_NAME}")
+                    }.body<GitHubRelease>()
+                }.getOrNull()
+
+                val apkAsset = optionalRelease?.assets?.firstOrNull {
+                    it.name.equals("CartVR.apk", ignoreCase = true)
+                } ?: optionalRelease?.assets?.firstOrNull {
+                    it.name.endsWith(".apk", ignoreCase = true)
+                }
+
+                return@runCatching UpdateInfo(
+                    versionName = remoteVersion,
+                    releaseNotes = optionalRelease?.body?.ifBlank { "Bug fixes and improvements." }
+                        ?: "Version $remoteVersion is ready to install.",
+                    apkDownloadUrl = apkAsset?.browserDownloadUrl
+                        ?: "https://github.com/$owner/$repo/releases/download/$resolvedTag/CartVR.apk",
+                    apkSizeBytes = apkAsset?.size ?: 0L
+                )
+            }
+
+            // 2. Fallback to GitHub API if redirect header wasn't available
+            val release: GitHubRelease = httpClient.get("https://api.github.com/repos/$owner/$repo/releases/latest") {
                 header("Accept", "application/vnd.github+json")
+                header("User-Agent", "CartVR/${BuildConfig.VERSION_NAME}")
             }.body()
 
             val remoteVersion = release.tagName.trim().removePrefix("v")
@@ -105,7 +154,9 @@ class GitHubUpdater(private val context: Context) {
             val apkFile = File(context.cacheDir, "CartVR-update.apk")
             if (apkFile.exists()) apkFile.delete()
 
-            val response = httpClient.get(updateInfo.apkDownloadUrl)
+            val response = httpClient.get(updateInfo.apkDownloadUrl) {
+                header("User-Agent", "CartVR/${BuildConfig.VERSION_NAME}")
+            }
             val totalBytes = response.contentLength() ?: updateInfo.apkSizeBytes
             val channel = response.bodyAsChannel()
 

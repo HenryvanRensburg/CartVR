@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.ShoppingCart
 import androidx.compose.material.icons.rounded.TaskAlt
@@ -39,11 +40,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.cartvr.app.data.local.entity.CalendarEventEntity
 import com.cartvr.app.data.local.entity.ShoppingListEntity
 import com.cartvr.app.data.local.entity.TaskEntity
 import com.cartvr.app.data.local.entity.TaskListEntity
 import com.cartvr.app.ui.auth.AcceptInviteScreen
 import com.cartvr.app.ui.auth.LoginScreen
+import com.cartvr.app.ui.calendar.CalendarScreen
+import com.cartvr.app.ui.calendar.EventEditorSheet
 import com.cartvr.app.ui.components.CreateListSheet
 import com.cartvr.app.ui.components.JoinListDialog
 import com.cartvr.app.ui.components.ListVisuals
@@ -60,10 +64,12 @@ import com.cartvr.app.ui.tasks.TasksHubScreen
 import com.cartvr.app.ui.theme.CartVRTheme
 import io.github.jan.supabase.auth.status.SessionStatus
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 private enum class TopTab(val route: String, val label: String, val icon: ImageVector) {
     SHOPPING("shopping", "Shopping", Icons.Rounded.ShoppingCart),
     TASKS("tasks", "Tasks", Icons.Rounded.TaskAlt),
+    CALENDAR("calendar", "Calendar", Icons.Rounded.CalendarMonth),
     SETTINGS("settings", "Settings", Icons.Rounded.Settings)
 }
 
@@ -156,11 +162,17 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
     val taskLists by viewModel.taskLists.collectAsStateWithLifecycle()
     val tasks by viewModel.tasks.collectAsStateWithLifecycle()
     val taskSubtasks by viewModel.taskSubtasks.collectAsStateWithLifecycle()
+    val calendarEvents by viewModel.calendarEvents.collectAsStateWithLifecycle()
 
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
 
     var selectedShoppingSubTab by rememberSaveable { mutableStateOf(ShoppingSubTab.LISTS) }
+    var selectedCalendarDateIso by rememberSaveable { mutableStateOf(LocalDate.now().toString()) }
+    val selectedCalendarDate = remember(selectedCalendarDateIso) {
+        runCatching { LocalDate.parse(selectedCalendarDateIso) }.getOrDefault(LocalDate.now())
+    }
+
     var showListSheet by remember { mutableStateOf(false) }
     var editingList by remember { mutableStateOf<ShoppingListEntity?>(null) }
 
@@ -171,10 +183,15 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
     var taskEditorFolderId by remember { mutableStateOf("") }
     var taskEditorInitialStatus by remember { mutableStateOf("todo") }
 
+    var showEventSheet by remember { mutableStateOf(false) }
+    var editingEvent by remember { mutableStateOf<CalendarEventEntity?>(null) }
+    var editingEventOccurrenceDate by remember { mutableStateOf(LocalDate.now()) }
+
     val showBottomBar = currentRoute in TopTab.entries.map { it.route }
     val showShoppingFab = currentRoute == TopTab.SHOPPING.route && selectedShoppingSubTab == ShoppingSubTab.LISTS
     val showTasksFab = currentRoute == TopTab.TASKS.route && taskLists.isNotEmpty()
-    val showFab = showShoppingFab || showTasksFab
+    val showCalendarFab = currentRoute == TopTab.CALENDAR.route
+    val showFab = showShoppingFab || showTasksFab || showCalendarFab
 
     LaunchedEffect(currentRoute, backStackEntry) {
         val activeListId = if (currentRoute == "list/{listId}") {
@@ -236,18 +253,34 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
             if (showFab) {
                 ExtendedFloatingActionButton(
                     onClick = {
-                        if (showTasksFab) {
-                            editingTask = null
-                            taskEditorFolderId = taskLists.firstOrNull()?.id ?: ""
-                            taskEditorInitialStatus = "todo"
-                            showTaskEditorSheet = true
-                        } else {
-                            editingList = null
-                            showListSheet = true
+                        when {
+                            showTasksFab -> {
+                                editingTask = null
+                                taskEditorFolderId = taskLists.firstOrNull()?.id ?: ""
+                                taskEditorInitialStatus = "todo"
+                                showTaskEditorSheet = true
+                            }
+                            showCalendarFab -> {
+                                editingEvent = null
+                                editingEventOccurrenceDate = selectedCalendarDate
+                                showEventSheet = true
+                            }
+                            else -> {
+                                editingList = null
+                                showListSheet = true
+                            }
                         }
                     },
                     icon = { Icon(Icons.Rounded.Add, contentDescription = null) },
-                    text = { Text(if (showTasksFab) "New Task" else "New List") },
+                    text = {
+                        Text(
+                            when {
+                                showTasksFab -> "New Task"
+                                showCalendarFab -> "New Event"
+                                else -> "New List"
+                            }
+                        )
+                    },
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 )
@@ -391,13 +424,49 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
                 }
             }
 
+            composable(TopTab.CALENDAR.route) {
+                CalendarScreen(
+                    syncState = syncState,
+                    themeMode = themeMode,
+                    selectedDate = selectedCalendarDate,
+                    onSelectDate = { selectedCalendarDateIso = it.toString() },
+                    events = calendarEvents,
+                    tasks = tasks,
+                    taskLists = taskLists,
+                    subtasks = taskSubtasks,
+                    profiles = householdProfiles,
+                    onToggleTheme = { isDark -> viewModel.toggleQuickTheme(isDark) },
+                    onSyncClick = { viewModel.syncNow() },
+                    onEventClick = { event, occDate ->
+                        editingEvent = event
+                        editingEventOccurrenceDate = occDate
+                        showEventSheet = true
+                    },
+                    onTaskClick = { task ->
+                        editingTask = task
+                        taskEditorFolderId = task.taskListId
+                        taskEditorInitialStatus = task.status
+                        showTaskEditorSheet = true
+                    },
+                    onToggleTaskDone = { task ->
+                        viewModel.setTaskStatus(task, if (task.status == "done") "todo" else "done")
+                    }
+                )
+            }
+
             composable(TopTab.SETTINGS.route) {
+                val myAccentColor = householdProfiles
+                    .firstOrNull { it.userId == viewModel.currentUserId() }
+                    ?.accentColor
+                    ?: "#0D9488"
+
                 SettingsScreen(
                     displayName = resolvedDisplayName,
                     userEmail = viewModel.userEmail(),
                     householdName = householdName ?: "Janse van Rensburg",
                     isAdmin = isAdmin,
                     themeMode = themeMode,
+                    myAccentColor = myAccentColor,
                     lastSyncError = lastSyncError,
                     updateState = updateState,
                     notificationsEnabled = notificationsEnabled,
@@ -406,6 +475,7 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
                     liveModeDurationHours = liveModeDurationHours,
                     liveModeStopAtMs = liveModeStopAtMs,
                     onThemeSelected = { viewModel.setThemeMode(it) },
+                    onAccentColorSelected = { viewModel.updateMyAccentColor(it) },
                     onNotificationsEnabledChanged = { viewModel.setNotificationsEnabled(it) },
                     onNotifyOnCheckedChanged = { viewModel.setNotifyOnChecked(it) },
                     onLiveModeEnabledChanged = { viewModel.setLiveModeEnabled(it) },
@@ -620,6 +690,52 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
             onDeleteSubtask = { sub -> viewModel.deleteSubtask(sub) },
             onSendToShoppingList = { listId, itemName, qty ->
                 viewModel.sendTaskItemToShoppingList(listId, itemName, qty)
+            }
+        )
+    }
+
+    if (showEventSheet) {
+        val liveEditingEvent = editingEvent?.let { target ->
+            calendarEvents.firstOrNull { it.id == target.id } ?: target
+        }
+        EventEditorSheet(
+            editingEvent = liveEditingEvent,
+            initialDate = selectedCalendarDate,
+            occurrenceDate = editingEventOccurrenceDate,
+            profiles = householdProfiles,
+            onDismiss = {
+                showEventSheet = false
+                editingEvent = null
+            },
+            onSave = { title, location, notes, date, isAllDay, startTime, endTime, isShared, assignedIds, colorHex, rrule, reminderMin ->
+                viewModel.saveCalendarEvent(
+                    existing = liveEditingEvent,
+                    title = title,
+                    location = location,
+                    notes = notes,
+                    date = date,
+                    isAllDay = isAllDay,
+                    startTime = startTime,
+                    endTime = endTime,
+                    isShared = isShared,
+                    assignedMemberIds = assignedIds,
+                    colorHex = colorHex,
+                    recurrenceRule = rrule,
+                    reminderMinutesBefore = reminderMin
+                )
+                selectedCalendarDateIso = date.toString()
+                showEventSheet = false
+                editingEvent = null
+            },
+            onDeleteSeries = { target ->
+                viewModel.deleteCalendarEvent(target)
+                showEventSheet = false
+                editingEvent = null
+            },
+            onStopRepeatingFromDate = { target, fromDate ->
+                viewModel.stopRepeatingEventFromDate(target, fromDate)
+                showEventSheet = false
+                editingEvent = null
             }
         )
     }

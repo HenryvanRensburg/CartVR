@@ -23,6 +23,9 @@ interface OrganizerDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertProfiles(profiles: List<HouseholdProfileEntity>)
 
+    @Query("UPDATE household_profiles SET accentColor = :accentColor WHERE userId = :userId")
+    suspend fun updateProfileAccentColor(userId: String, accentColor: String)
+
     @Query("DELETE FROM household_profiles")
     suspend fun clearProfiles()
 
@@ -128,6 +131,9 @@ interface OrganizerDao {
     // --- Calendar Events ---
     @Query("SELECT * FROM calendar_events WHERE deletedAt IS NULL ORDER BY startAt ASC")
     fun observeActiveCalendarEvents(): Flow<List<CalendarEventEntity>>
+
+    @Query("SELECT * FROM calendar_events WHERE id = :id LIMIT 1")
+    suspend fun getCalendarEventById(id: String): CalendarEventEntity?
 
     @Query("SELECT * FROM calendar_events WHERE syncStatus != '${SyncStatus.SYNCED}'")
     suspend fun getPendingCalendarEvents(): List<CalendarEventEntity>

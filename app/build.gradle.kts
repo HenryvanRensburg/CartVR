@@ -22,8 +22,8 @@ android {
         applicationId = "com.cartvr.app"
                 minSdk = 26
         targetSdk = 35
-        versionCode = 9
-        versionName = "1.5.0"
+        versionCode = 10
+        versionName = "1.6.0"
 
         buildConfigField("String", "SUPABASE_URL", "\"https://dqbjxuuladymxlcedbvx.supabase.co\"")
         buildConfigField("String", "SUPABASE_KEY", "\"sb_publishable_02TccoaCz3gUG3Gl6KkNLQ_l_1cHBdD\"")

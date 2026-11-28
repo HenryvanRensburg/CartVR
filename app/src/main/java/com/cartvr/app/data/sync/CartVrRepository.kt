@@ -39,6 +39,7 @@ import com.cartvr.app.data.remote.dto.TaskListDto
 import com.cartvr.app.data.remote.dto.TaskSubtaskDto
 import com.cartvr.app.data.remote.dto.toDto
 import com.cartvr.app.data.remote.dto.toEntity
+import com.cartvr.app.domain.CalendarRecurrence
 import com.cartvr.app.domain.TaskRecurrence
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.builtin.Email
@@ -70,6 +71,9 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import java.security.SecureRandom
 import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.ZoneId
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
@@ -1733,6 +1737,146 @@ class CartVrRepository(
             )
         )
         scope.launch { syncAll() }
+    }
+
+    // --- Family Calendar & Member Accent Color ---
+
+    suspend fun saveCalendarEvent(
+        existing: CalendarEventEntity?,
+        title: String,
+        location: String?,
+        notes: String?,
+        date: LocalDate,
+        isAllDay: Boolean,
+        startTime: LocalTime,
+        endTime: LocalTime,
+        isShared: Boolean,
+        assignedMemberIds: List<String>,
+        colorHex: String?,
+        recurrenceRule: String?,
+        reminderMinutesBefore: Int?
+    ): CalendarEventEntity? {
+        val userId = currentUserId() ?: return null
+        val householdId = prefs.householdId.first() ?: return null
+        val cleanTitle = normalizeName(title)
+        if (cleanTitle.isEmpty()) return null
+
+        val zone = ZoneId.systemDefault()
+        val startInstant: Instant
+        val endInstant: Instant
+        if (isAllDay) {
+            startInstant = date.atStartOfDay(zone).toInstant()
+            endInstant = date.atTime(23, 59).atZone(zone).toInstant()
+        } else {
+            startInstant = date.atTime(startTime).atZone(zone).toInstant()
+            val resolvedEndTime = if (!endTime.isAfter(startTime)) {
+                startTime.plusHours(1)
+            } else {
+                endTime
+            }
+            val endDate = if (!resolvedEndTime.isAfter(startTime)) date.plusDays(1) else date
+            endInstant = endDate.atTime(resolvedEndTime).atZone(zone).toInstant()
+        }
+
+        val resolvedMembersCsv = if (!isShared) {
+            userId
+        } else {
+            assignedMemberIds.filter { it.isNotBlank() }.distinct().joinToString(",")
+        }
+
+        val now = Instant.now().toString()
+        val event = if (existing == null) {
+            CalendarEventEntity(
+                id = UUID.randomUUID().toString(),
+                householdId = householdId,
+                ownerId = userId,
+                title = cleanTitle,
+                location = location?.trim()?.ifBlank { null },
+                notes = notes?.trim()?.ifBlank { null },
+                startAt = startInstant.toString(),
+                endAt = endInstant.toString(),
+                isAllDay = isAllDay,
+                isShared = isShared,
+                assignedMemberIdsCsv = resolvedMembersCsv,
+                colorHex = colorHex?.ifBlank { null },
+                recurrenceRule = recurrenceRule?.ifBlank { null },
+                reminderMinutesBefore = reminderMinutesBefore,
+                updatedBy = userId,
+                createdAt = now,
+                updatedAt = now,
+                syncStatus = SyncStatus.PENDING_UPSERT
+            )
+        } else {
+            existing.copy(
+                title = cleanTitle,
+                location = location?.trim()?.ifBlank { null },
+                notes = notes?.trim()?.ifBlank { null },
+                startAt = startInstant.toString(),
+                endAt = endInstant.toString(),
+                isAllDay = isAllDay,
+                isShared = isShared,
+                assignedMemberIdsCsv = resolvedMembersCsv,
+                colorHex = colorHex?.ifBlank { null },
+                recurrenceRule = recurrenceRule?.ifBlank { null },
+                reminderMinutesBefore = reminderMinutesBefore,
+                updatedBy = userId,
+                updatedAt = now,
+                syncStatus = SyncStatus.PENDING_UPSERT
+            )
+        }
+
+        organizerDao.upsertCalendarEvent(event)
+        scope.launch { syncAll() }
+        return event
+    }
+
+    suspend fun stopRepeatingEventFromDate(event: CalendarEventEntity, fromDate: LocalDate) {
+        val zone = ZoneId.systemDefault()
+        val startDate = runCatching {
+            Instant.parse(event.startAt).atZone(zone).toLocalDate()
+        }.getOrNull()
+
+        if (startDate == null || !fromDate.isAfter(startDate)) {
+            softDeleteCalendarEvent(event)
+            return
+        }
+
+        val updatedRule = CalendarRecurrence.withUntilDate(event.recurrenceRule, fromDate.minusDays(1))
+        val now = Instant.now().toString()
+        organizerDao.upsertCalendarEvent(
+            event.copy(
+                recurrenceRule = updatedRule,
+                updatedBy = currentUserId(),
+                updatedAt = now,
+                syncStatus = SyncStatus.PENDING_UPSERT
+            )
+        )
+        scope.launch { syncAll() }
+    }
+
+    suspend fun softDeleteCalendarEvent(event: CalendarEventEntity) {
+        val now = Instant.now().toString()
+        organizerDao.upsertCalendarEvent(
+            event.copy(
+                updatedBy = currentUserId(),
+                updatedAt = now,
+                deletedAt = now,
+                syncStatus = SyncStatus.PENDING_DELETE
+            )
+        )
+        scope.launch { syncAll() }
+    }
+
+    suspend fun updateMyAccentColor(colorHex: String) {
+        val userId = currentUserId() ?: return
+        organizerDao.updateProfileAccentColor(userId, colorHex)
+        runCatching {
+            supabase.postgrest["profiles"].update({
+                set("accent_color", colorHex)
+            }) {
+                filter { eq("user_id", userId) }
+            }
+        }
     }
 
     // --- Family Admin & Invites ---

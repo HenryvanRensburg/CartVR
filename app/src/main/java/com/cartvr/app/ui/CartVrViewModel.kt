@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.cartvr.app.CartVRApplication
+import com.cartvr.app.data.local.entity.CalendarEventEntity
 import com.cartvr.app.data.local.entity.CategoryEntity
 import com.cartvr.app.data.local.entity.HouseholdProfileEntity
 import com.cartvr.app.data.local.entity.ItemHistoryEntity
@@ -40,6 +41,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalTime
 
 data class UpdateUiState(
     val isChecking: Boolean = false,
@@ -168,6 +171,12 @@ class CartVrViewModel(
     )
 
     val taskSubtasks: StateFlow<List<TaskSubtaskEntity>> = repository.taskSubtasks.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        emptyList()
+    )
+
+    val calendarEvents: StateFlow<List<CalendarEventEntity>> = repository.calendarEvents.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
         emptyList()
@@ -700,6 +709,63 @@ class CartVrViewModel(
                 is ItemMutationResult.DuplicateBlocked ->
                     _statusBanner.value = res.message
             }
+        }
+    }
+
+    // --- Family Calendar & Accent Color ---
+
+    fun saveCalendarEvent(
+        existing: CalendarEventEntity?,
+        title: String,
+        location: String?,
+        notes: String?,
+        date: LocalDate,
+        isAllDay: Boolean,
+        startTime: LocalTime,
+        endTime: LocalTime,
+        isShared: Boolean,
+        assignedMemberIds: List<String>,
+        colorHex: String?,
+        recurrenceRule: String?,
+        reminderMinutesBefore: Int?
+    ) {
+        viewModelScope.launch {
+            repository.saveCalendarEvent(
+                existing = existing,
+                title = title,
+                location = location,
+                notes = notes,
+                date = date,
+                isAllDay = isAllDay,
+                startTime = startTime,
+                endTime = endTime,
+                isShared = isShared,
+                assignedMemberIds = assignedMemberIds,
+                colorHex = colorHex,
+                recurrenceRule = recurrenceRule,
+                reminderMinutesBefore = reminderMinutesBefore
+            )
+        }
+    }
+
+    fun deleteCalendarEvent(event: CalendarEventEntity) {
+        viewModelScope.launch {
+            repository.softDeleteCalendarEvent(event)
+            _statusBanner.value = "Deleted \"${event.title}\""
+        }
+    }
+
+    fun stopRepeatingEventFromDate(event: CalendarEventEntity, fromDate: LocalDate) {
+        viewModelScope.launch {
+            repository.stopRepeatingEventFromDate(event, fromDate)
+            _statusBanner.value = "Updated repeating series"
+        }
+    }
+
+    fun updateMyAccentColor(colorHex: String) {
+        viewModelScope.launch {
+            repository.updateMyAccentColor(colorHex)
+            _statusBanner.value = "Calendar color updated"
         }
     }
 
