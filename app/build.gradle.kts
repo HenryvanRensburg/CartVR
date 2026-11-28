@@ -22,8 +22,8 @@ android {
         applicationId = "com.cartvr.app"
                 minSdk = 26
         targetSdk = 35
-        versionCode = 12
-        versionName = "2.0.1"
+        versionCode = 13
+        versionName = "2.1.0"
 
         buildConfigField("String", "SUPABASE_URL", "\"https://dqbjxuuladymxlcedbvx.supabase.co\"")
         buildConfigField("String", "SUPABASE_KEY", "\"sb_publishable_02TccoaCz3gUG3Gl6KkNLQ_l_1cHBdD\"")
@@ -108,4 +108,11 @@ dependencies {
 
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.android)
+
+    implementation(libs.androidx.camera.core)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.view)
+    implementation(libs.mlkit.barcode.scanning)
+    implementation(libs.zxing.core)
 }

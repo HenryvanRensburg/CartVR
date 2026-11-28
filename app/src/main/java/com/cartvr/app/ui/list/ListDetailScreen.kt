@@ -31,15 +31,18 @@ import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.ArrowUpward
 import androidx.compose.material.icons.rounded.CheckBox
 import androidx.compose.material.icons.rounded.CheckBoxOutlineBlank
+import androidx.compose.material.icons.rounded.CreditCard
 import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.material.icons.rounded.ExitToApp
 import androidx.compose.material.icons.rounded.ExpandLess
 import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.QrCodeScanner
 import androidx.compose.material.icons.rounded.Reorder
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.Tune
+import androidx.compose.material.icons.rounded.WbSunny
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
@@ -61,6 +64,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -68,6 +72,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -76,11 +81,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.cartvr.app.data.local.entity.CategoryEntity
 import com.cartvr.app.data.local.entity.ItemHistoryEntity
+import com.cartvr.app.data.local.entity.LoyaltyCardEntity
 import com.cartvr.app.data.local.entity.RegularItemEntity
 import com.cartvr.app.data.local.entity.ShoppingItemEntity
 import com.cartvr.app.data.local.entity.ShoppingListEntity
 import com.cartvr.app.domain.SmartItemParser
 import com.cartvr.app.ui.components.EditItemSheet
+import com.cartvr.app.ui.loyalty.LinkedCardsPickerSheet
+import com.cartvr.app.ui.loyalty.LoyaltyCardDisplayDialog
 
 private data class SuggestionCandidate(
     val displayName: String,
@@ -98,8 +106,15 @@ fun ListDetailScreen(
     categories: List<CategoryEntity>,
     history: List<ItemHistoryEntity>,
     regulars: List<RegularItemEntity>,
+    linkedCards: List<LoyaltyCardEntity> = emptyList(),
+    defaultKeepAwakeOnList: Boolean = false,
+    keepAwakeInLiveMode: Boolean = true,
+    liveModeEnabled: Boolean = false,
     onBack: () -> Unit,
     onQuickAddItem: (name: String, quantity: String?, note: String?, categoryId: String?) -> Unit,
+    onOpenScanBarcode: () -> Unit = {},
+    onOpenLoyaltyWallet: () -> Unit = {},
+    onShowSnackbar: (String) -> Unit = {},
     onToggleChecked: (ShoppingItemEntity) -> Unit,
     onUpdateItem: (updated: ShoppingItemEntity, categoryChanged: Boolean) -> Unit,
     onDeleteItem: (ShoppingItemEntity) -> Unit,
@@ -110,6 +125,20 @@ fun ListDetailScreen(
     onDeleteList: () -> Unit,
     onLeaveList: () -> Unit
 ) {
+    val view = LocalView.current
+    val autoKeepAwake = defaultKeepAwakeOnList || (liveModeEnabled && keepAwakeInLiveMode)
+    var manualKeepAwakeOverride by remember(list.id) { mutableStateOf<Boolean?>(null) }
+    val isKeepScreenAwake = manualKeepAwakeOverride ?: autoKeepAwake
+
+    DisposableEffect(view, isKeepScreenAwake) {
+        view.keepScreenOn = isKeepScreenAwake
+        onDispose {
+            view.keepScreenOn = false
+        }
+    }
+
+    var activeLoyaltyCardDialog by remember { mutableStateOf<LoyaltyCardEntity?>(null) }
+    var showLinkedCardsPicker by remember { mutableStateOf(false) }
     var completedExpanded by remember { mutableStateOf(true) }
     var showReorderDialog by remember { mutableStateOf(false) }
     var editingItem by remember { mutableStateOf<ShoppingItemEntity?>(null) }
@@ -215,14 +244,48 @@ fun ListDetailScreen(
                     }
                 },
                 actions = {
+                    IconButton(
+                        onClick = {
+                            val next = !isKeepScreenAwake
+                            manualKeepAwakeOverride = next
+                            onShowSnackbar(
+                                if (next) "Screen will stay awake while on this list"
+                                else "Normal screen timeout restored"
+                            )
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.WbSunny,
+                            contentDescription = if (isKeepScreenAwake) "Keep screen awake (On)" else "Keep screen awake (Off)",
+                            tint = if (isKeepScreenAwake) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            }
+                        )
+                    }
+                    if (linkedCards.isNotEmpty()) {
+                        IconButton(
+                            onClick = {
+                                if (linkedCards.size == 1) {
+                                    activeLoyaltyCardDialog = linkedCards.first()
+                                } else {
+                                    showLinkedCardsPicker = true
+                                }
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.CreditCard,
+                                contentDescription = "Show loyalty card",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
                     IconButton(onClick = onShareList) {
                         Icon(
                             imageVector = Icons.Rounded.Share,
                             contentDescription = if (list.isShared) "Send Invite Link" else "Share List"
                         )
-                    }
-                    IconButton(onClick = { showReorderDialog = true }) {
-                        Icon(Icons.Rounded.Reorder, contentDescription = "Reorder Aisles")
                     }
                     Box {
                         IconButton(onClick = { menuExpanded = true }) {
@@ -232,6 +295,22 @@ fun ListDetailScreen(
                             expanded = menuExpanded,
                             onDismissRequest = { menuExpanded = false }
                         ) {
+                            DropdownMenuItem(
+                                text = { Text("Loyalty Card Wallet") },
+                                leadingIcon = { Icon(Icons.Rounded.CreditCard, contentDescription = null) },
+                                onClick = {
+                                    menuExpanded = false
+                                    onOpenLoyaltyWallet()
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Reorder Aisles") },
+                                leadingIcon = { Icon(Icons.Rounded.Reorder, contentDescription = null) },
+                                onClick = {
+                                    menuExpanded = false
+                                    showReorderDialog = true
+                                }
+                            )
                             if (checked.isNotEmpty()) {
                                 DropdownMenuItem(
                                     text = { Text("Clear Completed") },
@@ -316,6 +395,7 @@ fun ListDetailScreen(
                     extraQty = ""
                     extraNote = ""
                 },
+                onOpenScanBarcode = onOpenScanBarcode,
                 onSubmit = { submitQuickAdd() }
             )
         },
@@ -441,6 +521,25 @@ fun ListDetailScreen(
         )
     }
 
+    activeLoyaltyCardDialog?.let { card ->
+        LoyaltyCardDisplayDialog(
+            card = card,
+            onDismiss = { activeLoyaltyCardDialog = null }
+        )
+    }
+
+    if (showLinkedCardsPicker) {
+        LinkedCardsPickerSheet(
+            cards = linkedCards,
+            listName = list.name,
+            onSelectCard = { selected ->
+                activeLoyaltyCardDialog = selected
+            },
+            onOpenWallet = onOpenLoyaltyWallet,
+            onDismiss = { showLinkedCardsPicker = false }
+        )
+    }
+
     if (showReorderDialog) {
         ReorderAislesDialog(
             categories = categories,
@@ -532,6 +631,7 @@ private fun BottomQuickAddBar(
     onExtraNoteChange: (String) -> Unit,
     suggestions: List<SuggestionCandidate>,
     onSuggestionClick: (SuggestionCandidate) -> Unit,
+    onOpenScanBarcode: () -> Unit,
     onSubmit: () -> Unit
 ) {
     Surface(
@@ -622,6 +722,17 @@ private fun BottomQuickAddBar(
                         } else {
                             MaterialTheme.colorScheme.onSurfaceVariant
                         }
+                    )
+                }
+
+                IconButton(
+                    onClick = onOpenScanBarcode,
+                    modifier = Modifier.size(42.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.QrCodeScanner,
+                        contentDescription = "Scan barcode",
+                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
 

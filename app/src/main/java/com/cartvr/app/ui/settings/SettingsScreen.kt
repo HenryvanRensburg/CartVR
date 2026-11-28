@@ -100,6 +100,8 @@ fun SettingsScreen(
     defaultEventReminderMinutes: Int,
     notifyTaskAssignments: Boolean,
     notifySharedCalendar: Boolean,
+    keepScreenAwakeOnList: Boolean,
+    keepScreenAwakeInLiveMode: Boolean,
     onThemeSelected: (ThemeMode) -> Unit,
     onAccentColorSelected: (String) -> Unit,
     onNotificationsEnabledChanged: (Boolean) -> Unit,
@@ -113,6 +115,8 @@ fun SettingsScreen(
     onDefaultEventReminderChanged: (Int) -> Unit,
     onNotifyTaskAssignmentsChanged: (Boolean) -> Unit,
     onNotifySharedCalendarChanged: (Boolean) -> Unit,
+    onKeepScreenAwakeOnListChanged: (Boolean) -> Unit,
+    onKeepScreenAwakeInLiveModeChanged: (Boolean) -> Unit,
     onOpenExactAlarmSettings: () -> Unit,
     onOpenBatteryOptimizationSettings: () -> Unit,
     onManageFamily: () -> Unit,
@@ -500,6 +504,72 @@ fun SettingsScreen(
                                 onCheckedChange = onNotifySharedCalendarChanged
                             )
                         }
+                    }
+                }
+            }
+        }
+
+        // In-Store Shopping Card
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(18.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(
+                        text = "In-Store Shopping",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "Auto Keep Screen Awake on Lists",
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            Text(
+                                text = "Keep your display awake automatically whenever you open a shopping list.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Switch(
+                            checked = keepScreenAwakeOnList,
+                            onCheckedChange = onKeepScreenAwakeOnListChanged
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "Keep Awake During Live Shopping Mode",
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            Text(
+                                text = "Stay awake on lists while Live Shopping Mode is turned on.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Switch(
+                            checked = keepScreenAwakeInLiveMode,
+                            onCheckedChange = onKeepScreenAwakeInLiveModeChanged
+                        )
                     }
                 }
             }

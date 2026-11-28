@@ -11,3 +11,8 @@
 -dontwarn okhttp3.**
 -dontwarn okio.**
 -dontwarn io.ktor.**
+
+# CameraX & ML Kit Barcode Scanning
+-keep class com.google.mlkit.** { *; }
+-dontwarn com.google.mlkit.**
+-dontwarn com.google.android.gms.**

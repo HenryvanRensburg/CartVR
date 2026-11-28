@@ -10,9 +10,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Checklist
+import androidx.compose.material.icons.rounded.CreditCard
 import androidx.compose.material.icons.rounded.DarkMode
 import androidx.compose.material.icons.rounded.GroupAdd
 import androidx.compose.material.icons.rounded.LightMode
+import androidx.compose.material.icons.rounded.QrCodeScanner
 import androidx.compose.material.icons.rounded.Repeat
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -60,6 +62,8 @@ fun ShoppingHubScreen(
     onToggleTheme: (Boolean) -> Unit,
     onSyncClick: () -> Unit,
     onOpenJoinDialog: () -> Unit,
+    onOpenLoyaltyWallet: () -> Unit = {},
+    onOpenBarcodeScanner: () -> Unit = {},
     onListClick: (ShoppingListEntity) -> Unit,
     onEditList: (ShoppingListEntity) -> Unit,
     onShareList: (ShoppingListEntity) -> Unit,
@@ -107,6 +111,20 @@ fun ShoppingHubScreen(
                 horizontalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 SyncStatusPill(syncState = syncState, onClick = onSyncClick)
+                IconButton(onClick = onOpenBarcodeScanner) {
+                    Icon(
+                        imageVector = Icons.Rounded.QrCodeScanner,
+                        contentDescription = "Scan barcode",
+                        tint = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+                IconButton(onClick = onOpenLoyaltyWallet) {
+                    Icon(
+                        imageVector = Icons.Rounded.CreditCard,
+                        contentDescription = "Loyalty Card Wallet",
+                        tint = MaterialTheme.colorScheme.onBackground
+                    )
+                }
                 if (selectedSubTab == ShoppingSubTab.LISTS) {
                     IconButton(onClick = onOpenJoinDialog) {
                         Icon(

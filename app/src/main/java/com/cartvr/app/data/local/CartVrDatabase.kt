@@ -8,11 +8,14 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.cartvr.app.data.local.dao.CartVrDao
 import com.cartvr.app.data.local.dao.OrganizerDao
+import com.cartvr.app.data.local.dao.StoreDao
 import com.cartvr.app.data.local.entity.CalendarEventEntity
 import com.cartvr.app.data.local.entity.CategoryEntity
 import com.cartvr.app.data.local.entity.HouseholdProfileEntity
 import com.cartvr.app.data.local.entity.ItemHistoryEntity
 import com.cartvr.app.data.local.entity.ListMemberEntity
+import com.cartvr.app.data.local.entity.LoyaltyCardEntity
+import com.cartvr.app.data.local.entity.ProductBarcodeEntity
 import com.cartvr.app.data.local.entity.RegularItemEntity
 import com.cartvr.app.data.local.entity.ShoppingItemEntity
 import com.cartvr.app.data.local.entity.ShoppingListEntity
@@ -32,14 +35,17 @@ import com.cartvr.app.data.local.entity.TaskSubtaskEntity
         TaskListEntity::class,
         TaskEntity::class,
         TaskSubtaskEntity::class,
-        CalendarEventEntity::class
+        CalendarEventEntity::class,
+        ProductBarcodeEntity::class,
+        LoyaltyCardEntity::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 abstract class CartVrDatabase : RoomDatabase() {
     abstract fun cartVrDao(): CartVrDao
     abstract fun organizerDao(): OrganizerDao
+    abstract fun storeDao(): StoreDao
 
     companion object {
         @Volatile
@@ -176,6 +182,57 @@ abstract class CartVrDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `product_barcodes` (
+                        `id` TEXT NOT NULL,
+                        `householdId` TEXT NOT NULL,
+                        `barcode` TEXT NOT NULL,
+                        `name` TEXT NOT NULL,
+                        `defaultQuantity` TEXT,
+                        `categoryName` TEXT,
+                        `brand` TEXT,
+                        `source` TEXT NOT NULL,
+                        `createdBy` TEXT,
+                        `createdAt` TEXT NOT NULL,
+                        `updatedAt` TEXT NOT NULL,
+                        `deletedAt` TEXT,
+                        `syncStatus` TEXT NOT NULL,
+                        PRIMARY KEY(`id`)
+                    )
+                    """.trimIndent()
+                )
+                db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_product_barcodes_householdId_barcode` ON `product_barcodes` (`householdId`, `barcode`)")
+
+                db.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `loyalty_cards` (
+                        `id` TEXT NOT NULL,
+                        `householdId` TEXT NOT NULL,
+                        `ownerId` TEXT NOT NULL,
+                        `storeName` TEXT NOT NULL,
+                        `cardName` TEXT NOT NULL,
+                        `cardNumber` TEXT NOT NULL,
+                        `barcodeFormat` TEXT NOT NULL,
+                        `accentColor` TEXT NOT NULL,
+                        `notes` TEXT,
+                        `linkedListId` TEXT,
+                        `isShared` INTEGER NOT NULL,
+                        `createdAt` TEXT NOT NULL,
+                        `updatedAt` TEXT NOT NULL,
+                        `deletedAt` TEXT,
+                        `syncStatus` TEXT NOT NULL,
+                        PRIMARY KEY(`id`)
+                    )
+                    """.trimIndent()
+                )
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_loyalty_cards_householdId` ON `loyalty_cards` (`householdId`)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_loyalty_cards_linkedListId` ON `loyalty_cards` (`linkedListId`)")
+            }
+        }
+
         fun getInstance(context: Context): CartVrDatabase {
             return INSTANCE ?: synchronized(this) {
                 INSTANCE ?: Room.databaseBuilder(
@@ -183,7 +240,7 @@ abstract class CartVrDatabase : RoomDatabase() {
                     CartVrDatabase::class.java,
                     "cartvr.db"
                 )
-                    .addMigrations(MIGRATION_2_3, MIGRATION_3_4)
+                    .addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
                     .fallbackToDestructiveMigration()
                     .build()
                     .also { INSTANCE = it }

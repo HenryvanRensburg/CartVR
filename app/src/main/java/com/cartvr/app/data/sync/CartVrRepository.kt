@@ -3,11 +3,14 @@ package com.cartvr.app.data.sync
 import android.content.Context
 import com.cartvr.app.data.local.dao.CartVrDao
 import com.cartvr.app.data.local.dao.OrganizerDao
+import com.cartvr.app.data.local.dao.StoreDao
 import com.cartvr.app.data.local.entity.CalendarEventEntity
 import com.cartvr.app.data.local.entity.CategoryEntity
 import com.cartvr.app.data.local.entity.HouseholdProfileEntity
 import com.cartvr.app.data.local.entity.ItemHistoryEntity
 import com.cartvr.app.data.local.entity.ListMemberEntity
+import com.cartvr.app.data.local.entity.LoyaltyCardEntity
+import com.cartvr.app.data.local.entity.ProductBarcodeEntity
 import com.cartvr.app.data.local.entity.RegularItemEntity
 import com.cartvr.app.data.local.entity.ShoppingItemEntity
 import com.cartvr.app.data.local.entity.ShoppingListEntity
@@ -22,6 +25,7 @@ import com.cartvr.app.data.notifications.PendingListChange
 import com.cartvr.app.data.notifications.ReminderScheduler
 import com.cartvr.app.data.preferences.AppPreferences
 import com.cartvr.app.data.remote.FamilyApiClient
+import com.cartvr.app.data.remote.OpenFoodFactsClient
 import com.cartvr.app.data.remote.SupabaseProvider
 import com.cartvr.app.data.remote.dto.CalendarEventDto
 import com.cartvr.app.data.remote.dto.CategoryDto
@@ -33,6 +37,8 @@ import com.cartvr.app.data.remote.dto.HouseholdMemberDto
 import com.cartvr.app.data.remote.dto.InvitePreviewResponse
 import com.cartvr.app.data.remote.dto.ItemHistoryDto
 import com.cartvr.app.data.remote.dto.ListMemberDto
+import com.cartvr.app.data.remote.dto.LoyaltyCardDto
+import com.cartvr.app.data.remote.dto.ProductBarcodeDto
 import com.cartvr.app.data.remote.dto.ProfileDto
 import com.cartvr.app.data.remote.dto.RegularItemDto
 import com.cartvr.app.data.remote.dto.ShoppingItemDto
@@ -43,6 +49,7 @@ import com.cartvr.app.data.remote.dto.TaskSubtaskDto
 import com.cartvr.app.data.remote.dto.toDto
 import com.cartvr.app.data.remote.dto.toEntity
 import com.cartvr.app.domain.CalendarRecurrence
+import com.cartvr.app.domain.SmartItemParser
 import com.cartvr.app.domain.TaskRecurrence
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.builtin.Email
@@ -95,9 +102,27 @@ sealed class ItemMutationResult {
     data class DuplicateBlocked(val message: String) : ItemMutationResult()
 }
 
+enum class BarcodeLookupSource {
+    HOUSEHOLD_LIBRARY,
+    OPEN_FOOD_FACTS,
+    UNKNOWN
+}
+
+data class BarcodeLookupResult(
+    val barcode: String,
+    val source: BarcodeLookupSource,
+    val suggestedName: String = "",
+    val suggestedQuantity: String? = null,
+    val suggestedCategoryName: String? = null,
+    val suggestedCategoryId: String? = null,
+    val brand: String? = null,
+    val existingRecordId: String? = null
+)
+
 class CartVrRepository(
     private val dao: CartVrDao,
     private val organizerDao: OrganizerDao,
+    private val storeDao: StoreDao,
     private val prefs: AppPreferences,
     private val networkMonitor: NetworkMonitor,
     private val notificationBundler: NotificationBundler? = null,
@@ -144,6 +169,8 @@ class CartVrRepository(
     val tasks: Flow<List<TaskEntity>> = organizerDao.observeActiveTasks()
     val taskSubtasks: Flow<List<TaskSubtaskEntity>> = organizerDao.observeActiveSubtasks()
     val calendarEvents: Flow<List<CalendarEventEntity>> = organizerDao.observeActiveCalendarEvents()
+    val productBarcodes: Flow<List<ProductBarcodeEntity>> = storeDao.observeAllActiveProductBarcodes()
+    val loyaltyCards: Flow<List<LoyaltyCardEntity>> = storeDao.observeAllActiveLoyaltyCards()
 
     fun observeListItems(listId: String): Flow<List<ShoppingItemEntity>> =
         dao.observeListShoppingItems(listId)
@@ -225,6 +252,8 @@ class CartVrRepository(
         dao.clearShoppingLists()
         dao.clearCategories()
         organizerDao.clearAll()
+        storeDao.clearProductBarcodes()
+        storeDao.clearLoyaltyCards()
         prefs.clearSessionData()
     }
 
@@ -437,6 +466,20 @@ class CartVrRepository(
             supabase.postgrest["calendar_events"].upsert(pendingEvents.map { it.toDto() })
             organizerDao.upsertCalendarEvents(pendingEvents.map { it.copy(syncStatus = SyncStatus.SYNCED) })
         }
+
+        val pendingBarcodes = storeDao.getPendingProductBarcodes()
+        if (pendingBarcodes.isNotEmpty()) {
+            supabase.postgrest["product_barcodes"].upsert(pendingBarcodes.map { it.toDto() }) {
+                onConflict = "household_id,barcode"
+            }
+            storeDao.upsertProductBarcodes(pendingBarcodes.map { it.copy(syncStatus = SyncStatus.SYNCED) })
+        }
+
+        val pendingCards = storeDao.getPendingLoyaltyCards()
+        if (pendingCards.isNotEmpty()) {
+            supabase.postgrest["loyalty_cards"].upsert(pendingCards.map { it.toDto() })
+            storeDao.upsertLoyaltyCards(pendingCards.map { it.copy(syncStatus = SyncStatus.SYNCED) })
+        }
     }
 
     private suspend fun pullRemoteData(userId: String, householdId: String?) {
@@ -541,6 +584,33 @@ class CartVrRepository(
             organizerDao.pruneSyncedCalendarEventsNotIn(activeEventIds)
             organizerDao.upsertCalendarEvents(remoteEvents)
         }
+
+        if (!householdId.isNullOrBlank()) {
+            val remoteBarcodes = supabase.postgrest["product_barcodes"]
+                .select()
+                .decodeList<ProductBarcodeDto>()
+                .map { it.toEntity() }
+            val activeBarcodeIds = remoteBarcodes.map { it.id }
+            if (activeBarcodeIds.isEmpty()) {
+                storeDao.pruneAllSyncedProductBarcodes()
+            } else {
+                storeDao.pruneSyncedProductBarcodesNotIn(activeBarcodeIds)
+                storeDao.upsertProductBarcodes(remoteBarcodes)
+            }
+        }
+
+        val remoteCards = supabase.postgrest["loyalty_cards"]
+            .select()
+            .decodeList<LoyaltyCardDto>()
+            .map { it.toEntity() }
+        val activeCardIds = remoteCards.map { it.id }
+        if (activeCardIds.isEmpty()) {
+            storeDao.pruneAllSyncedLoyaltyCards()
+        } else {
+            storeDao.pruneSyncedLoyaltyCardsNotIn(activeCardIds)
+            storeDao.upsertLoyaltyCards(remoteCards)
+        }
+
         rescheduleRemindersAsync()
     }
 
@@ -587,6 +657,12 @@ class CartVrRepository(
             val eventChanges = channel.postgresChangeFlow<PostgresAction>(schema = "public") {
                 table = "calendar_events"
             }
+            val productBarcodeChanges = channel.postgresChangeFlow<PostgresAction>(schema = "public") {
+                table = "product_barcodes"
+            }
+            val loyaltyCardChanges = channel.postgresChangeFlow<PostgresAction>(schema = "public") {
+                table = "loyalty_cards"
+            }
 
             realtimeJob?.cancel()
             realtimeJob = scope.launch {
@@ -616,6 +692,12 @@ class CartVrRepository(
                 }
                 launch {
                     eventChanges.collect { action -> handleCalendarEventRealtime(action) }
+                }
+                launch {
+                    productBarcodeChanges.collect { action -> handleProductBarcodeRealtime(action) }
+                }
+                launch {
+                    loyaltyCardChanges.collect { action -> handleLoyaltyCardRealtime(action) }
                 }
             }
 
@@ -977,6 +1059,45 @@ class CartVrRepository(
                 val id = action.oldRecord["id"]?.toString()?.trim('"') ?: return
                 organizerDao.hardDeleteCalendarEvent(id)
                 rescheduleRemindersAsync()
+            }
+            else -> Unit
+        }
+    }
+
+    private suspend fun handleProductBarcodeRealtime(action: PostgresAction) {
+        when (action) {
+            is PostgresAction.Insert -> {
+                storeDao.upsertProductBarcode(action.decodeRecord<ProductBarcodeDto>().toEntity())
+            }
+            is PostgresAction.Update -> {
+                storeDao.upsertProductBarcode(action.decodeRecord<ProductBarcodeDto>().toEntity())
+            }
+            is PostgresAction.Delete -> {
+                val id = action.oldRecord["id"]?.toString()?.trim('"') ?: return
+                storeDao.hardDeleteProductBarcode(id)
+            }
+            else -> Unit
+        }
+    }
+
+    private suspend fun handleLoyaltyCardRealtime(action: PostgresAction) {
+        when (action) {
+            is PostgresAction.Insert,
+            is PostgresAction.Update -> {
+                val dto = if (action is PostgresAction.Insert) {
+                    action.decodeRecord<LoyaltyCardDto>()
+                } else {
+                    (action as PostgresAction.Update).decodeRecord<LoyaltyCardDto>()
+                }
+                if (!dto.isShared && dto.ownerId != currentUserId()) {
+                    storeDao.hardDeleteLoyaltyCard(dto.id)
+                } else {
+                    storeDao.upsertLoyaltyCard(dto.toEntity())
+                }
+            }
+            is PostgresAction.Delete -> {
+                val id = action.oldRecord["id"]?.toString()?.trim('"') ?: return
+                storeDao.hardDeleteLoyaltyCard(id)
             }
             else -> Unit
         }
@@ -2100,5 +2221,201 @@ class CartVrRepository(
             onSuccess = { signIn(email, password) },
             onFailure = { Result.failure(it) }
         )
+    }
+
+    // --- Barcode Lookup & Household Product Library ---
+
+    suspend fun lookupBarcode(rawBarcode: String): BarcodeLookupResult {
+        val barcode = rawBarcode.trim()
+        val activeCategories = categories.first()
+        val activeHistory = itemHistory.first()
+        val userId = currentUserId()
+        val householdId = prefs.householdId.first()
+            ?: if (userId != null && networkMonitor.isOnline.value) resolveHouseholdId(userId) else null
+
+        if (!householdId.isNullOrBlank()) {
+            val local = storeDao.findProductBarcode(householdId, barcode)
+            if (local != null) {
+                val matchedCategoryId = local.categoryName?.let { savedName ->
+                    activeCategories.firstOrNull {
+                        it.name.equals(savedName, ignoreCase = true)
+                    }?.id
+                } ?: SmartItemParser.parse(local.name, activeCategories, activeHistory).suggestedCategoryId
+
+                return BarcodeLookupResult(
+                    barcode = barcode,
+                    source = BarcodeLookupSource.HOUSEHOLD_LIBRARY,
+                    suggestedName = local.name,
+                    suggestedQuantity = local.defaultQuantity,
+                    suggestedCategoryName = local.categoryName,
+                    suggestedCategoryId = matchedCategoryId,
+                    brand = local.brand,
+                    existingRecordId = local.id
+                )
+            }
+        }
+
+        if (networkMonitor.refresh()) {
+            val remote = OpenFoodFactsClient.lookupProduct(barcode)
+            if (remote != null) {
+                val parsed = SmartItemParser.parse(remote.name, activeCategories, activeHistory)
+                val catName = activeCategories.firstOrNull { it.id == parsed.suggestedCategoryId }?.name
+                return BarcodeLookupResult(
+                    barcode = barcode,
+                    source = BarcodeLookupSource.OPEN_FOOD_FACTS,
+                    suggestedName = remote.name,
+                    suggestedQuantity = remote.quantity,
+                    suggestedCategoryName = catName,
+                    suggestedCategoryId = parsed.suggestedCategoryId,
+                    brand = remote.brand
+                )
+            }
+        }
+
+        return BarcodeLookupResult(
+            barcode = barcode,
+            source = BarcodeLookupSource.UNKNOWN
+        )
+    }
+
+    suspend fun saveBarcodeAndAddToList(
+        barcode: String,
+        name: String,
+        quantity: String?,
+        categoryId: String?,
+        brand: String?,
+        source: String,
+        listId: String,
+        saveAsRegular: Boolean
+    ): ItemMutationResult {
+        val userId = currentUserId()
+        val householdId = prefs.householdId.first()
+            ?: if (userId != null && networkMonitor.isOnline.value) resolveHouseholdId(userId) else null
+        val cleanBarcode = barcode.trim()
+        val cleanName = normalizeName(name)
+        if (cleanName.isEmpty()) {
+            return ItemMutationResult.DuplicateBlocked("Item name cannot be empty")
+        }
+        val cleanQty = quantity?.trim()?.ifBlank { null }
+        val activeCategories = categories.first()
+        val categoryName = activeCategories.firstOrNull { it.id == categoryId }?.name
+        val now = Instant.now().toString()
+
+        if (cleanBarcode.isNotEmpty() && !householdId.isNullOrBlank()) {
+            val existing = storeDao.findProductBarcodeAnyState(householdId, cleanBarcode)
+            val entity = if (existing != null) {
+                existing.copy(
+                    name = cleanName,
+                    defaultQuantity = cleanQty,
+                    categoryName = categoryName ?: existing.categoryName,
+                    brand = brand ?: existing.brand,
+                    source = if (existing.source == "manual") source else existing.source,
+                    updatedAt = now,
+                    deletedAt = null,
+                    syncStatus = SyncStatus.PENDING_UPSERT
+                )
+            } else {
+                ProductBarcodeEntity(
+                    id = UUID.randomUUID().toString(),
+                    householdId = householdId,
+                    barcode = cleanBarcode,
+                    name = cleanName,
+                    defaultQuantity = cleanQty,
+                    categoryName = categoryName,
+                    brand = brand,
+                    source = source,
+                    createdBy = userId,
+                    createdAt = now,
+                    updatedAt = now,
+                    deletedAt = null,
+                    syncStatus = SyncStatus.PENDING_UPSERT
+                )
+            }
+            storeDao.upsertProductBarcode(entity)
+        }
+
+        return addShoppingItem(
+            listId = listId,
+            categoryId = categoryId,
+            name = cleanName,
+            quantity = cleanQty,
+            note = null,
+            saveAsRegular = saveAsRegular
+        )
+    }
+
+    // --- Loyalty Cards ---
+
+    suspend fun saveLoyaltyCard(
+        existingId: String? = null,
+        storeName: String,
+        cardName: String,
+        cardNumber: String,
+        barcodeFormat: String,
+        accentColor: String,
+        notes: String?,
+        linkedListId: String?,
+        isShared: Boolean
+    ) {
+        val userId = currentUserId() ?: return
+        val householdId = prefs.householdId.first()
+            ?: if (networkMonitor.isOnline.value) resolveHouseholdId(userId) else null
+        if (householdId.isNullOrBlank()) return
+
+        val now = Instant.now().toString()
+        val existing = existingId?.let { storeDao.getLoyaltyCardById(it) }
+        val cleanStore = storeName.trim().ifBlank { "Store Card" }
+        val cleanCardName = cardName.trim().ifBlank { cleanStore }
+        val cleanNumber = cardNumber.trim()
+        val cleanNotes = notes?.trim()?.ifBlank { null }
+
+        val entity = if (existing != null) {
+            existing.copy(
+                storeName = cleanStore,
+                cardName = cleanCardName,
+                cardNumber = cleanNumber,
+                barcodeFormat = barcodeFormat,
+                accentColor = accentColor,
+                notes = cleanNotes,
+                linkedListId = linkedListId,
+                isShared = isShared,
+                updatedAt = now,
+                deletedAt = null,
+                syncStatus = SyncStatus.PENDING_UPSERT
+            )
+        } else {
+            LoyaltyCardEntity(
+                id = UUID.randomUUID().toString(),
+                householdId = householdId,
+                ownerId = userId,
+                storeName = cleanStore,
+                cardName = cleanCardName,
+                cardNumber = cleanNumber,
+                barcodeFormat = barcodeFormat,
+                accentColor = accentColor,
+                notes = cleanNotes,
+                linkedListId = linkedListId,
+                isShared = isShared,
+                createdAt = now,
+                updatedAt = now,
+                deletedAt = null,
+                syncStatus = SyncStatus.PENDING_UPSERT
+            )
+        }
+
+        storeDao.upsertLoyaltyCard(entity)
+        scope.launch { syncAll() }
+    }
+
+    suspend fun softDeleteLoyaltyCard(card: LoyaltyCardEntity) {
+        val now = Instant.now().toString()
+        storeDao.upsertLoyaltyCard(
+            card.copy(
+                deletedAt = now,
+                updatedAt = now,
+                syncStatus = SyncStatus.PENDING_UPSERT
+            )
+        )
+        scope.launch { syncAll() }
     }
 }

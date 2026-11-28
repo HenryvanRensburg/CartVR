@@ -10,6 +10,8 @@ import com.cartvr.app.data.local.entity.CategoryEntity
 import com.cartvr.app.data.local.entity.HouseholdProfileEntity
 import com.cartvr.app.data.local.entity.ItemHistoryEntity
 import com.cartvr.app.data.local.entity.ListMemberEntity
+import com.cartvr.app.data.local.entity.LoyaltyCardEntity
+import com.cartvr.app.data.local.entity.ProductBarcodeEntity
 import com.cartvr.app.data.local.entity.RegularItemEntity
 import com.cartvr.app.data.local.entity.ShoppingItemEntity
 import com.cartvr.app.data.local.entity.ShoppingListEntity
@@ -25,6 +27,7 @@ import com.cartvr.app.data.preferences.ThemeMode
 import com.cartvr.app.data.remote.dto.FamilyInviteDto
 import com.cartvr.app.data.remote.dto.FamilyMemberDto
 import com.cartvr.app.data.remote.dto.InvitePreviewResponse
+import com.cartvr.app.data.sync.BarcodeLookupResult
 import com.cartvr.app.data.sync.CartVrRepository
 import com.cartvr.app.data.sync.ItemMutationResult
 import com.cartvr.app.data.sync.SyncState
@@ -182,6 +185,36 @@ class CartVrViewModel(
         emptyList()
     )
 
+    val productBarcodes: StateFlow<List<ProductBarcodeEntity>> = repository.productBarcodes.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        emptyList()
+    )
+
+    val loyaltyCards: StateFlow<List<LoyaltyCardEntity>> = combine(
+        repository.loyaltyCards,
+        repository.sessionStatus
+    ) { cards, _ ->
+        val uid = repository.currentUserId()
+        cards.filter { card -> card.isShared || uid == null || card.ownerId == uid }
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        emptyList()
+    )
+
+    val keepScreenAwakeOnList: StateFlow<Boolean> = prefs.keepScreenAwakeOnList.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        false
+    )
+
+    val keepScreenAwakeInLiveMode: StateFlow<Boolean> = prefs.keepScreenAwakeInLiveMode.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        true
+    )
+
     val notificationsEnabled: StateFlow<Boolean> = prefs.notificationsEnabled.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
@@ -265,6 +298,12 @@ class CartVrViewModel(
 
     private val _pendingNotificationEvent = MutableStateFlow<Pair<String, String?>?>(null)
     val pendingNotificationEvent: StateFlow<Pair<String, String?>?> = _pendingNotificationEvent.asStateFlow()
+
+    private val _isLookingUpBarcode = MutableStateFlow(false)
+    val isLookingUpBarcode: StateFlow<Boolean> = _isLookingUpBarcode.asStateFlow()
+
+    private val _scannedBarcodeResult = MutableStateFlow<BarcodeLookupResult?>(null)
+    val scannedBarcodeResult: StateFlow<BarcodeLookupResult?> = _scannedBarcodeResult.asStateFlow()
 
     private val _authLoading = MutableStateFlow(false)
     val authLoading: StateFlow<Boolean> = _authLoading.asStateFlow()
@@ -433,6 +472,102 @@ class CartVrViewModel(
 
     fun openBatteryOptimizationSettings() {
         NotificationHelper.openBatteryOptimizationSettings(appContext)
+    }
+
+    fun setKeepScreenAwakeOnList(enabled: Boolean) {
+        viewModelScope.launch {
+            prefs.setKeepScreenAwakeOnList(enabled)
+        }
+    }
+
+    fun setKeepScreenAwakeInLiveMode(enabled: Boolean) {
+        viewModelScope.launch {
+            prefs.setKeepScreenAwakeInLiveMode(enabled)
+        }
+    }
+
+    fun lookupBarcode(rawBarcode: String) {
+        viewModelScope.launch {
+            _isLookingUpBarcode.value = true
+            _scannedBarcodeResult.value = repository.lookupBarcode(rawBarcode)
+            _isLookingUpBarcode.value = false
+        }
+    }
+
+    fun clearScannedBarcode() {
+        _isLookingUpBarcode.value = false
+        _scannedBarcodeResult.value = null
+    }
+
+    fun confirmScannedItem(
+        barcode: String,
+        name: String,
+        quantity: String?,
+        categoryId: String?,
+        brand: String?,
+        source: String,
+        listId: String,
+        saveAsRegular: Boolean
+    ) {
+        viewModelScope.launch {
+            when (
+                val res = repository.saveBarcodeAndAddToList(
+                    barcode = barcode,
+                    name = name,
+                    quantity = quantity,
+                    categoryId = categoryId,
+                    brand = brand,
+                    source = source,
+                    listId = listId,
+                    saveAsRegular = saveAsRegular
+                )
+            ) {
+                is ItemMutationResult.Added ->
+                    _statusBanner.value = "Added ${res.itemName} to ${res.listName ?: "list"}"
+                is ItemMutationResult.UpdatedExisting ->
+                    _statusBanner.value = "Updated ${res.itemName} on ${res.listName} (already on list)"
+                is ItemMutationResult.AlreadyExists ->
+                    _statusBanner.value = "${res.itemName} is already on ${res.listName}"
+                is ItemMutationResult.RestoredFromCompleted ->
+                    _statusBanner.value = "Moved ${res.itemName} back to ${res.listName}"
+                is ItemMutationResult.DuplicateBlocked ->
+                    _statusBanner.value = res.message
+            }
+        }
+    }
+
+    fun saveLoyaltyCard(
+        existingId: String? = null,
+        storeName: String,
+        cardName: String,
+        cardNumber: String,
+        barcodeFormat: String,
+        accentColor: String,
+        notes: String?,
+        linkedListId: String?,
+        isShared: Boolean
+    ) {
+        viewModelScope.launch {
+            repository.saveLoyaltyCard(
+                existingId = existingId,
+                storeName = storeName,
+                cardName = cardName,
+                cardNumber = cardNumber,
+                barcodeFormat = barcodeFormat,
+                accentColor = accentColor,
+                notes = notes,
+                linkedListId = linkedListId,
+                isShared = isShared
+            )
+            _statusBanner.value = "Saved ${storeName.trim()} loyalty card"
+        }
+    }
+
+    fun deleteLoyaltyCard(card: LoyaltyCardEntity) {
+        viewModelScope.launch {
+            repository.softDeleteLoyaltyCard(card)
+            _statusBanner.value = "Removed ${card.storeName} card"
+        }
     }
 
     fun openDashboardFromNotification() {

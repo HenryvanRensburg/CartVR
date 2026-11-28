@@ -68,6 +68,9 @@ import com.cartvr.app.ui.family.ManageFamilyScreen
 import com.cartvr.app.ui.home.FamilyDashboardScreen
 import com.cartvr.app.ui.home.QuickAddShoppingItemDialog
 import com.cartvr.app.ui.list.ListDetailScreen
+import com.cartvr.app.ui.loyalty.LoyaltyWalletScreen
+import com.cartvr.app.ui.scanner.BarcodeScannerDialog
+import com.cartvr.app.ui.scanner.ScannedItemSheet
 import com.cartvr.app.ui.settings.SettingsScreen
 import com.cartvr.app.ui.shopping.ShoppingHubScreen
 import com.cartvr.app.ui.shopping.ShoppingSubTab
@@ -187,6 +190,11 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
     val tasks by viewModel.tasks.collectAsStateWithLifecycle()
     val taskSubtasks by viewModel.taskSubtasks.collectAsStateWithLifecycle()
     val calendarEvents by viewModel.calendarEvents.collectAsStateWithLifecycle()
+    val loyaltyCards by viewModel.loyaltyCards.collectAsStateWithLifecycle()
+    val isLookingUpBarcode by viewModel.isLookingUpBarcode.collectAsStateWithLifecycle()
+    val scannedBarcodeResult by viewModel.scannedBarcodeResult.collectAsStateWithLifecycle()
+    val keepScreenAwakeOnList by viewModel.keepScreenAwakeOnList.collectAsStateWithLifecycle()
+    val keepScreenAwakeInLiveMode by viewModel.keepScreenAwakeInLiveMode.collectAsStateWithLifecycle()
 
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
@@ -213,6 +221,9 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
     var showEventSheet by remember { mutableStateOf(false) }
     var editingEvent by remember { mutableStateOf<CalendarEventEntity?>(null) }
     var editingEventOccurrenceDate by remember { mutableStateOf(LocalDate.now()) }
+
+    var showBarcodeScanner by remember { mutableStateOf(false) }
+    var scannerTargetListId by remember { mutableStateOf<String?>(null) }
 
     fun navigateToTopTab(tab: TopTab) {
         dashboardQuickAddExpanded = false
@@ -529,6 +540,12 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
                     onToggleTheme = { isDark -> viewModel.toggleQuickTheme(isDark) },
                     onSyncClick = { viewModel.syncNow() },
                     onOpenJoinDialog = { viewModel.openJoinDialog() },
+                    onOpenLoyaltyWallet = { navController.navigate("loyalty_cards") },
+                    onOpenBarcodeScanner = {
+                        scannerTargetListId = lists.firstOrNull()?.id
+                        viewModel.clearScannedBarcode()
+                        showBarcodeScanner = true
+                    },
                     onListClick = { list -> navController.navigate("list/${list.id}") },
                     onEditList = { list ->
                         editingList = list
@@ -698,6 +715,8 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
                     defaultEventReminderMinutes = defaultEventReminderMinutes,
                     notifyTaskAssignments = notifyTaskAssignments,
                     notifySharedCalendar = notifySharedCalendar,
+                    keepScreenAwakeOnList = keepScreenAwakeOnList,
+                    keepScreenAwakeInLiveMode = keepScreenAwakeInLiveMode,
                     onThemeSelected = { viewModel.setThemeMode(it) },
                     onAccentColorSelected = { viewModel.updateMyAccentColor(it) },
                     onNotificationsEnabledChanged = { viewModel.setNotificationsEnabled(it) },
@@ -711,6 +730,8 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
                     onDefaultEventReminderChanged = { viewModel.setDefaultEventReminderMinutes(it) },
                     onNotifyTaskAssignmentsChanged = { viewModel.setNotifyTaskAssignments(it) },
                     onNotifySharedCalendarChanged = { viewModel.setNotifySharedCalendar(it) },
+                    onKeepScreenAwakeOnListChanged = { viewModel.setKeepScreenAwakeOnList(it) },
+                    onKeepScreenAwakeInLiveModeChanged = { viewModel.setKeepScreenAwakeInLiveMode(it) },
                     onOpenExactAlarmSettings = { viewModel.openExactAlarmSettings() },
                     onOpenBatteryOptimizationSettings = { viewModel.openBatteryOptimizationSettings() },
                     onManageFamily = { navController.navigate("manage_family") },
@@ -720,6 +741,28 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
                     },
                     onCheckForUpdates = { viewModel.checkForUpdates(silent = false) },
                     onSignOut = { viewModel.signOut() }
+                )
+            }
+
+            composable("loyalty_cards") {
+                LoyaltyWalletScreen(
+                    cards = loyaltyCards,
+                    lists = lists,
+                    onBack = { navController.popBackStack() },
+                    onSaveCard = { existingId, storeName, cardName, cardNumber, format, color, notes, linkedListId, isShared ->
+                        viewModel.saveLoyaltyCard(
+                            existingId = existingId,
+                            storeName = storeName,
+                            cardName = cardName,
+                            cardNumber = cardNumber,
+                            barcodeFormat = format,
+                            accentColor = color,
+                            notes = notes,
+                            linkedListId = linkedListId,
+                            isShared = isShared
+                        )
+                    },
+                    onDeleteCard = { card -> viewModel.deleteLoyaltyCard(card) }
                 )
             }
 
@@ -769,6 +812,9 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
                 if (list != null) {
                     val isOwner = list.ownerId == viewModel.currentUserId()
                     val memberCount = listMembers.count { it.listId == list.id }.coerceAtLeast(1)
+                    val linkedCards = remember(loyaltyCards, list.id) {
+                        loyaltyCards.filter { it.linkedListId == list.id }
+                    }
 
                     ListDetailScreen(
                         list = list,
@@ -778,10 +824,21 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
                         categories = categories,
                         history = history,
                         regulars = regulars,
+                        linkedCards = linkedCards,
+                        defaultKeepAwakeOnList = keepScreenAwakeOnList,
+                        keepAwakeInLiveMode = keepAwakeInLiveMode,
+                        liveModeEnabled = liveModeEnabled,
                         onBack = { navController.popBackStack() },
                         onQuickAddItem = { name, qty, note, catId ->
                             viewModel.addShoppingItem(list.id, catId, name, qty, note)
                         },
+                        onOpenScanBarcode = {
+                            scannerTargetListId = list.id
+                            viewModel.clearScannedBarcode()
+                            showBarcodeScanner = true
+                        },
+                        onOpenLoyaltyWallet = { navController.navigate("loyalty_cards") },
+                        onShowSnackbar = { msg -> scope.launch { snackbarHostState.showSnackbar(msg) } },
                         onToggleChecked = { viewModel.toggleItemChecked(it) },
                         onUpdateItem = { updated, categoryChanged ->
                             viewModel.updateShoppingItem(updated, learnCategory = categoryChanged)
@@ -978,6 +1035,53 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
             onAdd = { listId, rawText ->
                 viewModel.quickAddShoppingItemFromDashboard(listId, rawText)
                 showQuickAddShoppingDialog = false
+            }
+        )
+    }
+
+    if (showBarcodeScanner) {
+        BarcodeScannerDialog(
+            title = "Scan Product Barcode",
+            subtitle = "Point your camera at an item barcode to add it",
+            isPaused = isLookingUpBarcode || scannedBarcodeResult != null,
+            isLookingUp = isLookingUpBarcode,
+            onDismiss = {
+                showBarcodeScanner = false
+                viewModel.clearScannedBarcode()
+            },
+            onBarcodeDetected = { rawValue, _ ->
+                viewModel.lookupBarcode(rawValue)
+            }
+        )
+    }
+
+    scannedBarcodeResult?.let { lookup ->
+        ScannedItemSheet(
+            lookupResult = lookup,
+            lists = lists,
+            initialListId = scannerTargetListId,
+            categories = categories,
+            history = history,
+            isAdmin = isAdmin,
+            showListSelector = scannerTargetListId == null || currentRoute != "list/{listId}",
+            onDismiss = {
+                viewModel.clearScannedBarcode()
+            },
+            onConfirm = { barcode, name, qty, catId, brand, source, targetListId, saveAsRegular, scanNext ->
+                viewModel.confirmScannedItem(
+                    barcode = barcode,
+                    name = name,
+                    quantity = qty,
+                    categoryId = catId,
+                    brand = brand,
+                    source = source,
+                    listId = targetListId,
+                    saveAsRegular = saveAsRegular
+                )
+                viewModel.clearScannedBarcode()
+                if (!scanNext) {
+                    showBarcodeScanner = false
+                }
             }
         )
     }

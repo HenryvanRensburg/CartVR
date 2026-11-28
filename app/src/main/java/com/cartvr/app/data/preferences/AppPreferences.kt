@@ -44,6 +44,9 @@ class AppPreferences(private val context: Context) {
         val NOTIFY_TASK_ASSIGNMENTS = booleanPreferencesKey("notify_task_assignments")
         val NOTIFY_SHARED_CALENDAR = booleanPreferencesKey("notify_shared_calendar")
         val SCHEDULED_ALARM_IDS = stringPreferencesKey("scheduled_alarm_ids")
+
+        val KEEP_SCREEN_AWAKE_ON_LIST = booleanPreferencesKey("keep_screen_awake_on_list")
+        val KEEP_SCREEN_AWAKE_IN_LIVE_MODE = booleanPreferencesKey("keep_screen_awake_in_live_mode")
     }
 
     val themeMode: Flow<ThemeMode> = context.dataStore.data.map { prefs ->
@@ -75,6 +78,13 @@ class AppPreferences(private val context: Context) {
             .split(",")
             .mapNotNull { it.trim().toIntOrNull() }
             .toSet()
+    }
+
+    val keepScreenAwakeOnList: Flow<Boolean> = context.dataStore.data.map {
+        it[Keys.KEEP_SCREEN_AWAKE_ON_LIST] ?: false
+    }
+    val keepScreenAwakeInLiveMode: Flow<Boolean> = context.dataStore.data.map {
+        it[Keys.KEEP_SCREEN_AWAKE_IN_LIVE_MODE] ?: true
     }
 
     suspend fun setThemeMode(mode: ThemeMode) {
@@ -147,6 +157,14 @@ class AppPreferences(private val context: Context) {
 
     suspend fun setScheduledAlarmIds(ids: Set<Int>) {
         context.dataStore.edit { it[Keys.SCHEDULED_ALARM_IDS] = ids.joinToString(",") }
+    }
+
+    suspend fun setKeepScreenAwakeOnList(enabled: Boolean) {
+        context.dataStore.edit { it[Keys.KEEP_SCREEN_AWAKE_ON_LIST] = enabled }
+    }
+
+    suspend fun setKeepScreenAwakeInLiveMode(enabled: Boolean) {
+        context.dataStore.edit { it[Keys.KEEP_SCREEN_AWAKE_IN_LIVE_MODE] = enabled }
     }
 
     suspend fun clearSessionData() {

@@ -49,6 +49,7 @@ class CartVRApplication : Application() {
         repository = CartVrRepository(
             dao = database.cartVrDao(),
             organizerDao = database.organizerDao(),
+            storeDao = database.storeDao(),
             prefs = preferences,
             networkMonitor = networkMonitor,
             notificationBundler = notificationBundler,
