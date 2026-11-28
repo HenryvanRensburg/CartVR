@@ -551,5 +551,3 @@ private fun VisibilityPill(isShared: Boolean, memberCount: Int) {
         }
     }
 }
-
-}
