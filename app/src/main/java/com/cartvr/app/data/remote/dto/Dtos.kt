@@ -105,7 +105,8 @@ data class ItemHistoryDto(
 data class ProfileDto(
     @SerialName("user_id") val userId: String,
     @SerialName("display_name") val displayName: String,
-    val email: String
+    val email: String,
+    @SerialName("accent_color") val accentColor: String = "#0D9488"
 )
 
 @Serializable

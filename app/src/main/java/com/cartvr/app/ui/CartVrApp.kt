@@ -6,9 +6,8 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Checklist
-import androidx.compose.material.icons.rounded.Repeat
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.ShoppingCart
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -25,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,18 +45,17 @@ import com.cartvr.app.ui.components.CreateListSheet
 import com.cartvr.app.ui.components.JoinListDialog
 import com.cartvr.app.ui.components.ListVisuals
 import com.cartvr.app.ui.components.UpdateDialog
-import com.cartvr.app.ui.dashboard.DashboardScreen
 import com.cartvr.app.ui.family.ManageFamilyScreen
 import com.cartvr.app.ui.list.ListDetailScreen
-import com.cartvr.app.ui.regulars.RegularsScreen
 import com.cartvr.app.ui.settings.SettingsScreen
+import com.cartvr.app.ui.shopping.ShoppingHubScreen
+import com.cartvr.app.ui.shopping.ShoppingSubTab
 import com.cartvr.app.ui.theme.CartVRTheme
 import io.github.jan.supabase.auth.status.SessionStatus
 import kotlinx.coroutines.launch
 
 private enum class TopTab(val route: String, val label: String, val icon: ImageVector) {
-    LISTS("lists", "Lists", Icons.Rounded.Checklist),
-    REGULARS("regulars", "Regulars", Icons.Rounded.Repeat),
+    SHOPPING("shopping", "Shopping", Icons.Rounded.ShoppingCart),
     SETTINGS("settings", "Settings", Icons.Rounded.Settings)
 }
 
@@ -149,11 +148,12 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
 
+    var selectedShoppingSubTab by rememberSaveable { mutableStateOf(ShoppingSubTab.LISTS) }
     var showListSheet by remember { mutableStateOf(false) }
     var editingList by remember { mutableStateOf<ShoppingListEntity?>(null) }
 
     val showBottomBar = currentRoute in TopTab.entries.map { it.route }
-    val showFab = currentRoute == TopTab.LISTS.route
+    val showFab = currentRoute == TopTab.SHOPPING.route && selectedShoppingSubTab == ShoppingSubTab.LISTS
 
     LaunchedEffect(currentRoute, backStackEntry) {
         val activeListId = if (currentRoute == "list/{listId}") {
@@ -228,20 +228,25 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = TopTab.LISTS.route,
+            startDestination = TopTab.SHOPPING.route,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            composable(TopTab.LISTS.route) {
-                DashboardScreen(
+            composable(TopTab.SHOPPING.route) {
+                ShoppingHubScreen(
+                    selectedSubTab = selectedShoppingSubTab,
+                    onSubTabSelected = { selectedShoppingSubTab = it },
                     displayName = resolvedDisplayName,
                     currentUserId = viewModel.currentUserId(),
+                    isAdmin = isAdmin,
                     syncState = syncState,
                     themeMode = themeMode,
                     lists = lists,
                     listMembers = listMembers,
                     allItems = allItems,
+                    regulars = regulars,
+                    categories = categories,
                     onToggleTheme = { isDark -> viewModel.toggleQuickTheme(isDark) },
                     onSyncClick = { viewModel.syncNow() },
                     onOpenJoinDialog = { viewModel.openJoinDialog() },
@@ -258,19 +263,9 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
                     },
                     onMakePrivate = { list -> viewModel.makeListPrivate(list) },
                     onDeleteList = { list -> viewModel.deleteList(list) },
-                    onLeaveList = { list -> viewModel.leaveSharedList(list) }
-                )
-            }
-
-            composable(TopTab.REGULARS.route) {
-                RegularsScreen(
-                    regulars = regulars,
-                    lists = lists,
-                    allItems = allItems,
-                    categories = categories,
-                    isAdmin = isAdmin,
-                    onAddToShoppingList = { regular ->
-                        val fallbackList = lists.firstOrNull() ?: return@RegularsScreen
+                    onLeaveList = { list -> viewModel.leaveSharedList(list) },
+                    onAddRegularToList = { regular ->
+                        val fallbackList = lists.firstOrNull() ?: return@ShoppingHubScreen
                         viewModel.addRegularToList(regular, fallbackList.id)
                     },
                     onSaveRegular = { name, qty, listId, categoryId, existingId ->

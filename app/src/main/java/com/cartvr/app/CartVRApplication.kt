@@ -47,6 +47,7 @@ class CartVRApplication : Application() {
         notificationBundler = NotificationBundler(this, preferences)
         repository = CartVrRepository(
             dao = database.cartVrDao(),
+            organizerDao = database.organizerDao(),
             prefs = preferences,
             networkMonitor = networkMonitor,
             notificationBundler = notificationBundler

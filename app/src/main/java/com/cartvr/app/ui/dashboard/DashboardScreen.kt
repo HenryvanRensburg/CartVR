@@ -1,6 +1,5 @@
 package com.cartvr.app.ui.dashboard
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CheckCircle
@@ -53,7 +51,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -63,10 +60,7 @@ import com.cartvr.app.data.local.entity.ShoppingListEntity
 import com.cartvr.app.data.preferences.ThemeMode
 import com.cartvr.app.data.sync.SyncState
 import com.cartvr.app.ui.components.ListVisuals
-import com.cartvr.app.ui.theme.StatusErrorRed
-import com.cartvr.app.ui.theme.StatusOfflineAmber
-import com.cartvr.app.ui.theme.StatusSyncedGreen
-import com.cartvr.app.ui.theme.StatusSyncingBlue
+import com.cartvr.app.ui.components.SyncStatusPill
 
 private enum class ListFilter(val label: String) {
     ALL("All"),
@@ -91,7 +85,8 @@ fun DashboardScreen(
     onShareList: (ShoppingListEntity) -> Unit,
     onMakePrivate: (ShoppingListEntity) -> Unit,
     onDeleteList: (ShoppingListEntity) -> Unit,
-    onLeaveList: (ShoppingListEntity) -> Unit
+    onLeaveList: (ShoppingListEntity) -> Unit,
+    embeddedInShoppingHub: Boolean = false
 ) {
     val isCurrentlyDark = when (themeMode) {
         ThemeMode.SYSTEM -> isSystemInDarkTheme()
@@ -115,47 +110,54 @@ fun DashboardScreen(
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 96.dp),
+        contentPadding = PaddingValues(
+            start = 16.dp,
+            end = 16.dp,
+            top = if (embeddedInShoppingHub) 6.dp else 12.dp,
+            bottom = 96.dp
+        ),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // Compact Header
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "Hi, $displayName",
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                    Text(
-                        text = "Your shopping lists",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-
+        if (!embeddedInShoppingHub) {
+            // Compact Header
+            item {
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(2.dp)
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    SyncStatusPill(syncState = syncState, onClick = onSyncClick)
-                    IconButton(onClick = onOpenJoinDialog) {
-                        Icon(
-                            imageVector = Icons.Rounded.GroupAdd,
-                            contentDescription = "Join shared list",
-                            tint = MaterialTheme.colorScheme.onBackground
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Hi, $displayName",
+                            style = MaterialTheme.typography.headlineMedium,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                        Text(
+                            text = "Your shopping lists",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
-                    IconButton(onClick = { onToggleTheme(isCurrentlyDark) }) {
-                        Icon(
-                            imageVector = if (isCurrentlyDark) Icons.Rounded.LightMode else Icons.Rounded.DarkMode,
-                            contentDescription = "Toggle theme",
-                            tint = MaterialTheme.colorScheme.onBackground
-                        )
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        SyncStatusPill(syncState = syncState, onClick = onSyncClick)
+                        IconButton(onClick = onOpenJoinDialog) {
+                            Icon(
+                                imageVector = Icons.Rounded.GroupAdd,
+                                contentDescription = "Join shared list",
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+                        IconButton(onClick = { onToggleTheme(isCurrentlyDark) }) {
+                            Icon(
+                                imageVector = if (isCurrentlyDark) Icons.Rounded.LightMode else Icons.Rounded.DarkMode,
+                                contentDescription = "Toggle theme",
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
                     }
                 }
             }
@@ -550,40 +552,4 @@ private fun VisibilityPill(isShared: Boolean, memberCount: Int) {
     }
 }
 
-@Composable
-private fun SyncStatusPill(
-    syncState: SyncState,
-    onClick: () -> Unit
-) {
-    val (label, color) = when (syncState) {
-        SyncState.SYNCED -> "Synced" to StatusSyncedGreen
-        SyncState.SYNCING -> "Syncing" to StatusSyncingBlue
-        SyncState.OFFLINE -> "Offline" to StatusOfflineAmber
-        SyncState.ERROR -> "Retry" to StatusErrorRed
-    }
-
-    Surface(
-        shape = RoundedCornerShape(50),
-        color = color.copy(alpha = 0.14f),
-        modifier = Modifier.clickable(onClick = onClick)
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(8.dp)
-                    .clip(CircleShape)
-                    .background(color)
-            )
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelMedium,
-                color = color,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
-    }
 }

@@ -60,7 +60,8 @@ fun RegularsScreen(
     isAdmin: Boolean,
     onAddToShoppingList: (RegularItemEntity) -> Unit,
     onSaveRegular: (name: String, qty: String?, listId: String?, categoryId: String?, existingId: String?) -> Unit,
-    onDeleteRegular: (RegularItemEntity) -> Unit
+    onDeleteRegular: (RegularItemEntity) -> Unit,
+    embeddedInShoppingHub: Boolean = false
 ) {
     var showEditorDialog by remember { mutableStateOf(false) }
     var editingRegular by remember { mutableStateOf<RegularItemEntity?>(null) }
@@ -96,7 +97,12 @@ fun RegularsScreen(
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 96.dp),
+        contentPadding = PaddingValues(
+            start = 16.dp,
+            end = 16.dp,
+            top = if (embeddedInShoppingHub) 6.dp else 16.dp,
+            bottom = 96.dp
+        ),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         item {
@@ -106,11 +112,13 @@ fun RegularsScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "Regulars",
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
+                    if (!embeddedInShoppingHub) {
+                        Text(
+                            text = "Regulars",
+                            style = MaterialTheme.typography.headlineMedium,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
                     Text(
                         text = "${regulars.size} staples • sorted by aisle A–Z",
                         style = MaterialTheme.typography.bodyMedium,

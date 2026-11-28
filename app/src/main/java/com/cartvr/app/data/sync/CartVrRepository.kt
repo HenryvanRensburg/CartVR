@@ -1,19 +1,26 @@
 package com.cartvr.app.data.sync
 
 import com.cartvr.app.data.local.dao.CartVrDao
+import com.cartvr.app.data.local.dao.OrganizerDao
+import com.cartvr.app.data.local.entity.CalendarEventEntity
 import com.cartvr.app.data.local.entity.CategoryEntity
+import com.cartvr.app.data.local.entity.HouseholdProfileEntity
 import com.cartvr.app.data.local.entity.ItemHistoryEntity
 import com.cartvr.app.data.local.entity.ListMemberEntity
 import com.cartvr.app.data.local.entity.RegularItemEntity
 import com.cartvr.app.data.local.entity.ShoppingItemEntity
 import com.cartvr.app.data.local.entity.ShoppingListEntity
 import com.cartvr.app.data.local.entity.SyncStatus
+import com.cartvr.app.data.local.entity.TaskEntity
+import com.cartvr.app.data.local.entity.TaskListEntity
+import com.cartvr.app.data.local.entity.TaskSubtaskEntity
 import com.cartvr.app.data.notifications.ItemChangeKind
 import com.cartvr.app.data.notifications.NotificationBundler
 import com.cartvr.app.data.notifications.PendingListChange
 import com.cartvr.app.data.preferences.AppPreferences
 import com.cartvr.app.data.remote.FamilyApiClient
 import com.cartvr.app.data.remote.SupabaseProvider
+import com.cartvr.app.data.remote.dto.CalendarEventDto
 import com.cartvr.app.data.remote.dto.CategoryDto
 import com.cartvr.app.data.remote.dto.EdgeActionResponse
 import com.cartvr.app.data.remote.dto.FamilyInviteDto
@@ -27,6 +34,9 @@ import com.cartvr.app.data.remote.dto.ProfileDto
 import com.cartvr.app.data.remote.dto.RegularItemDto
 import com.cartvr.app.data.remote.dto.ShoppingItemDto
 import com.cartvr.app.data.remote.dto.ShoppingListDto
+import com.cartvr.app.data.remote.dto.TaskDto
+import com.cartvr.app.data.remote.dto.TaskListDto
+import com.cartvr.app.data.remote.dto.TaskSubtaskDto
 import com.cartvr.app.data.remote.dto.toDto
 import com.cartvr.app.data.remote.dto.toEntity
 import io.github.jan.supabase.auth.auth
@@ -79,6 +89,7 @@ sealed class ItemMutationResult {
 
 class CartVrRepository(
     private val dao: CartVrDao,
+    private val organizerDao: OrganizerDao,
     private val prefs: AppPreferences,
     private val networkMonitor: NetworkMonitor,
     private val notificationBundler: NotificationBundler? = null
@@ -118,6 +129,12 @@ class CartVrRepository(
     val allShoppingItems: Flow<List<ShoppingItemEntity>> = dao.observeAllActiveShoppingItems()
     val regularItems: Flow<List<RegularItemEntity>> = dao.observeActiveRegularItems()
     val itemHistory: Flow<List<ItemHistoryEntity>> = dao.observeItemHistory()
+
+    val householdProfiles: Flow<List<HouseholdProfileEntity>> = organizerDao.observeHouseholdProfiles()
+    val taskLists: Flow<List<TaskListEntity>> = organizerDao.observeActiveTaskLists()
+    val tasks: Flow<List<TaskEntity>> = organizerDao.observeActiveTasks()
+    val taskSubtasks: Flow<List<TaskSubtaskEntity>> = organizerDao.observeActiveSubtasks()
+    val calendarEvents: Flow<List<CalendarEventEntity>> = organizerDao.observeActiveCalendarEvents()
 
     fun observeListItems(listId: String): Flow<List<ShoppingItemEntity>> =
         dao.observeListShoppingItems(listId)
@@ -181,6 +198,7 @@ class CartVrRepository(
         dao.clearListMembers()
         dao.clearShoppingLists()
         dao.clearCategories()
+        organizerDao.clearAll()
         prefs.clearSessionData()
     }
 
@@ -353,6 +371,46 @@ class CartVrRepository(
             }
             dao.upsertItemHistory(pendingHistory.map { it.copy(syncStatus = SyncStatus.SYNCED) })
         }
+
+        val pendingTaskLists = organizerDao.getPendingTaskLists()
+        if (pendingTaskLists.isNotEmpty()) {
+            supabase.postgrest["task_lists"].upsert(pendingTaskLists.map { it.toDto() })
+            organizerDao.upsertTaskLists(pendingTaskLists.map { it.copy(syncStatus = SyncStatus.SYNCED) })
+        }
+
+        val pendingTasks = organizerDao.getPendingTasks()
+        if (pendingTasks.isNotEmpty()) {
+            val batchResult = runCatching {
+                supabase.postgrest["tasks"].upsert(pendingTasks.map { it.toDto() })
+            }
+            if (batchResult.isSuccess) {
+                organizerDao.upsertTasks(pendingTasks.map { it.copy(syncStatus = SyncStatus.SYNCED) })
+            } else {
+                pendingTasks.forEach { task ->
+                    val singleResult = runCatching {
+                        supabase.postgrest["tasks"].upsert(task.toDto())
+                    }
+                    if (singleResult.isSuccess) {
+                        organizerDao.upsertTask(task.copy(syncStatus = SyncStatus.SYNCED))
+                    } else if (task.recurrenceSourceId != null && task.deletedAt == null) {
+                        // Duplicate recurring next occurrence created offline; let canonical remote row win
+                        organizerDao.hardDeleteTask(task.id)
+                    }
+                }
+            }
+        }
+
+        val pendingSubtasks = organizerDao.getPendingSubtasks()
+        if (pendingSubtasks.isNotEmpty()) {
+            supabase.postgrest["task_subtasks"].upsert(pendingSubtasks.map { it.toDto() })
+            organizerDao.upsertSubtasks(pendingSubtasks.map { it.copy(syncStatus = SyncStatus.SYNCED) })
+        }
+
+        val pendingEvents = organizerDao.getPendingCalendarEvents()
+        if (pendingEvents.isNotEmpty()) {
+            supabase.postgrest["calendar_events"].upsert(pendingEvents.map { it.toDto() })
+            organizerDao.upsertCalendarEvents(pendingEvents.map { it.copy(syncStatus = SyncStatus.SYNCED) })
+        }
     }
 
     private suspend fun pullRemoteData(userId: String, householdId: String?) {
@@ -386,14 +444,15 @@ class CartVrRepository(
             dao.upsertRegularItems(remoteRegulars.map { it.toEntity() })
 
             runCatching {
-                supabase.postgrest["profiles"]
+                val remoteProfiles = supabase.postgrest["profiles"]
                     .select()
                     .decodeList<ProfileDto>()
-                    .forEach { profile ->
-                        if (profile.displayName.isNotBlank()) {
-                            profileNameCache[profile.userId] = profile.displayName.trim()
-                        }
+                remoteProfiles.forEach { profile ->
+                    if (profile.displayName.isNotBlank()) {
+                        profileNameCache[profile.userId] = profile.displayName.trim()
                     }
+                }
+                organizerDao.upsertProfiles(remoteProfiles.map { it.toEntity() })
             }
         }
 
@@ -408,6 +467,54 @@ class CartVrRepository(
             .select { filter { eq("user_id", userId) } }
             .decodeList<ItemHistoryDto>()
         dao.upsertItemHistory(remoteHistory.map { it.toEntity() })
+
+        val remoteTaskLists = supabase.postgrest["task_lists"]
+            .select()
+            .decodeList<TaskListDto>()
+            .map { it.toEntity() }
+        val activeTaskListIds = remoteTaskLists.map { it.id }
+        if (activeTaskListIds.isEmpty()) {
+            organizerDao.pruneAllSyncedTaskLists()
+        } else {
+            organizerDao.pruneSyncedTaskListsNotIn(activeTaskListIds)
+            organizerDao.upsertTaskLists(remoteTaskLists)
+        }
+
+        val remoteTasks = supabase.postgrest["tasks"]
+            .select()
+            .decodeList<TaskDto>()
+            .map { it.toEntity() }
+        val activeTaskIds = remoteTasks.map { it.id }
+        if (activeTaskIds.isEmpty()) {
+            organizerDao.pruneAllSyncedTasks()
+        } else {
+            organizerDao.pruneSyncedTasksNotIn(activeTaskIds)
+            organizerDao.upsertTasks(remoteTasks)
+        }
+
+        val remoteSubtasks = supabase.postgrest["task_subtasks"]
+            .select()
+            .decodeList<TaskSubtaskDto>()
+            .map { it.toEntity() }
+        val activeSubtaskIds = remoteSubtasks.map { it.id }
+        if (activeSubtaskIds.isEmpty()) {
+            organizerDao.pruneAllSyncedSubtasks()
+        } else {
+            organizerDao.pruneSyncedSubtasksNotIn(activeSubtaskIds)
+            organizerDao.upsertSubtasks(remoteSubtasks)
+        }
+
+        val remoteEvents = supabase.postgrest["calendar_events"]
+            .select()
+            .decodeList<CalendarEventDto>()
+            .map { it.toEntity() }
+        val activeEventIds = remoteEvents.map { it.id }
+        if (activeEventIds.isEmpty()) {
+            organizerDao.pruneAllSyncedCalendarEvents()
+        } else {
+            organizerDao.pruneSyncedCalendarEventsNotIn(activeEventIds)
+            organizerDao.upsertCalendarEvents(remoteEvents)
+        }
     }
 
     suspend fun ensureRealtimeSubscribed(forceReconnect: Boolean = false) {
@@ -441,6 +548,18 @@ class CartVrRepository(
             val regularChanges = channel.postgresChangeFlow<PostgresAction>(schema = "public") {
                 table = "regular_items"
             }
+            val taskListChanges = channel.postgresChangeFlow<PostgresAction>(schema = "public") {
+                table = "task_lists"
+            }
+            val taskChanges = channel.postgresChangeFlow<PostgresAction>(schema = "public") {
+                table = "tasks"
+            }
+            val subtaskChanges = channel.postgresChangeFlow<PostgresAction>(schema = "public") {
+                table = "task_subtasks"
+            }
+            val eventChanges = channel.postgresChangeFlow<PostgresAction>(schema = "public") {
+                table = "calendar_events"
+            }
 
             realtimeJob?.cancel()
             realtimeJob = scope.launch {
@@ -458,6 +577,18 @@ class CartVrRepository(
                 }
                 launch {
                     regularChanges.collect { action -> handleRegularRealtime(action) }
+                }
+                launch {
+                    taskListChanges.collect { action -> handleTaskListRealtime(action) }
+                }
+                launch {
+                    taskChanges.collect { action -> handleTaskRealtime(action) }
+                }
+                launch {
+                    subtaskChanges.collect { action -> handleSubtaskRealtime(action) }
+                }
+                launch {
+                    eventChanges.collect { action -> handleCalendarEventRealtime(action) }
                 }
             }
 
@@ -683,6 +814,104 @@ class CartVrRepository(
             is PostgresAction.Delete -> {
                 val id = action.oldRecord["id"]?.toString()?.trim('"') ?: return
                 dao.hardDeleteRegularItem(id)
+            }
+            else -> Unit
+        }
+    }
+
+    private suspend fun handleTaskListRealtime(action: PostgresAction) {
+        when (action) {
+            is PostgresAction.Insert,
+            is PostgresAction.Update -> {
+                val dto = if (action is PostgresAction.Insert) {
+                    action.decodeRecord<TaskListDto>()
+                } else {
+                    (action as PostgresAction.Update).decodeRecord<TaskListDto>()
+                }
+                if (!dto.isShared && dto.ownerId != currentUserId()) {
+                    organizerDao.deleteSubtasksByListId(dto.id)
+                    organizerDao.deleteTasksByListId(dto.id)
+                    organizerDao.hardDeleteTaskList(dto.id)
+                } else {
+                    organizerDao.upsertTaskList(dto.toEntity())
+                }
+            }
+            is PostgresAction.Delete -> {
+                val id = action.oldRecord["id"]?.toString()?.trim('"') ?: return
+                organizerDao.deleteSubtasksByListId(id)
+                organizerDao.deleteTasksByListId(id)
+                organizerDao.hardDeleteTaskList(id)
+            }
+            else -> Unit
+        }
+    }
+
+    private suspend fun handleTaskRealtime(action: PostgresAction) {
+        when (action) {
+            is PostgresAction.Insert,
+            is PostgresAction.Update -> {
+                val dto = if (action is PostgresAction.Insert) {
+                    action.decodeRecord<TaskDto>()
+                } else {
+                    (action as PostgresAction.Update).decodeRecord<TaskDto>()
+                }
+                if (!dto.isShared && dto.ownerId != currentUserId()) {
+                    organizerDao.deleteSubtasksByTaskId(dto.id)
+                    organizerDao.hardDeleteTask(dto.id)
+                } else {
+                    organizerDao.upsertTask(dto.toEntity())
+                }
+            }
+            is PostgresAction.Delete -> {
+                val id = action.oldRecord["id"]?.toString()?.trim('"') ?: return
+                organizerDao.deleteSubtasksByTaskId(id)
+                organizerDao.hardDeleteTask(id)
+            }
+            else -> Unit
+        }
+    }
+
+    private suspend fun handleSubtaskRealtime(action: PostgresAction) {
+        when (action) {
+            is PostgresAction.Insert,
+            is PostgresAction.Update -> {
+                val dto = if (action is PostgresAction.Insert) {
+                    action.decodeRecord<TaskSubtaskDto>()
+                } else {
+                    (action as PostgresAction.Update).decodeRecord<TaskSubtaskDto>()
+                }
+                if (!dto.isShared && dto.ownerId != currentUserId()) {
+                    organizerDao.hardDeleteSubtask(dto.id)
+                } else {
+                    organizerDao.upsertSubtask(dto.toEntity())
+                }
+            }
+            is PostgresAction.Delete -> {
+                val id = action.oldRecord["id"]?.toString()?.trim('"') ?: return
+                organizerDao.hardDeleteSubtask(id)
+            }
+            else -> Unit
+        }
+    }
+
+    private suspend fun handleCalendarEventRealtime(action: PostgresAction) {
+        when (action) {
+            is PostgresAction.Insert,
+            is PostgresAction.Update -> {
+                val dto = if (action is PostgresAction.Insert) {
+                    action.decodeRecord<CalendarEventDto>()
+                } else {
+                    (action as PostgresAction.Update).decodeRecord<CalendarEventDto>()
+                }
+                if (!dto.isShared && dto.ownerId != currentUserId()) {
+                    organizerDao.hardDeleteCalendarEvent(dto.id)
+                } else {
+                    organizerDao.upsertCalendarEvent(dto.toEntity())
+                }
+            }
+            is PostgresAction.Delete -> {
+                val id = action.oldRecord["id"]?.toString()?.trim('"') ?: return
+                organizerDao.hardDeleteCalendarEvent(id)
             }
             else -> Unit
         }
