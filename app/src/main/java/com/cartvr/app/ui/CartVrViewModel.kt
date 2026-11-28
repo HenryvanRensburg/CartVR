@@ -221,6 +221,51 @@ class CartVrViewModel(
     private val _pendingNotificationListId = MutableStateFlow<String?>(null)
     val pendingNotificationListId: StateFlow<String?> = _pendingNotificationListId.asStateFlow()
 
+    val morningSummaryEnabled: StateFlow<Boolean> = prefs.morningSummaryEnabled.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        false
+    )
+
+    val morningSummaryHour: StateFlow<Int> = prefs.morningSummaryHour.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        7
+    )
+
+    val morningSummaryMinute: StateFlow<Int> = prefs.morningSummaryMinute.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        0
+    )
+
+    val defaultEventReminderMinutes: StateFlow<Int> = prefs.defaultEventReminderMinutes.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        30
+    )
+
+    val notifyTaskAssignments: StateFlow<Boolean> = prefs.notifyTaskAssignments.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        true
+    )
+
+    val notifySharedCalendar: StateFlow<Boolean> = prefs.notifySharedCalendar.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        true
+    )
+
+    private val _pendingDashboardEvent = MutableStateFlow(false)
+    val pendingDashboardEvent: StateFlow<Boolean> = _pendingDashboardEvent.asStateFlow()
+
+    private val _pendingNotificationTaskId = MutableStateFlow<String?>(null)
+    val pendingNotificationTaskId: StateFlow<String?> = _pendingNotificationTaskId.asStateFlow()
+
+    private val _pendingNotificationEvent = MutableStateFlow<Pair<String, String?>?>(null)
+    val pendingNotificationEvent: StateFlow<Pair<String, String?>?> = _pendingNotificationEvent.asStateFlow()
+
     private val _authLoading = MutableStateFlow(false)
     val authLoading: StateFlow<Boolean> = _authLoading.asStateFlow()
 
@@ -286,6 +331,7 @@ class CartVrViewModel(
         LiveSyncService.stop(appContext)
         ListSyncWorker.WorkScheduler.cancel(appContext)
         viewModelScope.launch {
+            repository.cancelAllReminders()
             repository.signOut()
         }
     }
@@ -345,6 +391,98 @@ class CartVrViewModel(
 
     fun openNotificationChannelSettings() {
         NotificationHelper.openChannelSoundSettings(appContext)
+    }
+
+    fun setMorningSummaryEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            prefs.setMorningSummaryEnabled(enabled)
+            repository.rescheduleReminders()
+        }
+    }
+
+    fun setMorningSummaryTime(hour: Int, minute: Int) {
+        viewModelScope.launch {
+            prefs.setMorningSummaryTime(hour, minute)
+            prefs.setMorningSummaryEnabled(true)
+            repository.rescheduleReminders()
+        }
+    }
+
+    fun setDefaultEventReminderMinutes(minutes: Int) {
+        viewModelScope.launch {
+            prefs.setDefaultEventReminderMinutes(minutes)
+            repository.rescheduleReminders()
+        }
+    }
+
+    fun setNotifyTaskAssignments(enabled: Boolean) {
+        viewModelScope.launch {
+            prefs.setNotifyTaskAssignments(enabled)
+        }
+    }
+
+    fun setNotifySharedCalendar(enabled: Boolean) {
+        viewModelScope.launch {
+            prefs.setNotifySharedCalendar(enabled)
+        }
+    }
+
+    fun openExactAlarmSettings() {
+        NotificationHelper.openExactAlarmSettings(appContext)
+    }
+
+    fun openBatteryOptimizationSettings() {
+        NotificationHelper.openBatteryOptimizationSettings(appContext)
+    }
+
+    fun openDashboardFromNotification() {
+        _pendingDashboardEvent.value = true
+    }
+
+    fun consumePendingDashboardEvent() {
+        _pendingDashboardEvent.value = false
+    }
+
+    fun openTaskFromNotification(taskId: String) {
+        _pendingNotificationTaskId.value = taskId
+    }
+
+    fun consumePendingNotificationTaskId() {
+        _pendingNotificationTaskId.value = null
+    }
+
+    fun openEventFromNotification(eventId: String, dateIso: String?) {
+        _pendingNotificationEvent.value = eventId to dateIso
+    }
+
+    fun consumePendingNotificationEvent() {
+        _pendingNotificationEvent.value = null
+    }
+
+    fun quickAddShoppingItemFromDashboard(listId: String, rawInput: String) {
+        viewModelScope.launch {
+            val parsed = SmartItemParser.parse(rawInput, categories.value, itemHistory.value)
+            if (parsed.name.isBlank()) return@launch
+            when (val res = repository.addShoppingItem(
+                listId = listId,
+                categoryId = parsed.suggestedCategoryId,
+                name = parsed.name,
+                quantity = parsed.quantity,
+                note = parsed.note,
+                saveAsRegular = false
+            )) {
+                is ItemMutationResult.Added ->
+                    _statusBanner.value = "Added ${res.itemName} to ${res.listName ?: "list"}"
+                is ItemMutationResult.UpdatedExisting ->
+                    _statusBanner.value = "Updated ${res.itemName} on ${res.listName}"
+                is ItemMutationResult.AlreadyExists ->
+                    _statusBanner.value = "${res.itemName} is already on ${res.listName}"
+                is ItemMutationResult.RestoredFromCompleted ->
+                    _statusBanner.value = "Moved ${res.itemName} back to ${res.listName}"
+                is ItemMutationResult.DuplicateBlocked ->
+                    _statusBanner.value = res.message
+            }
+        }
     }
 
     fun openListFromNotification(listId: String) {

@@ -45,6 +45,24 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun handleIntent(intent: Intent?) {
+        if (intent?.getBooleanExtra(NotificationHelper.EXTRA_OPEN_DASHBOARD, false) == true) {
+            viewModel.openDashboardFromNotification()
+            return
+        }
+
+        val notificationTaskId = intent?.getStringExtra(NotificationHelper.EXTRA_TASK_ID)
+        if (!notificationTaskId.isNullOrBlank()) {
+            viewModel.openTaskFromNotification(notificationTaskId)
+            return
+        }
+
+        val notificationEventId = intent?.getStringExtra(NotificationHelper.EXTRA_EVENT_ID)
+        if (!notificationEventId.isNullOrBlank()) {
+            val eventDate = intent.getStringExtra(NotificationHelper.EXTRA_EVENT_DATE)
+            viewModel.openEventFromNotification(notificationEventId, eventDate)
+            return
+        }
+
         val notificationListId = intent?.getStringExtra(NotificationHelper.EXTRA_LIST_ID)
         if (!notificationListId.isNullOrBlank()) {
             viewModel.openListFromNotification(notificationListId)

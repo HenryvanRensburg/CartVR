@@ -36,6 +36,14 @@ class AppPreferences(private val context: Context) {
         val LIVE_MODE_DURATION_HOURS = intPreferencesKey("live_mode_duration_hours")
         val LIVE_MODE_STOP_AT_MS = longPreferencesKey("live_mode_stop_at_ms")
         val LAST_NOTIFIED_AT = stringPreferencesKey("last_notified_at")
+
+        val MORNING_SUMMARY_ENABLED = booleanPreferencesKey("morning_summary_enabled")
+        val MORNING_SUMMARY_HOUR = intPreferencesKey("morning_summary_hour")
+        val MORNING_SUMMARY_MINUTE = intPreferencesKey("morning_summary_minute")
+        val DEFAULT_EVENT_REMINDER_MINUTES = intPreferencesKey("default_event_reminder_minutes")
+        val NOTIFY_TASK_ASSIGNMENTS = booleanPreferencesKey("notify_task_assignments")
+        val NOTIFY_SHARED_CALENDAR = booleanPreferencesKey("notify_shared_calendar")
+        val SCHEDULED_ALARM_IDS = stringPreferencesKey("scheduled_alarm_ids")
     }
 
     val themeMode: Flow<ThemeMode> = context.dataStore.data.map { prefs ->
@@ -55,6 +63,19 @@ class AppPreferences(private val context: Context) {
     val liveModeDurationHours: Flow<Int> = context.dataStore.data.map { it[Keys.LIVE_MODE_DURATION_HOURS] ?: 2 }
     val liveModeStopAtMs: Flow<Long> = context.dataStore.data.map { it[Keys.LIVE_MODE_STOP_AT_MS] ?: 0L }
     val lastNotifiedAt: Flow<String?> = context.dataStore.data.map { it[Keys.LAST_NOTIFIED_AT] }
+
+    val morningSummaryEnabled: Flow<Boolean> = context.dataStore.data.map { it[Keys.MORNING_SUMMARY_ENABLED] ?: false }
+    val morningSummaryHour: Flow<Int> = context.dataStore.data.map { it[Keys.MORNING_SUMMARY_HOUR] ?: 7 }
+    val morningSummaryMinute: Flow<Int> = context.dataStore.data.map { it[Keys.MORNING_SUMMARY_MINUTE] ?: 0 }
+    val defaultEventReminderMinutes: Flow<Int> = context.dataStore.data.map { it[Keys.DEFAULT_EVENT_REMINDER_MINUTES] ?: 30 }
+    val notifyTaskAssignments: Flow<Boolean> = context.dataStore.data.map { it[Keys.NOTIFY_TASK_ASSIGNMENTS] ?: true }
+    val notifySharedCalendar: Flow<Boolean> = context.dataStore.data.map { it[Keys.NOTIFY_SHARED_CALENDAR] ?: true }
+    val scheduledAlarmIds: Flow<Set<Int>> = context.dataStore.data.map { prefs ->
+        (prefs[Keys.SCHEDULED_ALARM_IDS] ?: "")
+            .split(",")
+            .mapNotNull { it.trim().toIntOrNull() }
+            .toSet()
+    }
 
     suspend fun setThemeMode(mode: ThemeMode) {
         context.dataStore.edit { it[Keys.THEME_MODE] = mode.name }
@@ -101,6 +122,33 @@ class AppPreferences(private val context: Context) {
         context.dataStore.edit { it[Keys.LAST_NOTIFIED_AT] = isoTimestamp }
     }
 
+    suspend fun setMorningSummaryEnabled(enabled: Boolean) {
+        context.dataStore.edit { it[Keys.MORNING_SUMMARY_ENABLED] = enabled }
+    }
+
+    suspend fun setMorningSummaryTime(hour: Int, minute: Int) {
+        context.dataStore.edit {
+            it[Keys.MORNING_SUMMARY_HOUR] = hour.coerceIn(0, 23)
+            it[Keys.MORNING_SUMMARY_MINUTE] = minute.coerceIn(0, 59)
+        }
+    }
+
+    suspend fun setDefaultEventReminderMinutes(minutes: Int) {
+        context.dataStore.edit { it[Keys.DEFAULT_EVENT_REMINDER_MINUTES] = minutes }
+    }
+
+    suspend fun setNotifyTaskAssignments(enabled: Boolean) {
+        context.dataStore.edit { it[Keys.NOTIFY_TASK_ASSIGNMENTS] = enabled }
+    }
+
+    suspend fun setNotifySharedCalendar(enabled: Boolean) {
+        context.dataStore.edit { it[Keys.NOTIFY_SHARED_CALENDAR] = enabled }
+    }
+
+    suspend fun setScheduledAlarmIds(ids: Set<Int>) {
+        context.dataStore.edit { it[Keys.SCHEDULED_ALARM_IDS] = ids.joinToString(",") }
+    }
+
     suspend fun clearSessionData() {
         context.dataStore.edit {
             it.remove(Keys.HOUSEHOLD_ID)
@@ -111,6 +159,7 @@ class AppPreferences(private val context: Context) {
             it.remove(Keys.LIVE_MODE_ENABLED)
             it.remove(Keys.LIVE_MODE_STOP_AT_MS)
             it.remove(Keys.LAST_NOTIFIED_AT)
+            it.remove(Keys.SCHEDULED_ALARM_IDS)
         }
     }
 }

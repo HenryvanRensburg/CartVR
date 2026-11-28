@@ -40,6 +40,17 @@ class NotificationBundler(
     private val debounceJobs = mutableMapOf<String, Job>()
     private val seenEventKeys = LinkedHashSet<String>()
 
+    suspend fun markKeySeen(key: String): Boolean {
+        return mutex.withLock {
+            if (!seenEventKeys.add(key)) return@withLock false
+            while (seenEventKeys.size > MAX_SEEN_KEYS) {
+                val first = seenEventKeys.iterator().next()
+                seenEventKeys.remove(first)
+            }
+            true
+        }
+    }
+
     suspend fun enqueueRealtimeChange(change: PendingListChange) {
         val listId = change.listId
         mutex.withLock {

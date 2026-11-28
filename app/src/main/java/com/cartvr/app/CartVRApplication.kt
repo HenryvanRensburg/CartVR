@@ -6,6 +6,7 @@ import com.cartvr.app.data.notifications.ListSyncWorker
 import com.cartvr.app.data.notifications.LiveSyncService
 import com.cartvr.app.data.notifications.NotificationBundler
 import com.cartvr.app.data.notifications.NotificationHelper
+import com.cartvr.app.data.notifications.ReminderScheduler
 import com.cartvr.app.data.preferences.AppPreferences
 import com.cartvr.app.data.sync.CartVrRepository
 import com.cartvr.app.data.sync.NetworkMonitor
@@ -50,7 +51,8 @@ class CartVRApplication : Application() {
             organizerDao = database.organizerDao(),
             prefs = preferences,
             networkMonitor = networkMonitor,
-            notificationBundler = notificationBundler
+            notificationBundler = notificationBundler,
+            appContext = this
         )
         updater = GitHubUpdater(this)
 
@@ -58,6 +60,11 @@ class CartVRApplication : Application() {
             if (preferences.notificationsEnabled.first()) {
                 ListSyncWorker.WorkScheduler.schedule(this@CartVRApplication)
             }
+            ReminderScheduler.rescheduleAll(
+                context = this@CartVRApplication,
+                organizerDao = database.organizerDao(),
+                prefs = preferences
+            )
             val liveSaved = preferences.liveModeEnabled.first()
             val stopAt = preferences.liveModeStopAtMs.first()
             if (liveSaved && !LiveSyncService.isRunning.value) {

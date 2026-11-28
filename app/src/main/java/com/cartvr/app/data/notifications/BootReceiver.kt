@@ -11,7 +11,14 @@ import kotlinx.coroutines.launch
 
 class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action != Intent.ACTION_BOOT_COMPLETED) return
+        val validActions = setOf(
+            Intent.ACTION_BOOT_COMPLETED,
+            Intent.ACTION_TIME_CHANGED,
+            Intent.ACTION_TIMEZONE_CHANGED,
+            Intent.ACTION_MY_PACKAGE_REPLACED
+        )
+        if (intent.action !in validActions) return
+
         val pendingResult = goAsync()
         val app = context.applicationContext as? CartVRApplication
         if (app == null) {
@@ -21,10 +28,17 @@ class BootReceiver : BroadcastReceiver() {
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                app.preferences.setLiveMode(enabled = false, stopAtMs = 0L)
+                if (intent.action == Intent.ACTION_BOOT_COMPLETED) {
+                    app.preferences.setLiveMode(enabled = false, stopAtMs = 0L)
+                }
                 if (app.preferences.notificationsEnabled.first()) {
                     ListSyncWorker.WorkScheduler.schedule(context)
                 }
+                ReminderScheduler.rescheduleAll(
+                    context = context,
+                    organizerDao = app.database.organizerDao(),
+                    prefs = app.preferences
+                )
             } finally {
                 pendingResult.finish()
             }

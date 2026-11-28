@@ -1,24 +1,34 @@
 package com.cartvr.app.ui
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.CalendarMonth
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Event
+import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.ShoppingCart
 import androidx.compose.material.icons.rounded.TaskAlt
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,6 +42,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
@@ -53,6 +65,8 @@ import com.cartvr.app.ui.components.JoinListDialog
 import com.cartvr.app.ui.components.ListVisuals
 import com.cartvr.app.ui.components.UpdateDialog
 import com.cartvr.app.ui.family.ManageFamilyScreen
+import com.cartvr.app.ui.home.FamilyDashboardScreen
+import com.cartvr.app.ui.home.QuickAddShoppingItemDialog
 import com.cartvr.app.ui.list.ListDetailScreen
 import com.cartvr.app.ui.settings.SettingsScreen
 import com.cartvr.app.ui.shopping.ShoppingHubScreen
@@ -67,6 +81,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 private enum class TopTab(val route: String, val label: String, val icon: ImageVector) {
+    DASHBOARD("dashboard", "Home", Icons.Rounded.Home),
     SHOPPING("shopping", "Shopping", Icons.Rounded.ShoppingCart),
     TASKS("tasks", "Tasks", Icons.Rounded.TaskAlt),
     CALENDAR("calendar", "Calendar", Icons.Rounded.CalendarMonth),
@@ -158,6 +173,15 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
     val liveModeEnabled by viewModel.liveModeEnabled.collectAsStateWithLifecycle()
     val liveModeDurationHours by viewModel.liveModeDurationHours.collectAsStateWithLifecycle()
     val liveModeStopAtMs by viewModel.liveModeStopAtMs.collectAsStateWithLifecycle()
+    val morningSummaryEnabled by viewModel.morningSummaryEnabled.collectAsStateWithLifecycle()
+    val morningSummaryHour by viewModel.morningSummaryHour.collectAsStateWithLifecycle()
+    val morningSummaryMinute by viewModel.morningSummaryMinute.collectAsStateWithLifecycle()
+    val defaultEventReminderMinutes by viewModel.defaultEventReminderMinutes.collectAsStateWithLifecycle()
+    val notifyTaskAssignments by viewModel.notifyTaskAssignments.collectAsStateWithLifecycle()
+    val notifySharedCalendar by viewModel.notifySharedCalendar.collectAsStateWithLifecycle()
+    val pendingDashboardEvent by viewModel.pendingDashboardEvent.collectAsStateWithLifecycle()
+    val pendingNotificationTaskId by viewModel.pendingNotificationTaskId.collectAsStateWithLifecycle()
+    val pendingNotificationEvent by viewModel.pendingNotificationEvent.collectAsStateWithLifecycle()
     val householdProfiles by viewModel.householdProfiles.collectAsStateWithLifecycle()
     val taskLists by viewModel.taskLists.collectAsStateWithLifecycle()
     val tasks by viewModel.tasks.collectAsStateWithLifecycle()
@@ -173,6 +197,9 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
         runCatching { LocalDate.parse(selectedCalendarDateIso) }.getOrDefault(LocalDate.now())
     }
 
+    var dashboardQuickAddExpanded by remember { mutableStateOf(false) }
+    var showQuickAddShoppingDialog by remember { mutableStateOf(false) }
+
     var showListSheet by remember { mutableStateOf(false) }
     var editingList by remember { mutableStateOf<ShoppingListEntity?>(null) }
 
@@ -187,13 +214,28 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
     var editingEvent by remember { mutableStateOf<CalendarEventEntity?>(null) }
     var editingEventOccurrenceDate by remember { mutableStateOf(LocalDate.now()) }
 
+    fun navigateToTopTab(tab: TopTab) {
+        dashboardQuickAddExpanded = false
+        navController.navigate(tab.route) {
+            popUpTo(navController.graph.findStartDestination().id) {
+                saveState = true
+            }
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
+
     val showBottomBar = currentRoute in TopTab.entries.map { it.route }
+    val isDashboard = currentRoute == TopTab.DASHBOARD.route
     val showShoppingFab = currentRoute == TopTab.SHOPPING.route && selectedShoppingSubTab == ShoppingSubTab.LISTS
     val showTasksFab = currentRoute == TopTab.TASKS.route && taskLists.isNotEmpty()
     val showCalendarFab = currentRoute == TopTab.CALENDAR.route
-    val showFab = showShoppingFab || showTasksFab || showCalendarFab
+    val showFab = isDashboard || showShoppingFab || showTasksFab || showCalendarFab
 
     LaunchedEffect(currentRoute, backStackEntry) {
+        if (currentRoute != TopTab.DASHBOARD.route) {
+            dashboardQuickAddExpanded = false
+        }
         val activeListId = if (currentRoute == "list/{listId}") {
             backStackEntry?.arguments?.getString("listId")
         } else {
@@ -208,6 +250,34 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
         navController.navigate("list/$targetListId") {
             launchSingleTop = true
         }
+    }
+
+    LaunchedEffect(pendingDashboardEvent) {
+        if (!pendingDashboardEvent) return@LaunchedEffect
+        viewModel.consumePendingDashboardEvent()
+        navigateToTopTab(TopTab.DASHBOARD)
+    }
+
+    LaunchedEffect(pendingNotificationTaskId, tasks) {
+        val targetTaskId = pendingNotificationTaskId ?: return@LaunchedEffect
+        val targetTask = tasks.firstOrNull { it.id == targetTaskId } ?: return@LaunchedEffect
+        viewModel.consumePendingNotificationTaskId()
+        editingTask = targetTask
+        taskEditorFolderId = targetTask.taskListId
+        taskEditorInitialStatus = targetTask.status
+        showTaskEditorSheet = true
+    }
+
+    LaunchedEffect(pendingNotificationEvent, calendarEvents) {
+        val pair = pendingNotificationEvent ?: return@LaunchedEffect
+        val targetEvent = calendarEvents.firstOrNull { it.id == pair.first } ?: return@LaunchedEffect
+        viewModel.consumePendingNotificationEvent()
+        val occDate = pair.second?.let { runCatching { LocalDate.parse(it) }.getOrNull() } ?: LocalDate.now()
+        selectedCalendarDateIso = occDate.toString()
+        navigateToTopTab(TopTab.CALENDAR)
+        editingEvent = targetEvent
+        editingEventOccurrenceDate = occDate
+        showEventSheet = true
     }
 
     LaunchedEffect(joinedListEvent) {
@@ -233,17 +303,17 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
                     TopTab.entries.forEach { tab ->
                         NavigationBarItem(
                             selected = currentRoute == tab.route,
-                            onClick = {
-                                navController.navigate(tab.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            },
+                            onClick = { navigateToTopTab(tab) },
                             icon = { Icon(tab.icon, contentDescription = tab.label) },
-                            label = { Text(tab.label) }
+                            label = {
+                                Text(
+                                    text = tab.label,
+                                    maxLines = 1,
+                                    softWrap = false,
+                                    overflow = TextOverflow.Ellipsis,
+                                    style = MaterialTheme.typography.labelSmall
+                                )
+                            }
                         )
                     }
                 }
@@ -251,49 +321,197 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
         },
         floatingActionButton = {
             if (showFab) {
-                ExtendedFloatingActionButton(
-                    onClick = {
-                        when {
-                            showTasksFab -> {
-                                editingTask = null
-                                taskEditorFolderId = taskLists.firstOrNull()?.id ?: ""
-                                taskEditorInitialStatus = "todo"
-                                showTaskEditorSheet = true
-                            }
-                            showCalendarFab -> {
-                                editingEvent = null
-                                editingEventOccurrenceDate = selectedCalendarDate
-                                showEventSheet = true
-                            }
-                            else -> {
-                                editingList = null
-                                showListSheet = true
+                if (isDashboard) {
+                    Column(
+                        horizontalAlignment = Alignment.End,
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        AnimatedVisibility(visible = dashboardQuickAddExpanded) {
+                            Column(
+                                horizontalAlignment = Alignment.End,
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Surface(
+                                        shape = MaterialTheme.shapes.small,
+                                        color = MaterialTheme.colorScheme.surface,
+                                        shadowElevation = 2.dp
+                                    ) {
+                                        Text(
+                                            text = "Shopping Item",
+                                            style = MaterialTheme.typography.labelLarge,
+                                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                                        )
+                                    }
+                                    SmallFloatingActionButton(
+                                        onClick = {
+                                            dashboardQuickAddExpanded = false
+                                            if (lists.isNotEmpty()) {
+                                                showQuickAddShoppingDialog = true
+                                            } else {
+                                                editingList = null
+                                                showListSheet = true
+                                            }
+                                        }
+                                    ) {
+                                        Icon(Icons.Rounded.ShoppingCart, contentDescription = "Add shopping item")
+                                    }
+                                }
+
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Surface(
+                                        shape = MaterialTheme.shapes.small,
+                                        color = MaterialTheme.colorScheme.surface,
+                                        shadowElevation = 2.dp
+                                    ) {
+                                        Text(
+                                            text = "New Task",
+                                            style = MaterialTheme.typography.labelLarge,
+                                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                                        )
+                                    }
+                                    SmallFloatingActionButton(
+                                        onClick = {
+                                            dashboardQuickAddExpanded = false
+                                            if (taskLists.isNotEmpty()) {
+                                                editingTask = null
+                                                taskEditorFolderId = taskLists.first().id
+                                                taskEditorInitialStatus = "todo"
+                                                showTaskEditorSheet = true
+                                            } else {
+                                                editingTaskFolder = null
+                                                showTaskFolderSheet = true
+                                            }
+                                        }
+                                    ) {
+                                        Icon(Icons.Rounded.TaskAlt, contentDescription = "Add task")
+                                    }
+                                }
+
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Surface(
+                                        shape = MaterialTheme.shapes.small,
+                                        color = MaterialTheme.colorScheme.surface,
+                                        shadowElevation = 2.dp
+                                    ) {
+                                        Text(
+                                            text = "Calendar Event",
+                                            style = MaterialTheme.typography.labelLarge,
+                                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                                        )
+                                    }
+                                    SmallFloatingActionButton(
+                                        onClick = {
+                                            dashboardQuickAddExpanded = false
+                                            editingEvent = null
+                                            editingEventOccurrenceDate = LocalDate.now()
+                                            showEventSheet = true
+                                        }
+                                    ) {
+                                        Icon(Icons.Rounded.Event, contentDescription = "Add event")
+                                    }
+                                }
                             }
                         }
-                    },
-                    icon = { Icon(Icons.Rounded.Add, contentDescription = null) },
-                    text = {
-                        Text(
+
+                        FloatingActionButton(
+                            onClick = { dashboardQuickAddExpanded = !dashboardQuickAddExpanded },
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        ) {
+                            Icon(
+                                imageVector = if (dashboardQuickAddExpanded) Icons.Rounded.Close else Icons.Rounded.Add,
+                                contentDescription = "Quick Add"
+                            )
+                        }
+                    }
+                } else {
+                    ExtendedFloatingActionButton(
+                        onClick = {
                             when {
-                                showTasksFab -> "New Task"
-                                showCalendarFab -> "New Event"
-                                else -> "New List"
+                                showTasksFab -> {
+                                    editingTask = null
+                                    taskEditorFolderId = taskLists.firstOrNull()?.id ?: ""
+                                    taskEditorInitialStatus = "todo"
+                                    showTaskEditorSheet = true
+                                }
+                                showCalendarFab -> {
+                                    editingEvent = null
+                                    editingEventOccurrenceDate = selectedCalendarDate
+                                    showEventSheet = true
+                                }
+                                else -> {
+                                    editingList = null
+                                    showListSheet = true
+                                }
                             }
-                        )
-                    },
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                )
+                        },
+                        icon = { Icon(Icons.Rounded.Add, contentDescription = null) },
+                        text = {
+                            Text(
+                                when {
+                                    showTasksFab -> "New Task"
+                                    showCalendarFab -> "New Event"
+                                    else -> "New List"
+                                }
+                            )
+                        },
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
             }
         }
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = TopTab.SHOPPING.route,
+            startDestination = TopTab.DASHBOARD.route,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
+            composable(TopTab.DASHBOARD.route) {
+                FamilyDashboardScreen(
+                    displayName = resolvedDisplayName,
+                    syncState = syncState,
+                    themeMode = themeMode,
+                    lists = lists,
+                    allShoppingItems = allItems,
+                    taskLists = taskLists,
+                    tasks = tasks,
+                    calendarEvents = calendarEvents,
+                    profiles = householdProfiles,
+                    onToggleTheme = { isDark -> viewModel.toggleQuickTheme(isDark) },
+                    onSyncClick = { viewModel.syncNow() },
+                    onOpenShoppingTab = { navigateToTopTab(TopTab.SHOPPING) },
+                    onOpenShoppingList = { list -> navController.navigate("list/${list.id}") },
+                    onOpenTasksTab = { navigateToTopTab(TopTab.TASKS) },
+                    onToggleTaskDone = { task ->
+                        viewModel.setTaskStatus(task, if (task.status == "done") "todo" else "done")
+                    },
+                    onOpenTask = { task ->
+                        editingTask = task
+                        taskEditorFolderId = task.taskListId
+                        taskEditorInitialStatus = task.status
+                        showTaskEditorSheet = true
+                    },
+                    onOpenCalendarTab = { navigateToTopTab(TopTab.CALENDAR) },
+                    onOpenEvent = { event, occDate ->
+                        editingEvent = event
+                        editingEventOccurrenceDate = occDate
+                        showEventSheet = true
+                    }
+                )
+            }
             composable(TopTab.SHOPPING.route) {
                 ShoppingHubScreen(
                     selectedSubTab = selectedShoppingSubTab,
@@ -474,6 +692,12 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
                     liveModeEnabled = liveModeEnabled,
                     liveModeDurationHours = liveModeDurationHours,
                     liveModeStopAtMs = liveModeStopAtMs,
+                    morningSummaryEnabled = morningSummaryEnabled,
+                    morningSummaryHour = morningSummaryHour,
+                    morningSummaryMinute = morningSummaryMinute,
+                    defaultEventReminderMinutes = defaultEventReminderMinutes,
+                    notifyTaskAssignments = notifyTaskAssignments,
+                    notifySharedCalendar = notifySharedCalendar,
                     onThemeSelected = { viewModel.setThemeMode(it) },
                     onAccentColorSelected = { viewModel.updateMyAccentColor(it) },
                     onNotificationsEnabledChanged = { viewModel.setNotificationsEnabled(it) },
@@ -482,6 +706,13 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
                     onLiveModeDurationChanged = { viewModel.setLiveModeDurationHours(it) },
                     onPreviewChime = { viewModel.previewNotificationChime() },
                     onOpenSoundSettings = { viewModel.openNotificationChannelSettings() },
+                    onMorningSummaryEnabledChanged = { viewModel.setMorningSummaryEnabled(it) },
+                    onMorningSummaryTimeChanged = { h, m -> viewModel.setMorningSummaryTime(h, m) },
+                    onDefaultEventReminderChanged = { viewModel.setDefaultEventReminderMinutes(it) },
+                    onNotifyTaskAssignmentsChanged = { viewModel.setNotifyTaskAssignments(it) },
+                    onNotifySharedCalendarChanged = { viewModel.setNotifySharedCalendar(it) },
+                    onOpenExactAlarmSettings = { viewModel.openExactAlarmSettings() },
+                    onOpenBatteryOptimizationSettings = { viewModel.openBatteryOptimizationSettings() },
                     onManageFamily = { navController.navigate("manage_family") },
                     onSyncNow = {
                         viewModel.syncNow()
@@ -736,6 +967,17 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
                 viewModel.stopRepeatingEventFromDate(target, fromDate)
                 showEventSheet = false
                 editingEvent = null
+            }
+        )
+    }
+
+    if (showQuickAddShoppingDialog && lists.isNotEmpty()) {
+        QuickAddShoppingItemDialog(
+            shoppingLists = lists,
+            onDismiss = { showQuickAddShoppingDialog = false },
+            onAdd = { listId, rawText ->
+                viewModel.quickAddShoppingItemFromDashboard(listId, rawText)
+                showQuickAddShoppingDialog = false
             }
         )
     }

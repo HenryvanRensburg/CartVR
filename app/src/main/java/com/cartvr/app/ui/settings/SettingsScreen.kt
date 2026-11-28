@@ -25,25 +25,35 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Logout
+import androidx.compose.material.icons.rounded.BatteryAlert
 import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.GroupAdd
 import androidx.compose.material.icons.rounded.NotificationsActive
 import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material.icons.rounded.SystemUpdate
 import androidx.compose.material.icons.rounded.Tune
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,6 +64,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.cartvr.app.BuildConfig
 import com.cartvr.app.data.notifications.NotificationHelper
 import com.cartvr.app.data.preferences.ThemeMode
@@ -65,6 +78,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     displayName: String,
@@ -80,6 +94,12 @@ fun SettingsScreen(
     liveModeEnabled: Boolean,
     liveModeDurationHours: Int,
     liveModeStopAtMs: Long,
+    morningSummaryEnabled: Boolean,
+    morningSummaryHour: Int,
+    morningSummaryMinute: Int,
+    defaultEventReminderMinutes: Int,
+    notifyTaskAssignments: Boolean,
+    notifySharedCalendar: Boolean,
     onThemeSelected: (ThemeMode) -> Unit,
     onAccentColorSelected: (String) -> Unit,
     onNotificationsEnabledChanged: (Boolean) -> Unit,
@@ -88,27 +108,57 @@ fun SettingsScreen(
     onLiveModeDurationChanged: (Int) -> Unit,
     onPreviewChime: () -> Unit,
     onOpenSoundSettings: () -> Unit,
+    onMorningSummaryEnabledChanged: (Boolean) -> Unit,
+    onMorningSummaryTimeChanged: (Int, Int) -> Unit,
+    onDefaultEventReminderChanged: (Int) -> Unit,
+    onNotifyTaskAssignmentsChanged: (Boolean) -> Unit,
+    onNotifySharedCalendarChanged: (Boolean) -> Unit,
+    onOpenExactAlarmSettings: () -> Unit,
+    onOpenBatteryOptimizationSettings: () -> Unit,
     onManageFamily: () -> Unit,
     onSyncNow: () -> Unit,
     onCheckForUpdates: () -> Unit,
     onSignOut: () -> Unit
 ) {
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
     var permissionDeniedNote by remember { mutableStateOf(false) }
     var pendingLiveAfterPermission by remember { mutableStateOf(false) }
+    var pendingSummaryAfterPermission by remember { mutableStateOf(false) }
+    var showMorningTimePicker by remember { mutableStateOf(false) }
+
+    var exactAlarmsOk by remember { mutableStateOf(NotificationHelper.canScheduleExactAlarms(context)) }
+    var batteryUnrestrictedOk by remember { mutableStateOf(NotificationHelper.isIgnoringBatteryOptimizations(context)) }
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                exactAlarmsOk = NotificationHelper.canScheduleExactAlarms(context)
+                batteryUnrestrictedOk = NotificationHelper.isIgnoringBatteryOptimizations(context)
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) {
             permissionDeniedNote = false
-            if (pendingLiveAfterPermission) {
-                pendingLiveAfterPermission = false
-                onLiveModeEnabledChanged(true)
-            } else {
-                onNotificationsEnabledChanged(true)
+            when {
+                pendingSummaryAfterPermission -> {
+                    pendingSummaryAfterPermission = false
+                    onMorningSummaryEnabledChanged(true)
+                }
+                pendingLiveAfterPermission -> {
+                    pendingLiveAfterPermission = false
+                    onLiveModeEnabledChanged(true)
+                }
+                else -> onNotificationsEnabledChanged(true)
             }
         } else {
+            pendingSummaryAfterPermission = false
             pendingLiveAfterPermission = false
             permissionDeniedNote = true
         }
@@ -404,6 +454,236 @@ fun SettingsScreen(
                                 Text("  Chime Sound")
                             }
                         }
+
+                        HorizontalDivider()
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = "Task assignment alerts",
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                                Text(
+                                    text = "Chime when another family member assigns a shared task to you.",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            Switch(
+                                checked = notifyTaskAssignments,
+                                onCheckedChange = onNotifyTaskAssignmentsChanged
+                            )
+                        }
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = "Shared calendar alerts",
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                                Text(
+                                    text = "Chime when someone adds or updates a shared family event.",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            Switch(
+                                checked = notifySharedCalendar,
+                                onCheckedChange = onNotifySharedCalendarChanged
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        // Reminders & Daily Summary Card
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(18.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(
+                        text = "Reminders & Daily Summary",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "Daily Morning Summary",
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            Text(
+                                text = "Morning overview of today's tasks & calendar events on this phone.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Switch(
+                            checked = morningSummaryEnabled,
+                            onCheckedChange = { wantSummary ->
+                                if (!wantSummary) {
+                                    onMorningSummaryEnabledChanged(false)
+                                } else if (
+                                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                                    !NotificationHelper.hasNotificationPermission(context)
+                                ) {
+                                    pendingSummaryAfterPermission = true
+                                    permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                } else {
+                                    onMorningSummaryEnabledChanged(true)
+                                }
+                            }
+                        )
+                    }
+
+                    if (morningSummaryEnabled) {
+                        val formattedTime = remember(morningSummaryHour, morningSummaryMinute) {
+                            String.format(Locale.getDefault(), "%02d:%02d", morningSummaryHour, morningSummaryMinute)
+                        }
+                        OutlinedButton(
+                            onClick = { showMorningTimePicker = true },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(14.dp)
+                        ) {
+                            Icon(Icons.Rounded.Schedule, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Text("  Morning Summary Time: $formattedTime")
+                        }
+                    }
+
+                    HorizontalDivider()
+
+                    Text(
+                        text = "Default Event Reminder",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Text(
+                        text = "Used for calendar events set to \"Phone default\".",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        listOf(
+                            15 to "15m",
+                            30 to "30m",
+                            60 to "1 hr",
+                            1440 to "1 day"
+                        ).forEach { (minutes, label) ->
+                            FilterChip(
+                                selected = defaultEventReminderMinutes == minutes,
+                                onClick = { onDefaultEventReminderChanged(minutes) },
+                                label = { Text(label) },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
+
+                    HorizontalDivider()
+
+                    Text(
+                        text = "Alarm & Battery Reliability",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+
+                    if (exactAlarmsOk && batteryUnrestrictedOk) {
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.55f),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Rounded.CheckCircle,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Text(
+                                    text = "Exact alarms and battery settings look great on this phone.",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                            }
+                        }
+                    } else {
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.55f),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(12.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.BatteryAlert,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.error,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                    Text(
+                                        text = "Android battery saving or alarm limits may delay your Morning Summary or timed reminders.",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onErrorContainer
+                                    )
+                                }
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    if (!exactAlarmsOk) {
+                                        OutlinedButton(
+                                            onClick = onOpenExactAlarmSettings,
+                                            modifier = Modifier.weight(1f),
+                                            shape = RoundedCornerShape(12.dp)
+                                        ) {
+                                            Text("Allow Exact Alarms")
+                                        }
+                                    }
+                                    if (!batteryUnrestrictedOk) {
+                                        OutlinedButton(
+                                            onClick = onOpenBatteryOptimizationSettings,
+                                            modifier = Modifier.weight(1f),
+                                            shape = RoundedCornerShape(12.dp)
+                                        ) {
+                                            Text("Unrestrict Battery")
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -568,5 +848,29 @@ fun SettingsScreen(
                 Text("  Sign Out")
             }
         }
+    }
+
+    if (showMorningTimePicker) {
+        val timeState = rememberTimePickerState(
+            initialHour = morningSummaryHour,
+            initialMinute = morningSummaryMinute,
+            is24Hour = true
+        )
+        AlertDialog(
+            onDismissRequest = { showMorningTimePicker = false },
+            title = { Text("Morning Summary Time") },
+            text = { TimePicker(state = timeState) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onMorningSummaryTimeChanged(timeState.hour, timeState.minute)
+                        showMorningTimePicker = false
+                    }
+                ) { Text("OK") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showMorningTimePicker = false }) { Text("Cancel") }
+            }
+        )
     }
 }

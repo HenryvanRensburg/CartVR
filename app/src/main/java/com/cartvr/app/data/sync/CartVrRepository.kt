@@ -1,5 +1,6 @@
 package com.cartvr.app.data.sync
 
+import android.content.Context
 import com.cartvr.app.data.local.dao.CartVrDao
 import com.cartvr.app.data.local.dao.OrganizerDao
 import com.cartvr.app.data.local.entity.CalendarEventEntity
@@ -16,7 +17,9 @@ import com.cartvr.app.data.local.entity.TaskListEntity
 import com.cartvr.app.data.local.entity.TaskSubtaskEntity
 import com.cartvr.app.data.notifications.ItemChangeKind
 import com.cartvr.app.data.notifications.NotificationBundler
+import com.cartvr.app.data.notifications.NotificationHelper
 import com.cartvr.app.data.notifications.PendingListChange
+import com.cartvr.app.data.notifications.ReminderScheduler
 import com.cartvr.app.data.preferences.AppPreferences
 import com.cartvr.app.data.remote.FamilyApiClient
 import com.cartvr.app.data.remote.SupabaseProvider
@@ -97,7 +100,8 @@ class CartVrRepository(
     private val organizerDao: OrganizerDao,
     private val prefs: AppPreferences,
     private val networkMonitor: NetworkMonitor,
-    private val notificationBundler: NotificationBundler? = null
+    private val notificationBundler: NotificationBundler? = null,
+    private val appContext: Context? = null
 ) {
     private val supabase = SupabaseProvider.client
     private val familyApi = FamilyApiClient()
@@ -165,6 +169,23 @@ class CartVrRepository(
 
     fun setAppForeground(inForeground: Boolean) {
         isAppInForeground = inForeground
+    }
+
+    private fun rescheduleRemindersAsync() {
+        val ctx = appContext ?: return
+        scope.launch {
+            ReminderScheduler.rescheduleAll(ctx, organizerDao, prefs)
+        }
+    }
+
+    suspend fun rescheduleReminders() {
+        val ctx = appContext ?: return
+        ReminderScheduler.rescheduleAll(ctx, organizerDao, prefs)
+    }
+
+    suspend fun cancelAllReminders() {
+        val ctx = appContext ?: return
+        ReminderScheduler.cancelAll(ctx, prefs)
     }
 
     fun currentUserId(): String? = supabase.auth.currentUserOrNull()?.id
@@ -520,6 +541,7 @@ class CartVrRepository(
             organizerDao.pruneSyncedCalendarEventsNotIn(activeEventIds)
             organizerDao.upsertCalendarEvents(remoteEvents)
         }
+        rescheduleRemindersAsync()
     }
 
     suspend fun ensureRealtimeSubscribed(forceReconnect: Boolean = false) {
@@ -717,6 +739,9 @@ class CartVrRepository(
         }
 
         val previousItemsById = dao.observeAllActiveShoppingItems().first().associateBy { it.id }
+        val previousTasksById = organizerDao.observeActiveTasks().first().associateBy { it.id }
+        val previousEventsById = organizerDao.observeActiveCalendarEvents().first().associateBy { it.id }
+
         syncAll(force = true)
         if (_syncState.value == SyncState.OFFLINE) return
 
@@ -724,10 +749,6 @@ class CartVrRepository(
         val sharedLists = dao.observeActiveLists().first()
             .filter { it.isShared && it.deletedAt == null }
             .associateBy { it.id }
-        if (sharedLists.isEmpty()) {
-            bundler.advanceLastNotifiedAt(Instant.now().toString())
-            return
-        }
 
         val notifyOnChecked = prefs.notifyOnChecked.first()
         val allActiveItems = dao.observeAllActiveShoppingItems().first()
@@ -775,6 +796,35 @@ class CartVrRepository(
         if (changes.isNotEmpty()) {
             bundler.postImmediateBatch(changes)
         }
+
+        // Check shared task assignments
+        if (prefs.notifyTaskAssignments.first()) {
+            val activeTasks = organizerDao.observeActiveTasks().first()
+            for (task in activeTasks) {
+                val updatedInstant = runCatching { Instant.parse(task.updatedAt) }.getOrNull() ?: continue
+                if (!updatedInstant.isAfter(sinceInstant)) continue
+                if (latestSeenIso == null || updatedInstant.isAfter(Instant.parse(latestSeenIso))) {
+                    latestSeenIso = task.updatedAt
+                }
+                val prev = previousTasksById[task.id]
+                maybeNotifySharedTask(previous = prev, current = task)
+            }
+        }
+
+        // Check shared calendar events
+        if (prefs.notifySharedCalendar.first()) {
+            val activeEvents = organizerDao.observeActiveCalendarEvents().first()
+            for (event in activeEvents) {
+                val updatedInstant = runCatching { Instant.parse(event.updatedAt) }.getOrNull() ?: continue
+                if (!updatedInstant.isAfter(sinceInstant)) continue
+                if (latestSeenIso == null || updatedInstant.isAfter(Instant.parse(latestSeenIso))) {
+                    latestSeenIso = event.updatedAt
+                }
+                val prev = previousEventsById[event.id]
+                maybeNotifySharedCalendarEvent(previous = prev, current = event)
+            }
+        }
+
         bundler.advanceLastNotifiedAt(latestSeenIso ?: Instant.now().toString())
     }
 
@@ -864,13 +914,18 @@ class CartVrRepository(
                     organizerDao.deleteSubtasksByTaskId(dto.id)
                     organizerDao.hardDeleteTask(dto.id)
                 } else {
-                    organizerDao.upsertTask(dto.toEntity())
+                    val previous = organizerDao.getTaskById(dto.id)
+                    val entity = dto.toEntity()
+                    organizerDao.upsertTask(entity)
+                    maybeNotifySharedTask(previous = previous, current = entity)
+                    rescheduleRemindersAsync()
                 }
             }
             is PostgresAction.Delete -> {
                 val id = action.oldRecord["id"]?.toString()?.trim('"') ?: return
                 organizerDao.deleteSubtasksByTaskId(id)
                 organizerDao.hardDeleteTask(id)
+                rescheduleRemindersAsync()
             }
             else -> Unit
         }
@@ -911,15 +966,85 @@ class CartVrRepository(
                 if (!dto.isShared && dto.ownerId != currentUserId()) {
                     organizerDao.hardDeleteCalendarEvent(dto.id)
                 } else {
-                    organizerDao.upsertCalendarEvent(dto.toEntity())
+                    val previous = organizerDao.getCalendarEventById(dto.id)
+                    val entity = dto.toEntity()
+                    organizerDao.upsertCalendarEvent(entity)
+                    maybeNotifySharedCalendarEvent(previous = previous, current = entity)
+                    rescheduleRemindersAsync()
                 }
             }
             is PostgresAction.Delete -> {
                 val id = action.oldRecord["id"]?.toString()?.trim('"') ?: return
                 organizerDao.hardDeleteCalendarEvent(id)
+                rescheduleRemindersAsync()
             }
             else -> Unit
         }
+    }
+
+    private suspend fun maybeNotifySharedTask(previous: TaskEntity?, current: TaskEntity) {
+        val ctx = appContext ?: return
+        val bundler = notificationBundler ?: return
+        if (!prefs.notificationsEnabled.first() || !prefs.notifyTaskAssignments.first()) return
+        val currentUid = currentUserId() ?: return
+        val actorId = current.updatedBy ?: current.ownerId
+        if (!current.isShared || current.deletedAt != null || current.status == "done") return
+        if (actorId == currentUid) return
+        if (current.assignedTo != currentUid || previous?.assignedTo == currentUid) return
+
+        val key = "task:${current.id}:${current.updatedAt}"
+        if (!bundler.markKeySeen(key)) return
+
+        val actorName = resolveActorName(actorId)
+        val dueSuffix = current.dueDate?.takeIf { it.isNotBlank() }?.let { " (due $it)" }.orEmpty()
+        NotificationHelper.postFamilyUpdateNotification(
+            context = ctx,
+            dedupKey = key,
+            title = "Task assigned to you",
+            body = "$actorName assigned \"${current.title}\"$dueSuffix",
+            taskId = current.id
+        )
+        bundler.advanceLastNotifiedAt(current.updatedAt)
+    }
+
+    private suspend fun maybeNotifySharedCalendarEvent(
+        previous: CalendarEventEntity?,
+        current: CalendarEventEntity
+    ) {
+        val ctx = appContext ?: return
+        val bundler = notificationBundler ?: return
+        if (!prefs.notificationsEnabled.first() || !prefs.notifySharedCalendar.first()) return
+        val currentUid = currentUserId() ?: return
+        val actorId = current.updatedBy ?: current.ownerId
+        if (!current.isShared || current.deletedAt != null) return
+        if (actorId == currentUid) return
+
+        val isMeaningfulUpdate = previous == null ||
+            previous.title != current.title ||
+            previous.startAt != current.startAt ||
+            previous.endAt != current.endAt ||
+            previous.location != current.location ||
+            previous.isShared != current.isShared
+        if (!isMeaningfulUpdate) return
+
+        val key = "event:${current.id}:${current.updatedAt}"
+        if (!bundler.markKeySeen(key)) return
+
+        val actorName = resolveActorName(actorId)
+        val occDate = runCatching {
+            Instant.parse(current.startAt).atZone(ZoneId.systemDefault()).toLocalDate().toString()
+        }.getOrDefault(LocalDate.now().toString())
+
+        val verb = if (previous == null) "added" else "updated"
+        NotificationHelper.postFamilyUpdateNotification(
+            context = ctx,
+            dedupKey = key,
+            title = "Family Calendar",
+            body = "$actorName $verb \"${current.title}\" ($occDate)",
+            eventId = current.id,
+            eventDateIso = occDate
+        )
+        bundler.advanceLastNotifiedAt(current.updatedAt)
     }
 
     // --- List Management (Private vs Shared) ---
@@ -1577,6 +1702,7 @@ class CartVrRepository(
             null
         }
 
+        rescheduleRemindersAsync()
         scope.launch { syncAll() }
         return saved to nextDue
     }
@@ -1603,6 +1729,7 @@ class CartVrRepository(
             null
         }
 
+        rescheduleRemindersAsync()
         scope.launch { syncAll() }
         return nextDue
     }
@@ -1689,6 +1816,7 @@ class CartVrRepository(
                 syncStatus = SyncStatus.PENDING_DELETE
             )
         )
+        rescheduleRemindersAsync()
         scope.launch { syncAll() }
     }
 
@@ -1826,6 +1954,7 @@ class CartVrRepository(
         }
 
         organizerDao.upsertCalendarEvent(event)
+        rescheduleRemindersAsync()
         scope.launch { syncAll() }
         return event
     }
@@ -1851,6 +1980,7 @@ class CartVrRepository(
                 syncStatus = SyncStatus.PENDING_UPSERT
             )
         )
+        rescheduleRemindersAsync()
         scope.launch { syncAll() }
     }
 
@@ -1864,6 +1994,7 @@ class CartVrRepository(
                 syncStatus = SyncStatus.PENDING_DELETE
             )
         )
+        rescheduleRemindersAsync()
         scope.launch { syncAll() }
     }
 
