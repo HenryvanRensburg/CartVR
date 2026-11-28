@@ -826,7 +826,7 @@ private fun AuthenticatedApp(viewModel: CartVrViewModel) {
                         regulars = regulars,
                         linkedCards = linkedCards,
                         defaultKeepAwakeOnList = keepScreenAwakeOnList,
-                        keepAwakeInLiveMode = keepAwakeInLiveMode,
+                        keepAwakeInLiveMode = keepScreenAwakeInLiveMode,
                         liveModeEnabled = liveModeEnabled,
                         onBack = { navController.popBackStack() },
                         onQuickAddItem = { name, qty, note, catId ->
